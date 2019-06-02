@@ -1,6 +1,5 @@
 /*
- * Original: Copyright (c) 2015-2019 5zig [MIT]
- * Current: Copyright (c) 2019 5zig Reborn [GPLv3+]
+ * Copyright (c) 2019 5zig Reborn
  *
  * This file is part of The 5zig Mod
  * The 5zig Mod is free software: you can redistribute it and/or modify
@@ -46,7 +45,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @param maxStringLength The Max Length the Text of the Textfield can have.
 	 */
 	public Textfield(int id, int x, int y, int width, int height, int maxStringLength) {
-		super(id, Minecraft.getMinecraft().fontRendererObj, x, y, width, height);
+		super(id, Minecraft.getMinecraft().fontRenderer, x, y, width, height);
 		this.width = width;
 		this.height = height;
 		callSetMaxStringLength(maxStringLength);
@@ -116,7 +115,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @return the x-location of the Textfield.
 	 */
 	public int getX() {
-		return xPosition;
+		return x;
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @param x The new x-location of the Textfield.
 	 */
 	public void setX(int x) {
-		this.xPosition = x;
+		this.x = x;
 	}
 
 	/**
@@ -134,7 +133,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @return the y-location of the Textfield.
 	 */
 	public int getY() {
-		return yPosition;
+		return y;
 	}
 
 	/**
@@ -143,7 +142,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @param y The new y-location of the Textfield.
 	 */
 	public void setY(int y) {
-		this.yPosition = y;
+		this.y = y;
 	}
 
 	/**

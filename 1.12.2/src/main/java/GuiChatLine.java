@@ -16,34 +16,38 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import eu.the5zig.mod.util.IKeybinding;
-import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.text.TextComponentString;
 
-/**
- * Created by 5zig.
- * All rights reserved © 2015
- */
-public class Keybinding extends KeyBinding implements IKeybinding {
+public class GuiChatLine {
 
-	public Keybinding(String description, int keyCode, String category) {
-		super(description, keyCode, category);
+	private final int updateCounterCreated;
+	private final TextComponentString lineString;
+
+	/**
+	 * int value to refer to existing Chat Lines, can be 0 which means unreferrable
+	 */
+	private final int chatLineID;
+
+	public GuiChatLine(int updateCounterCreated, TextComponentString lineString, int id)
+	{
+		this.lineString = lineString;
+		this.updateCounterCreated = updateCounterCreated;
+		this.chatLineID = id;
 	}
 
-	public boolean isPressed() {
-		return isKeyDown();
+	public TextComponentString getChatComponent()
+	{
+		return this.lineString;
 	}
 
-	@Override
-	public boolean callIsPressed() {
-		return isPressed();
+	public int getUpdatedCounter()
+	{
+		return this.updateCounterCreated;
 	}
 
-	public int callGetKeyCode() {
-		return getKeyCode();
+	public int getChatLineID()
+	{
+		return this.chatLineID;
 	}
 
-	@Override
-	public int compareTo(KeyBinding o) {
-		return super.compareTo(o);
-	}
 }

@@ -23,7 +23,6 @@ import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IChatComponent;
 
 public class Names {
 
@@ -49,7 +48,7 @@ public class Names {
 	public static Name buttonList = new Name("n", "Ljava/util/List;");
 	public static Name width = new Name("l", "I");
 
-	public static Name chatComponent = new Name(IChatComponent.class.getName());
+	public static Name chatComponent = new Name("eu");
 	public static Name packetBuffer = new Name(PacketBuffer.class.getName());
 
 	public static Name guiIngame = new Name(GuiIngame.class.getName());

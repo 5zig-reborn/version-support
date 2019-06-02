@@ -50,10 +50,21 @@ public class ClassTweaker implements ITweaker {
 		this.version = RealmsSharedConstants.VERSION_STRING;
 		LogWrapper.info("Minecraft Version: " + this.version);
 
+		String reflName = null;
+
 		switch(this.version) {
 			case "1.8.9":
-				Transformer.REFLECTION = new ReflectionNames189();
+				reflName = "ReflectionNames189";
 				break;
+			case "1.12.2":
+				reflName = "ReflectionNames1122";
+				break;
+		}
+
+		try {
+			Transformer.REFLECTION = (ReflectionNames) Class.forName("eu.the5zig.mod.asm." + reflName).newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 
 		try {

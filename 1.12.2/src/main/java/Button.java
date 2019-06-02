@@ -1,6 +1,5 @@
 /*
- * Original: Copyright (c) 2015-2019 5zig [MIT]
- * Current: Copyright (c) 2019 5zig Reborn [GPLv3+]
+ * Copyright (c) 2019 5zig Reborn
  *
  * This file is part of The 5zig Mod
  * The 5zig Mod is free software: you can redistribute it and/or modify
@@ -114,27 +113,27 @@ public class Button extends GuiButton implements IButton {
 
 	@Override
 	public int getX() {
-		return xPosition;
+		return x;
 	}
 
 	@Override
 	public void setX(int x) {
-		this.xPosition = x;
+		this.x = x;
 	}
 
 	@Override
 	public int getY() {
-		return yPosition;
+		return y;
 	}
 
 	@Override
 	public void setY(int y) {
-		this.yPosition = y;
+		this.y = y;
 	}
 
 	@Override
 	public void draw(int mouseX, int mouseY) {
-		drawButton(Minecraft.getMinecraft(), mouseX, mouseY);
+		drawButton(Minecraft.getMinecraft(), mouseX, mouseY, 0);
 	}
 
 	@Override
