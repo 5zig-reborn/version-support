@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.resources.DefaultResourcePack;
 import net.minecraft.client.resources.ResourceIndex;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -30,9 +31,7 @@ public class The5zigPack extends DefaultResourcePack {
     public static final Set<String> resourceDomains = ImmutableSet.of("the5zigmod");
 
     public The5zigPack() {
-        super(new ResourceIndex() {
-
-        });
+        super(new HashMap<String, File>());
     }
 
     /**

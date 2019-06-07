@@ -926,7 +926,7 @@ public class Variables implements IVariables {
 	}
 
 	public net.minecraft.item.ItemStack getPlayerItemInHand() {
-		return getPlayer().getItemInUse();
+		return getPlayer().getHeldItem();
 	}
 
 	public net.minecraft.item.ItemStack getArmorItemBySlot(int slot) {

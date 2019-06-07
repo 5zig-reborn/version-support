@@ -16,34 +16,29 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import eu.the5zig.mod.util.IKeybinding;
-import net.minecraft.client.settings.KeyBinding;
+import eu.the5zig.mod.util.IResourceLocation;
 
-/**
- * Created by 5zig.
- * All rights reserved © 2015
- */
-public class Keybinding extends KeyBinding implements IKeybinding {
+public class ResourceLocation extends net.minecraft.util.ResourceLocation implements IResourceLocation {
 
-	public Keybinding(String description, int keyCode, String category) {
-		super(description, keyCode, category);
+	public ResourceLocation(String resourcePath) {
+		super(resourcePath);
 	}
 
-	public boolean isPressed() {
-		return isKeyDown();
+	public ResourceLocation(String resourceDomain, String resourcePath) {
+		super(resourceDomain, resourcePath);
 	}
 
-	@Override
-	public boolean callIsPressed() {
-		return isPressed();
-	}
-
-	public int callGetKeyCode() {
-		return getKeyCode();
+	public static ResourceLocation fromObfuscated(net.minecraft.util.ResourceLocation resourceLocation) {
+		return new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath());
 	}
 
 	@Override
-	public int compareTo(KeyBinding o) {
-		return super.compareTo(o);
+	public String callGetResourcePath() {
+		return resourcePath;
+	}
+
+	@Override
+	public String callGetResourceDomain() {
+		return resourceDomain;
 	}
 }

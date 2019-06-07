@@ -20,6 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
+import eu.the5zig.mod.util.CombatRangeUtil;
 import eu.the5zig.mod.util.The5zigPack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -59,6 +60,13 @@ public abstract class MixinMinecraft {
             MinecraftFactory.getClassProxyCallback().renderSnow(mc.currentScreen.width, mc.currentScreen.height);
         }
         The5zigMod.getListener().onRenderOverlay();
+    }
+
+    @Inject(method = "clickMouse", at = @At(value = "INVOKE", target =
+            "net/minecraft/client/multiplayer/PlayerControllerMP.attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V"))
+    public void clickMouse(CallbackInfo _ci) {
+        CombatRangeUtil.lastRange = CombatRangeUtil.lastPoint;
+        CombatRangeUtil.lastAttack = System.currentTimeMillis();
     }
 
 }
