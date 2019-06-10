@@ -85,7 +85,7 @@ public class AudioButton extends IconButton {
 			MinecraftFactory.getVars().getCurrentScreen().drawHoveringText(Arrays.asList(line1, line2), (int) (getX() + stringWidth * .8), getY() - 15);
 		}
 
-		if (recording && (mouseX <= getX() || mouseX >= getX() + getWidth() || mouseY <= getY() || mouseY >= getY() + getWidth())) {
+		if (recording && (mouseX <= getX() || mouseX >= getX() + callGetWidth() || mouseY <= getY() || mouseY >= getY() + callGetWidth())) {
 			recordingStarted = System.currentTimeMillis();
 			recording = false;
 			synchronized (LOCK) {

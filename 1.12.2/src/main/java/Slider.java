@@ -62,7 +62,7 @@ public class Slider extends Button {
 	protected void mouseDragged(Minecraft mc, int mouseX, int mouseY) {
 		if (isVisible()) {
 			if (this.dragging) {
-				this.value = (mouseX - (getX() + 4)) / (float) (getWidth() - 8);
+				this.value = (mouseX - (getX() + 4)) / (float) (callGetWidth() - 8);
 				this.value = Utils.clamp(value, 0f, 1f);
 
 				float v = denormalizeValue(value);
@@ -74,8 +74,8 @@ public class Slider extends Button {
 
 			MinecraftFactory.getVars().bindTexture(GuiButton.BUTTON_TEXTURES);
 			GLUtil.color(1, 1, 1, 1);
-			drawTexturedModalRect(getX() + (int) (this.value * (getWidth() - 8)), getY(), 0, 66, 4, 20);
-			drawTexturedModalRect(getX() + (int) (this.value * (getWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
+			drawTexturedModalRect(getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
+			drawTexturedModalRect(getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
 		}
 	}
 

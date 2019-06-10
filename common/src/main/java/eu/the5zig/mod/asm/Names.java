@@ -21,7 +21,6 @@ package eu.the5zig.mod.asm;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.network.PacketBuffer;
 
 public class Names {
@@ -54,7 +53,7 @@ public class Names {
 	public static Name guiIngame = new Name(GuiIngame.class.getName());
 	public static Name guiIngameForge = new Name("net.minecraftforge.client.GuiIngameForge");
 	public static Name renderGameOverlay = new Name("a", "(F)V");
-	public static Name scaledResolution = new Name(ScaledResolution.class.getName());
+	public static Name scaledResolution = new Name("");
 	public static Name renderFood = new Name("d", "(L" + scaledResolution.getName() + ";)V");
 	public static Name renderHotbar = new Name("a", "(L" + scaledResolution.getName() + ";F)V");
 	public static Name renderGameOverlayForge = new Name("renderHUDText", "(II)V");

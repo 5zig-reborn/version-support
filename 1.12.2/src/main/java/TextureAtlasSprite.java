@@ -19,9 +19,9 @@
 
 public class TextureAtlasSprite extends net.minecraft.client.renderer.texture.TextureAtlasSprite {
 
-	public static final TextureAtlasSprite MISSING_NO = new TextureAtlasSprite("missingno");
+    public static final TextureAtlasSprite MISSING_NO = new TextureAtlasSprite("missingno");
 
-	protected TextureAtlasSprite(String s) {
-		super(s);
-	}
+    protected TextureAtlasSprite(String s) {
+        super(s);
+    }
 }

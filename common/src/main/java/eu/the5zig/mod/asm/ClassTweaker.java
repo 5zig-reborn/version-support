@@ -59,9 +59,12 @@ public class ClassTweaker implements ITweaker {
 			case "1.12.2":
 				reflName = "ReflectionNames1122";
 				break;
+			case "1.13.2":
+				reflName = "ReflectionNames1132";
+				break;
 		}
 
-		try {
+        try {
 			Transformer.REFLECTION = (ReflectionNames) Class.forName("eu.the5zig.mod.asm." + reflName).newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -78,7 +81,7 @@ public class ClassTweaker implements ITweaker {
 
 		LogWrapper.info("Initializing Mixins...");
 		MixinBootstrap.init();
-		MixinEnvironment env = MixinEnvironment.getCurrentEnvironment();
+		MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
 		Mixins.addConfiguration("mixins.json");
 
 		LogWrapper.info("Forge: %b", Transformer.FORGE);

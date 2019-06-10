@@ -62,7 +62,7 @@ public class Button extends GuiButton implements IButton {
 	}
 
 	@Override
-	public int getWidth() {
+	public int callGetWidth() {
 		return width;
 	}
 
@@ -72,7 +72,7 @@ public class Button extends GuiButton implements IButton {
 	}
 
 	@Override
-	public int getHeight() {
+	public int callGetHeight() {
 		return height;
 	}
 

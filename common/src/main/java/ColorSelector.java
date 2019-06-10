@@ -111,11 +111,11 @@ public class ColorSelector extends Button implements IColorSelector {
 
 
 	private int getBoxX() {
-		return getX() + (getWidth() + MinecraftFactory.getVars().getStringWidth(getLabel())) / 2 + 4;
+		return getX() + (callGetWidth() + MinecraftFactory.getVars().getStringWidth(getLabel())) / 2 + 4;
 	}
 
 	private int getBoxY() {
-		return getY() + (getHeight() - boxHeight) / 2;
+		return getY() + (callGetHeight() - boxHeight) / 2;
 	}
 
 	/**
