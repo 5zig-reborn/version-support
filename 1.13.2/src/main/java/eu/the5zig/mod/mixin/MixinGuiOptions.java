@@ -39,7 +39,6 @@ public class MixinGuiOptions extends GuiScreen {
 
             @Override
             public void onClick(double mouseX, double mouseY) {
-                System.out.println("Mouse cliocked!");
                 The5zigMod.getVars().displayScreen(new GuiSettings(null, "main"));
             }
         };
