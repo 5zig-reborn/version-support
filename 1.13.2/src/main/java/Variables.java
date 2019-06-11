@@ -745,7 +745,7 @@ public class Variables implements IVariables {
 	@Override
 	public ResourceLocation getTargetBlockName() {
 		BlockPos blockPosition = getMinecraft().objectMouseOver.getBlockPos();
-		return ResourceLocation.fromObfuscated(getWorld().getBlockState(blockPosition).getBlock().getRegistryName());
+		return new ResourceLocation("minecraft", getWorld().getBlockState(blockPosition).getBlock().getTranslationKey());
 	}
 
 	@Override
