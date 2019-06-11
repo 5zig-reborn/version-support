@@ -21,7 +21,7 @@ package eu.the5zig.mod.mixin;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.Version;
-import eu.the5zig.mod.gui.elements.IButton;
+import eu.the5zig.mod.util.ButtonFactory;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -30,8 +30,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.List;
 
 @Mixin(GuiMainMenu.class)
 public abstract class MixinGuiMainMenu extends GuiScreen {
@@ -55,21 +53,11 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
                 lastServer = host + ":" + port;
             }
             lastServer = MinecraftFactory.getVars().shortenToWidth(lastServer, 88);
-            button = new GuiButton(99, x, y, 98, 20, lastServer) {
-                @Override
-                public void onClick(double mouseX, double mouseY) {
-                    String server = MinecraftFactory.getClassProxyCallback().getLastServer();
-                    if (server == null)
-                        return;
-                    String[] parts = server.split(":");
-                    String host = parts[parts.length - 2];
-                    int port = Integer.parseInt(parts[parts.length - 1]);
-                    MinecraftFactory.getVars().joinServer(host, port);
-                }
-            };
+            button = ButtonFactory.lastServer(x, y, lastServer);
         } else {
-            button = new GuiButton(98, x, y, 98, 20, MinecraftFactory.getClassProxyCallback().translate("menu.no_last_server")) {
-            };
+            button = (GuiButton)
+                    MinecraftFactory.getVars().createButton(98, x, y, 98, 20,
+                            MinecraftFactory.getClassProxyCallback().translate("menu.no_last_server"));
         }
 
         buttons.add(button);
