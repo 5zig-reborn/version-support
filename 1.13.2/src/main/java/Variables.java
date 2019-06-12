@@ -125,7 +125,7 @@ public class Variables implements IVariables {
 		Keyboard.initLegacy(new Keyboard.KeyboardHandler() {
 			@Override
 			public boolean isKeyDown(int key) {
-					return GLFW.glfwGetKey(scaledResolution.getHandle(), key) == GLFW.GLFW_PRESS;
+				return GLFW.glfwGetKey(scaledResolution.getHandle(), key) == GLFW.GLFW_PRESS;
 			}
 
 			@Override
@@ -610,7 +610,7 @@ public class Variables implements IVariables {
 	}
 
 	public Container getOpenContainer() {
-		return getPlayer().openContainer;
+		return getPlayer() == null ? null : getPlayer().openContainer;
 	}
 
 	@Override
