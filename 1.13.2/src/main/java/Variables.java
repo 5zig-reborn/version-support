@@ -57,7 +57,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.item.Item;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -154,7 +153,8 @@ public class Variables implements IVariables {
 		Display.init(new Display.DisplayHandler() {
 			@Override
 			public boolean isActive() {
-				return org.lwjgl.opengl.Display.isActive();
+				return GLFW.glfwGetWindowAttrib(scaledResolution.getHandle(), GLFW.GLFW_FOCUSED)
+						!= 0;
 			}
 		});
 		updateScaledResolution();

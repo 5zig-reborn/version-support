@@ -55,8 +55,6 @@ public class ClassProxy {
 
 	private static boolean tryFix = false;
 
-	private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
-
 	private ClassProxy() {
 	}
 
@@ -290,38 +288,7 @@ public class ClassProxy {
 		MinecraftFactory.getClassProxyCallback().addSearch(searchEntry);
 	}
 */
-	public static float getCustomFOVModifier(Object object) {
-		EntityPlayer playerInstance = (EntityPlayer) object;
 
-		float modifier = 1.0F;
-		if (playerInstance.abilities.isFlying) {
-			// is Flying
-			modifier *= 1.1F;
-		}
-		IAttributeInstance movementSpeedAttribute = playerInstance.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-		if (movementSpeedAttribute.getModifier(SPRINT_MODIFIER_UUID) != null) {
-			modifier = (float) ((double) modifier * (movementSpeedAttribute.getValue() * 1.30000001192092896D
-					/ playerInstance.abilities.getWalkSpeed() + 1.0) / 2.0D);
-		}
-		if (playerInstance.abilities.getWalkSpeed() == 0.0F || Float.isNaN(modifier) || Float.isInfinite(modifier)) {
-			modifier = 1.0F;
-		}
-
-		if (playerInstance.getActiveItemStack().getItem() == Items.BOW) {
-			// is using bow
-			int itemInUseDuration = playerInstance.getItemInUseCount();
-			float itemInUseDurationSeconds = (float) itemInUseDuration / 20.0F;
-			if (itemInUseDurationSeconds > 1.0F) {
-				itemInUseDurationSeconds = 1.0F;
-			} else {
-				itemInUseDurationSeconds *= itemInUseDurationSeconds;
-			}
-
-			modifier *= 1.0F - itemInUseDurationSeconds * 0.15F;
-		}
-
-		return modifier;
-	}
 
 	public static String[] getSignText(Object signTile) {
 		ITextComponent[] lines = ((TileEntitySign) signTile).signText;

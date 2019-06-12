@@ -60,7 +60,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
                             MinecraftFactory.getClassProxyCallback().translate("menu.no_last_server"));
         }
 
-        buttons.add(button);
+        addButton(button);
 
         for (GuiButton b : buttons) {
             int id = b.id;
