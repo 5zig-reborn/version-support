@@ -775,6 +775,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getEntityCount() {
+		if(getMinecraft().world == null) return "No world";
 		return Integer.toString(getMinecraft().world.loadedEntityList.size());
 	}
 

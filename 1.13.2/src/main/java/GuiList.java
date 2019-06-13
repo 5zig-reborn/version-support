@@ -337,7 +337,7 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 		if(item == null) return;
 		int id = rows.indexOf(item);
 		setSelectedEntry(id);
-		setSelectedId(id);
+		this.mouseClicked(id, 0, (double)mouseX, (double)mouseY);
 
 		if (hasSelected) {
 			synchronized (rows) {
@@ -396,13 +396,17 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 		return x < this.getScrollBarX() && x >= var3 && x <= var4 && var6 >= 0 && var5 >= 0 && var6 < this.getSize() ? var6 - 3 : -1;
 	}
 
-	/**
-	 * Called when the mouse has been released.
-	 *
-	 * @param mouseX The x coordinate of the Mouse.
-	 * @param mouseY The y coordinate of the Mouse.
-	 * @param state  The state.
-	 */
+	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int state) {
+		if(this.getFocused() != null) {
+			this.getFocused().mouseReleased(mouseX, mouseY, state);
+		}
+		this.getChildren().forEach(child -> {
+			child.mouseReleased(mouseX, mouseY, state);
+		});
+		return false;
+	}
+
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int state) {
 		if (this.selectedButton != null && state == 0) {
