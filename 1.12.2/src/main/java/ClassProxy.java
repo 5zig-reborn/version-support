@@ -31,10 +31,6 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.ResourcePackListEntry;
 import net.minecraft.client.resources.ResourcePackListEntryFound;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -291,38 +287,7 @@ public class ClassProxy {
 		MinecraftFactory.getClassProxyCallback().addSearch(searchEntry);
 	}
 */
-	public static float getCustomFOVModifier(Object object) {
-		EntityPlayer playerInstance = (EntityPlayer) object;
 
-		float modifier = 1.0F;
-		if (playerInstance.capabilities.isFlying) {
-			// is Flying
-			modifier *= 1.1F;
-		}
-		IAttributeInstance movementSpeedAttribute = playerInstance.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-		if (movementSpeedAttribute.getModifier(SPRINT_MODIFIER_UUID) != null) {
-			modifier = (float) ((double) modifier * (movementSpeedAttribute.getAttributeValue() * 1.30000001192092896D
-					/ playerInstance.capabilities.getWalkSpeed() + 1.0) / 2.0D);
-		}
-		if (playerInstance.capabilities.getWalkSpeed() == 0.0F || Float.isNaN(modifier) || Float.isInfinite(modifier)) {
-			modifier = 1.0F;
-		}
-
-		if (playerInstance.getActiveItemStack().getItem() == Items.BOW) {
-			// is using bow
-			int itemInUseDuration = playerInstance.getItemInUseCount();
-			float itemInUseDurationSeconds = (float) itemInUseDuration / 20.0F;
-			if (itemInUseDurationSeconds > 1.0F) {
-				itemInUseDurationSeconds = 1.0F;
-			} else {
-				itemInUseDurationSeconds *= itemInUseDurationSeconds;
-			}
-
-			modifier *= 1.0F - itemInUseDurationSeconds * 0.15F;
-		}
-
-		return modifier;
-	}
 
 	public static String[] getSignText(Object signTile) {
 		ITextComponent[] lines = ((TileEntitySign) signTile).signText;

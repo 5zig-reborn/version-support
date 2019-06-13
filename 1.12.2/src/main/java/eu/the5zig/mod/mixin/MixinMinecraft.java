@@ -55,11 +55,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At("TAIL"))
     public void tick(CallbackInfo _ci) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if(mc.currentScreen instanceof GuiMainMenu) {
-            MinecraftFactory.getClassProxyCallback().renderSnow(mc.currentScreen.width, mc.currentScreen.height);
-        }
-        The5zigMod.getListener().onRenderOverlay();
+        The5zigMod.getListener().onTick();
     }
 
     @Inject(method = "clickMouse", at = @At(value = "INVOKE", target =

@@ -20,7 +20,6 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.modules.items.player.CombatRange;
 import eu.the5zig.mod.util.CombatRangeUtil;
 import eu.the5zig.mod.util.The5zigPack;
 import net.minecraft.client.Minecraft;
@@ -52,16 +51,11 @@ public abstract class MixinMinecraft {
             The5zigMod.init();
         }
         The5zigMod.getKeybindingManager().flushTextfields();
-        The5zigMod.getOverlayMessage().displayMessage("Test message");
     }
 
     @Inject(method = "runTick", at = @At("TAIL"))
     public void tick(CallbackInfo _ci) {
-        Minecraft mc = Minecraft.getMinecraft();
-        if(mc.currentScreen instanceof GuiMainMenu) {
-            MinecraftFactory.getClassProxyCallback().renderSnow(mc.currentScreen.width, mc.currentScreen.height);
-        }
-        The5zigMod.getListener().onRenderOverlay();
+        The5zigMod.getListener().onTick();
     }
 
     @Inject(method = "clickMouse", at = @At(value = "INVOKE", target =
