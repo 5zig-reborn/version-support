@@ -40,6 +40,7 @@ public abstract class MixinEntityRenderer {
             opcode = Opcodes.PUTFIELD))
     public void getMouseOver(float pTicks, CallbackInfo ci, Entity p1, double p2, Vec3d p3, boolean p4,
                              int p5, double p6, Vec3d p7, Vec3d p8, Vec3d p9, float p10, List p11, double p12) {
+        System.out.println(p2 + " " + p12);
         CombatRangeUtil.lastPoint = p12;
         CombatRangeUtil.maxRange = p2;
     }

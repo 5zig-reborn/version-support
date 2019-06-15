@@ -70,6 +70,22 @@ public class GuiHandle extends GuiScreen implements IGuiHandle {
 		super.();
 	}
 */
+
+	@Override
+	public boolean mouseScrolled(double p_mouseScrolled_1_) {
+		boolean result = super.mouseScrolled(p_mouseScrolled_1_);
+		child.mouseScrolled0(p_mouseScrolled_1_);
+		return result;
+	}
+
+	@Override
+	public boolean mouseDragged(double p_mouseDragged_1_, double p_mouseDragged_3_, int p_mouseDragged_5_, double p_mouseDragged_6_, double p_mouseDragged_8_) {
+		boolean result = super.mouseDragged(p_mouseDragged_1_, p_mouseDragged_3_,
+				p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_);
+		child.mouseDragged0(p_mouseDragged_1_, p_mouseDragged_3_, p_mouseDragged_5_, p_mouseDragged_6_, p_mouseDragged_8_);
+		return result;
+	}
+
 	@Override
 	public void onGuiClosed() {
 		child.guiClosed0();

@@ -30,7 +30,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.input.Mouse;
 
 import java.util.List;
 
@@ -49,7 +48,6 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 	private boolean hasSelected = false;
 
 	protected int mouseX, mouseY;
-	protected float scrollMultiplier;
 
 	private int selected;
 	private IButton selectedButton;
@@ -320,13 +318,45 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 	}
 
 	@Override
-	public boolean mouseDragged(double v, double v1, int i, double v2, double v3) {
-		return false;
+	public boolean callMouseDragged(double v, double v1, int i, double v2, double v3) {
+		if ((this.getFocused() != null && this.hasSelected && i == 0) && this.getFocused().mouseDragged(v, v1, i, v2, v3)) {
+			return true;
+		} else if (this.isVisible() && i == 0 && this.hasSelected && v > getScrollBarX() && v < getScrollBarX() + 6) {
+			if (v1 < (double)this.top) {
+				this.amountScrolled = 0.0D;
+			} else if (v1 > (double)this.bottom) {
+				this.amountScrolled = (double)this.getMaxScroll();
+			} else {
+				double var10 = (double)this.getMaxScroll();
+				if (var10 < 1.0D) {
+					var10 = 1.0D;
+				}
+
+				int var12 = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getContentHeight());
+				var12 = MathHelper.clamp(var12, 32, this.bottom - this.top - 8);
+				double var13 = var10 / (double)(this.bottom - this.top - var12);
+				if (var13 < 1.0D) {
+					var13 = 1.0D;
+				}
+
+				this.amountScrolled += v3 * var13;
+				this.bindAmountScrolled();
+			}
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public boolean mouseScrolled(double v) {
-		return false;
+	public boolean callMouseScrolled(double var1) {
+		if (!this.isVisible() || !(mouseX >= getLeft() && mouseX <= getRight() && mouseY >= getTop() & mouseY <= getBottom())) {
+			return false;
+		} else {
+			this.amountScrolled -= var1 * (double)this.slotHeight / 2.0D;
+			return true;
+		}
 	}
 
 	@Override

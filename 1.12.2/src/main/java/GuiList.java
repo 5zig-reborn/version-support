@@ -393,12 +393,12 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 	}
 
 	@Override
-	public boolean mouseDragged(double v, double v1, int i, double v2, double v3) {
+	public boolean callMouseDragged(double v, double v1, int i, double v2, double v3) {
 		return false;
 	}
 
 	@Override
-	public boolean mouseScrolled(double v) {
+	public boolean callMouseScrolled(double v) {
 		return false;
 	}
 
