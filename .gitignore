@@ -3,3 +3,7 @@
 *.iml
 .gradle
 build/
+gradle/
+gradlew
+gradlew.bat
+/artifacts/
