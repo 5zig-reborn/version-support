@@ -18,14 +18,13 @@
 
 package eu.the5zig.mod.mixin;
 
-import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.CombatRangeUtil;
 import eu.the5zig.mod.util.The5zigPack;
-import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.ResourcePackInfoClient;
+import net.minecraft.resources.IReloadableResourceManager;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackList;
@@ -36,16 +35,25 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
 
     @Shadow
-    private ResourcePackList<ResourcePackInfo> resourcePackRepository;
+    private ResourcePackList<ResourcePackInfoClient> resourcePackRepository;
 
-    @Inject(method = "init", at = @At("HEAD"))
+    @Shadow
+    private IReloadableResourceManager resourceManager;
+
+    @Inject(method = "refreshResources", at = @At("TAIL"))
     public void startGame(CallbackInfo _ci) {
-        //resourcePackRepository.addPackFinder(new The5zigPack());
+        List<IResourcePack> list = resourcePackRepository.getEnabledPacks().stream()
+                .map(ResourcePackInfo::getResourcePack).collect(Collectors.toList());
+
+        list.add(new The5zigPack());
+
+        resourceManager.reload(list);
     }
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"))

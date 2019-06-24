@@ -18,24 +18,12 @@
 
 package eu.the5zig.mod.util;
 
-import com.google.common.collect.ImmutableSet;
-import net.minecraft.resources.ResourcePackType;
 import net.minecraft.resources.VanillaPack;
-
-import java.util.Set;
 
 public class The5zigPack extends VanillaPack {
 
-    public static final Set<String> resourceDomains = ImmutableSet.of("the5zigmod");
-
-    @Override
-    public Set<String> getResourceNamespaces(ResourcePackType type) {
-        return resourceDomains;
-    }
-
-    @Override
-    public String getName() {
-        return "The 5zig Mod";
+    public The5zigPack() {
+        super("the5zigmod");
     }
 
 }

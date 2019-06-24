@@ -46,6 +46,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
@@ -80,9 +81,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Proxy;
@@ -1133,7 +1134,14 @@ public class Variables implements IVariables {
 
 	@Override
 	public Object loadDynamicImage(String name, BufferedImage image) {
-		return getTextureManager().getDynamicTextureLocation(name, new DynamicTexture(image.getWidth(), image.getHeight(), false));
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ImageIO.write(image, "png", os);
+			InputStream in = new ByteArrayInputStream(os.toByteArray());
+			return getTextureManager().getDynamicTextureLocation(name, new DynamicTexture(NativeImage.read(in)));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
