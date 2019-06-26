@@ -606,6 +606,7 @@ public class Variables implements IVariables {
 	}
 
 	public Container getOpenContainer() {
+		if(getPlayer() == null) return null;
 		return getPlayer().openContainer;
 	}
 

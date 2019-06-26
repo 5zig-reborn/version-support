@@ -86,6 +86,10 @@ public class ClassTweaker implements ITweaker {
 
 		LogWrapper.info("Forge: %b", Transformer.FORGE);
 
+		if(Transformer.FORGE) {
+			Mixins.addConfiguration("mixins_forge.json");
+		}
+
 		env.setObfuscationContext(Transformer.FORGE ? "searge" : "notch");
 		env.setSide(MixinEnvironment.Side.CLIENT);
 

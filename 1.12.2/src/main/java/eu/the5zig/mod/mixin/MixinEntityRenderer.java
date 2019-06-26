@@ -19,29 +19,25 @@
 package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.util.CombatRangeUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.List;
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
 
-    @Inject(method = "getMouseOver", locals = LocalCapture.CAPTURE_FAILEXCEPTION, at = @At(value = "FIELD", target =
+    @Inject(method = "getMouseOver", at = @At(value = "FIELD", target =
             "net/minecraft/client/Minecraft.pointedEntity:Lnet/minecraft/entity/Entity;",
             ordinal = 1,
             opcode = Opcodes.PUTFIELD))
-    public void getMouseOver(float pTicks, CallbackInfo ci, Entity p1, double p2, Vec3d p3, boolean p4,
-                             int p5, double p6, Vec3d p7, Vec3d p8, Vec3d p9, float p10, List p11, double p12) {
-        CombatRangeUtil.lastPoint = p12;
-        CombatRangeUtil.maxRange = p2;
+    public void getMouseOver(float pTicks, CallbackInfo ci) {
+        Vec3d vec3d = Minecraft.getMinecraft().getRenderViewEntity().getPositionEyes(pTicks);
+        CombatRangeUtil.lastPoint = Minecraft.getMinecraft().objectMouseOver.hitVec.distanceTo(vec3d);
     }
 
 }

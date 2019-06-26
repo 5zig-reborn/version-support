@@ -18,26 +18,25 @@
 
 package eu.the5zig.mod.mixin;
 
-import eu.the5zig.mod.util.CombatRangeUtil;
+import eu.the5zig.mod.The5zigMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.util.math.Vec3d;
-import org.spongepowered.asm.lib.Opcodes;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraftforge.client.GuiIngameForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GameRenderer.class)
-public class MixinEntityRenderer {
+@Mixin(GuiIngameForge.class)
+public abstract class MixinGuiIngameForge extends GuiIngame {
 
-    @Inject(method = "getMouseOver", at = @At(value = "FIELD", target =
-            "net/minecraft/client/Minecraft.pointedEntity:Lnet/minecraft/entity/Entity;",
-            ordinal = 1,
-            opcode = Opcodes.PUTFIELD))
-    public void getMouseOver(float pTicks, CallbackInfo ci) {
-        Vec3d vec3d = Minecraft.getInstance().getRenderViewEntity().getEyePosition(pTicks);
-        CombatRangeUtil.lastPoint = Minecraft.getInstance().objectMouseOver.hitVec.distanceTo(vec3d);
+    public MixinGuiIngameForge(Minecraft mcIn) {
+        super(mcIn);
+    }
+
+    @Inject(remap = false, method = "renderChat", at = @At("HEAD"))
+    public void renderChat(int w, int h, CallbackInfo _ci) {
+        The5zigMod.getVars().get2ndChat().draw(updateCounter);
     }
 
 }

@@ -52,6 +52,14 @@ public class GuiHandle extends GuiScreen implements IGuiHandle {
 		button.onClick(0, 0);
 	}
 */
+
+	@Override
+	public boolean charTyped(char c, int keyCode) {
+		boolean result = super.charTyped(c, keyCode);
+		child.keyTyped0(c, keyCode);
+		return result;
+	}
+
 	@Override
 	public void render(int mouseX, int mouseY, float partialTicks) {
 		callDrawDefaultBackground();
@@ -93,8 +101,9 @@ public class GuiHandle extends GuiScreen implements IGuiHandle {
 
 	@Override
 	public boolean keyPressed(int i1, int i2, int i3) {
+		boolean b = super.keyPressed(i1, i2, i3);
 		child.keyPressed0(i1, i2, i3);
-		return true;
+		return b;
 	}
 
 	@Override

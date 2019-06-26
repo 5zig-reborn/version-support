@@ -219,12 +219,7 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * @param key       The LWJGL-Integer of the typed key.
 	 */
 	public boolean callKeyTyped(char character, int key) {
-		return keyPressed((int)character, key, 0);
-	}
-
-	@Override
-	public boolean keyPressed(int key, int scanCode, int modifiers) {
-		return false;
+		return super.charTyped(character, key);
 	}
 
 	/**

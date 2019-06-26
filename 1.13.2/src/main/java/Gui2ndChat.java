@@ -36,7 +36,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.logging.log4j.LogManager;
-import org.lwjgl.input.Mouse;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -280,7 +279,7 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public void drawComponentHover(int mouseX, int mouseY) {
-		TextComponentString chatComponent = getChatComponent(Mouse.getX(), Mouse.getY());
+		TextComponentString chatComponent = getChatComponent(mouseX, mouseY);
 		try {
 			hoverChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
 					chatComponent, mouseX, mouseY);
@@ -293,7 +292,7 @@ public class Gui2ndChat implements IGui2ndChat {
 	public boolean mouseClicked(int mouseX, int mouseY, int button) {
 		try {
 			return button == 0 && (Boolean) clickChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
-					getChatComponent(Mouse.getX(), Mouse.getY()));
+					getChatComponent(mouseX, mouseY));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

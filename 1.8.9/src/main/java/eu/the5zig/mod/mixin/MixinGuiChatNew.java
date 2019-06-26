@@ -23,7 +23,7 @@ import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.ChatHighlighting;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -32,10 +32,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.lang.reflect.InvocationTargetException;
+
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiChatNew {
 
-    private ITextComponent lastComponent;
+    private IChatComponent lastComponent;
 
     @Inject(method = "drawChat", at = @At("TAIL"))
     public void drawChat(int upd, CallbackInfo _ci) {
@@ -43,8 +45,8 @@ public abstract class MixinGuiChatNew {
     }
 
     @Inject(method = "drawChat", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
-        locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, float var4, boolean var5, float var6, int var7, int var8, int var9,
+        locals = LocalCapture.CAPTURE_FAILHARD)
+    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, boolean var3, int var4, int var5, float var6, float var7, int var8, int var9,
                                   ChatLine var10, int var11, double var12, int var14, int var15, int var16) {
         lastComponent = var10.getChatComponent();
     }
@@ -64,9 +66,9 @@ public abstract class MixinGuiChatNew {
     }
 
     @ModifyVariable(method = "setChatLine", at = @At("HEAD"), argsOnly = true, index = 1)
-    public ITextComponent setChatLine(ITextComponent chatComponent) {
+    public IChatComponent setChatLine(IChatComponent chatComponent) {
         if(The5zigMod.getConfig().getBool("chatTimePrefixEnabled")) {
-            return (ITextComponent) The5zigMod.getDataManager().getChatComponentWithTime(chatComponent);
+            return (IChatComponent) The5zigMod.getDataManager().getChatComponentWithTime(chatComponent);
         }
         return chatComponent;
     }

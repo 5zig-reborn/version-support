@@ -37,22 +37,17 @@ public abstract class MixinGuiChatNew {
 
     private ITextComponent lastComponent;
 
-    @Inject(method = "drawChat", at = @At("TAIL"))
-    public void drawChat(int upd, CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().draw(upd);
-    }
-
-    @Inject(method = "drawChat", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
+    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
         locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, float var4, boolean var5, float var6, int var7, int var8, int var9,
+    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, double var4, boolean var5, double var6, int var7, int var8, int var9,
                                   ChatLine var10, int var11, double var12, int var14, int var15, int var16) {
         lastComponent = var10.getChatComponent();
     }
 
-    @ModifyArg(method = "drawChat", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
         index = 4)
     public int customAlpha(int previous) {
-        if(ChatHighlighting.shouldHighlight(lastComponent.getUnformattedText())) {
+        if(ChatHighlighting.shouldHighlight(lastComponent.getString())) {
             return MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, previous) << 24);
         }
         return previous * (The5zigMod.getConfig().getBool("transparentChatBackground") ? 0 : 1);

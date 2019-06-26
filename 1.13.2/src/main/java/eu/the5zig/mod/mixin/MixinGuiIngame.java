@@ -21,12 +21,16 @@ package eu.the5zig.mod.mixin;
 import eu.the5zig.mod.The5zigMod;
 import net.minecraft.client.gui.GuiIngame;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GuiIngame.class)
 public abstract class MixinGuiIngame {
+
+    @Shadow
+    protected int ticks;
 
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     protected void renderHotbar(float pTicks, CallbackInfo _ci) {
@@ -36,6 +40,12 @@ public abstract class MixinGuiIngame {
     @Inject(method = "tick", at = @At("TAIL"))
     public void updateTick(CallbackInfo _ci) {
         The5zigMod.getGuiIngame().tick();
+    }
+
+    @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE",
+            target = "net/minecraft/profiler/Profiler.startSection(Ljava/lang/String;)V", ordinal = 4))
+    public void patchChat(float pTicks, CallbackInfo _ci) {
+        The5zigMod.getVars().get2ndChat().draw(ticks);
     }
 
 }
