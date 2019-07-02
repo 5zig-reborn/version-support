@@ -18,12 +18,10 @@
 
 package eu.the5zig.mod.mixin;
 
-import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.CombatRangeUtil;
 import eu.the5zig.mod.util.The5zigPack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.IResourcePack;
 import org.spongepowered.asm.mixin.Mixin;

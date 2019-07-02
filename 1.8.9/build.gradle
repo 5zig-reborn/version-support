@@ -58,7 +58,6 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
 mixin {
-    defaultObfuscationEnv notch
     add sourceSets.main, "mixins.refmap.json"
 }
 

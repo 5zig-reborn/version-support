@@ -26,10 +26,9 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP {
 
-    @Overwrite
-    public void sendChatMessage(String msg) {
+    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
+    public void sendChatMessage(String msg, CallbackInfo ci) {
         The5zigMod.getListener().onSendChatMessage(msg);
+        ci.cancel();
     }
-
-
 }
