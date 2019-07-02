@@ -65,7 +65,8 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
 }
 
-sourceSets.main.java {
-    srcDirs 'src/main/java'
+sourceSets.main {
+    java.srcDirs 'src/main/java'
+    resources.srcDirs 'src/main/resources'
 }
 

@@ -68,8 +68,9 @@ minecraft {
     makeObfSourceJar = false
 }
 
-sourceSets.main.java {
-    srcDirs 'src/main/java'
+sourceSets.main {
+    java.srcDirs 'src/main/java'
+    resources.srcDirs 'src/main/resources'
 }
 
 reobf.jar.mappingType = 'NOTCH'
