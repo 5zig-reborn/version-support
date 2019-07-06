@@ -29,11 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(GuiChat.class)
 public abstract class MixinGuiChat {
 
-    @Inject(method = "updateUsageInfo", at = @At("HEAD"))
-    public void handleMouseInput(CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().scroll(1);
-    }
-
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     public void onGuiClosed(CallbackInfo _ci) {
         The5zigMod.getVars().get2ndChat().resetScroll();

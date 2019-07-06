@@ -37,6 +37,11 @@ public abstract class MixinGuiChatNew {
 
     private ITextComponent lastComponent;
 
+    @Inject(method = "scroll", at = @At("HEAD"))
+    public void scroll(int amount, CallbackInfo _ci) {
+        The5zigMod.getVars().get2ndChat().scroll(amount);
+    }
+
     @Inject(method = "drawChat", at = @At("TAIL"))
     public void drawChat(int upd, CallbackInfo _ci) {
         The5zigMod.getVars().get2ndChat().draw(upd);

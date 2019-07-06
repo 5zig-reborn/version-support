@@ -32,12 +32,15 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.lang.reflect.InvocationTargetException;
-
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiChatNew {
 
     private IChatComponent lastComponent;
+
+    @Inject(method = "scroll", at = @At("HEAD"))
+    public void scroll(int amount, CallbackInfo _ci) {
+        The5zigMod.getVars().get2ndChat().scroll(amount);
+    }
 
     @Inject(method = "drawChat", at = @At("TAIL"))
     public void drawChat(int upd, CallbackInfo _ci) {

@@ -37,6 +37,11 @@ public abstract class MixinGuiChatNew {
 
     private ITextComponent lastComponent;
 
+    @Inject(method = "func_194813_a", at = @At("HEAD"))
+    public void scroll(double amount, CallbackInfo _ci) {
+        The5zigMod.getVars().get2ndChat().scroll((int)amount);
+    }
+
     @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
         locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, double var4, boolean var5, double var6, int var7, int var8, int var9,
