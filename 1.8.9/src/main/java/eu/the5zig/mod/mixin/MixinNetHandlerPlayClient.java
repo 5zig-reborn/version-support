@@ -44,7 +44,7 @@ public abstract class MixinNetHandlerPlayClient {
         The5zigMod.getListener().onPlayerListHeaderFooter(tabList);
     }
 
-    @Inject(method = "handleChat", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleChat", at = @At(value = "CONSTANT", args = "intValue=2", shift = At.Shift.BEFORE), cancellable = true)
     public void handleChat(S02PacketChat packet, CallbackInfo ci) {
         byte type = packet.getType();
         IChatComponent comp = packet.getChatComponent();

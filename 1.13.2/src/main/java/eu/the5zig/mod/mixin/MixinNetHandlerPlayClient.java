@@ -44,7 +44,9 @@ public abstract class MixinNetHandlerPlayClient {
         The5zigMod.getListener().onPlayerListHeaderFooter(tabList);
     }
 
-    @Inject(method = "handleChat", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleChat", at = @At(value = "INVOKE",
+            target = "net/minecraft/client/gui/GuiIngame.addChatMessage(Lnet/minecraft/util/text/ChatType;Lnet/minecraft/util/text/ITextComponent;)V",
+            shift = At.Shift.BEFORE), cancellable = true)
     public void handleChat(SPacketChat packet, CallbackInfo ci) {
         byte type = packet.getType().getId();
         ITextComponent comp = packet.getChatComponent();
