@@ -428,7 +428,7 @@ public class Variables implements IVariables {
 		}
 		getGameSettings().keyBindings = Utils.concat(currentKeybindings, customKeybindings);
 
-		getGameSettings().saveOptions();
+		getGameSettings().loadOptions();
 	}
 
 	@Override
