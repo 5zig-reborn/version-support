@@ -628,7 +628,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getSession() {
-		return getMinecraft().getSession().getSessionID();
+		return getMinecraft().getSession().getToken();
 	}
 
 	@Override

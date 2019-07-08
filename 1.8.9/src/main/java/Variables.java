@@ -24,7 +24,6 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.asm.Names;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
@@ -624,7 +623,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getSession() {
-		return getMinecraft().getSession().getSessionID();
+		return getMinecraft().getSession().getToken();
 	}
 
 	@Override
