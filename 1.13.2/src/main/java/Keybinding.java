@@ -37,10 +37,6 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 		tryRegisterCategory(category);
 	}
 
-	public boolean isPressed() {
-		return isKeyDown();
-	}
-
 	@Override
 	public boolean callIsPressed() {
 		return isPressed();
