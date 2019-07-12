@@ -67,7 +67,7 @@ public class Button extends GuiButton implements IButton {
 	}
 
 	@Override
-	public void setWidth(int width) {
+	public void callSetWidth(int width) {
 		this.width = width;
 	}
 
@@ -77,7 +77,7 @@ public class Button extends GuiButton implements IButton {
 	}
 
 	@Override
-	public void setHeight(int height) {
+	public void callSetHeight(int height) {
 		this.height = height;
 	}
 
