@@ -37,7 +37,7 @@ public abstract class MixinRenderPlayer {
     @Inject(method = "doRender", at = @At("TAIL"))
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float yaw, float pTicks, CallbackInfo _ci) {
         if(!RewardTagUtils.shouldRender(entity)) return;
-        String rewardString = RewardsCache.getRewardString(entity.getUniqueID().toString().replace("-", ""));
+        String rewardString = RewardsCache.getRewardString(entity.getUniqueID().toString());
         if(rewardString == null) return;
 
         // Transform
