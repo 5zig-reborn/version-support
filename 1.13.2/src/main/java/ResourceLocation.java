@@ -18,14 +18,16 @@
 
 import eu.the5zig.mod.util.IResourceLocation;
 
+import java.util.Locale;
+
 public class ResourceLocation extends net.minecraft.util.ResourceLocation implements IResourceLocation {
 
 	public ResourceLocation(String resourcePath) {
-		super(resourcePath);
+		super(resourcePath.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9/._-]", ""));
 	}
 
 	public ResourceLocation(String resourceDomain, String resourcePath) {
-		super(resourceDomain, resourcePath);
+		super(resourceDomain, resourcePath.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9/._-]", ""));
 	}
 
 	public static ResourceLocation fromObfuscated(net.minecraft.util.ResourceLocation resourceLocation) {

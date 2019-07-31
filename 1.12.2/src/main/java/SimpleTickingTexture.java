@@ -19,7 +19,7 @@
 
 import eu.the5zig.mod.MinecraftFactory;
 import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.client.renderer.texture.ITickableTextureObject;
 import net.minecraft.client.resources.IResourceManager;
 
 import java.awt.image.BufferedImage;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleTickingTexture extends net.minecraft.client.renderer.texture.SimpleTexture implements ITickable {
+public class SimpleTickingTexture extends net.minecraft.client.renderer.texture.SimpleTexture implements ITickableTextureObject {
 
 	private final ResourceLocation resourceLocation;
 
@@ -73,8 +73,8 @@ public class SimpleTickingTexture extends net.minecraft.client.renderer.texture.
 		} else {
 			int parts = bufferedImage.getHeight() / (bufferedImage.getWidth() / 2);
 			int partHeight = bufferedImage.getHeight() / parts;
-			bufferedImages = new ArrayList<BufferedImage>(parts);
-			frames = new ArrayList<ResourceLocation>(parts);
+			bufferedImages = new ArrayList<>(parts);
+			frames = new ArrayList<>(parts);
 			for (int part = 0; part < parts; part++) {
 				bufferedImages.add(bufferedImage.getSubimage(0, part * partHeight, bufferedImage.getWidth(), partHeight));
 			}

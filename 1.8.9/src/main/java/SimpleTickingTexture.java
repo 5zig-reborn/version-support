@@ -19,7 +19,7 @@
 
 import eu.the5zig.mod.MinecraftFactory;
 import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.client.renderer.texture.ITickableTextureObject;
 import net.minecraft.client.resources.IResourceManager;
 
 import java.awt.image.BufferedImage;
@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleTickingTexture extends net.minecraft.client.renderer.texture.SimpleTexture implements ITickable {
+public class SimpleTickingTexture extends net.minecraft.client.renderer.texture.SimpleTexture implements ITickableTextureObject {
 
 	private final ResourceLocation resourceLocation;
 

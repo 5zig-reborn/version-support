@@ -17,10 +17,15 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureUtil;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class SimpleTexture extends net.minecraft.client.renderer.texture.SimpleTexture {
 
@@ -34,8 +39,17 @@ public class SimpleTexture extends net.minecraft.client.renderer.texture.SimpleT
 	void checkTextureUploaded() {
 		if (!this.textureUploaded) {
 			if (this.bufferedImage != null) {
-				TextureUtil.allocateTexture(super.getGlTextureId(), this.bufferedImage.getWidth(), this.bufferedImage.getHeight());
-				this.textureUploaded = true;
+				try {
+					ByteArrayOutputStream os = new ByteArrayOutputStream();
+					ImageIO.write(bufferedImage, "png", os);
+					InputStream in = new ByteArrayInputStream(os.toByteArray());
+					NativeImage var1 = NativeImage.read(in);
+					TextureUtil.allocateTexture(super.getGlTextureId(), var1.getWidth(), var1.getHeight());
+					var1.uploadTextureSub(0, 0, 0, false);
+					this.textureUploaded = true;
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 	}
