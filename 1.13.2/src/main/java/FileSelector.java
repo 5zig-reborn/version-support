@@ -28,11 +28,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +45,8 @@ public class FileSelector implements IFileSelector {
 
 	private final FileSystemView fsv = FileSystemView.getFileSystemView();
 	private final Callback<File> callback;
+
+	private List<String> allowedExtensions = new ArrayList<>();
 
 	private File currentDir;
 	private int selectedFile;
@@ -92,6 +96,7 @@ public class FileSelector implements IFileSelector {
 			for (File file : a) {
 				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
 					continue;
+				if(!isExtensionAllowed(file)) continue;
 				files.add(file);
 			}
 			selectedFile = files.isEmpty() ? -1 : 0;
@@ -111,6 +116,7 @@ public class FileSelector implements IFileSelector {
 			for (File file : a) {
 				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
 					continue;
+				if(!isExtensionAllowed(file)) continue;
 				files.add(file);
 			}
 			selectedFile = files.isEmpty() ? -1 : 0;
@@ -122,9 +128,23 @@ public class FileSelector implements IFileSelector {
 		for (File file : a) {
 			if (file.isHidden())
 				continue;
+			if(!isExtensionAllowed(file)) continue;
 			files.add(file);
 		}
 		selectedFile = files.isEmpty() ? -1 : 0;
+	}
+
+	@Override
+	public void setAllowedExtensions(String... extensions) {
+		allowedExtensions.addAll(java.util.Arrays.asList(extensions));
+		updateDir(currentDir);
+	}
+
+	private boolean isExtensionAllowed(File file) {
+		if(allowedExtensions.size() == 0) return true;
+		if(file.isDirectory()) return true;
+		String ext = FilenameUtils.getExtension(file.getName());
+		return allowedExtensions.contains(ext);
 	}
 
 	@Override

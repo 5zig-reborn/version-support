@@ -28,11 +28,13 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.MathHelper;
+import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +49,8 @@ public class FileSelector implements IFileSelector {
 	private File currentDir;
 	private int selectedFile;
 	private List<File> files = Lists.newArrayList();
+
+	private List<String> allowedExtensions = new ArrayList<>();
 
 	private int width, height;
 
@@ -79,6 +83,19 @@ public class FileSelector implements IFileSelector {
 	}
 
 	@Override
+	public void setAllowedExtensions(String... extensions) {
+		allowedExtensions.addAll(java.util.Arrays.asList(extensions));
+		updateDir(currentDir);
+	}
+
+	private boolean isExtensionAllowed(File file) {
+		if(allowedExtensions.size() == 0) return true;
+		if(file.isDirectory()) return true;
+		String ext = FilenameUtils.getExtension(file.getName());
+		return allowedExtensions.contains(ext);
+	}
+
+	@Override
 	public void goUp() {
 		if (currentDir == null)
 			return;
@@ -92,6 +109,7 @@ public class FileSelector implements IFileSelector {
 			for (File file : a) {
 				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
 					continue;
+				if(!isExtensionAllowed(file)) continue;
 				files.add(file);
 			}
 			selectedFile = files.isEmpty() ? -1 : 0;
@@ -111,6 +129,7 @@ public class FileSelector implements IFileSelector {
 			for (File file : a) {
 				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
 					continue;
+				if(!isExtensionAllowed(file)) continue;
 				files.add(file);
 			}
 			selectedFile = files.isEmpty() ? -1 : 0;
@@ -122,6 +141,7 @@ public class FileSelector implements IFileSelector {
 		for (File file : a) {
 			if (file.isHidden())
 				continue;
+			if(!isExtensionAllowed(file)) continue;
 			files.add(file);
 		}
 		selectedFile = files.isEmpty() ? -1 : 0;

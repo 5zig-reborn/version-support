@@ -28,11 +28,13 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,6 +49,8 @@ public class FileSelector implements IFileSelector {
 	private File currentDir;
 	private int selectedFile;
 	private List<File> files = Lists.newArrayList();
+
+	private List<String> allowedExtensions = new ArrayList<>();
 
 	private int width, height;
 
@@ -86,16 +90,7 @@ public class FileSelector implements IFileSelector {
 		if (parent == null) {
 			currentDir = null;
 			files.clear();
-			File[] a = File.listRoots();
-			if (a == null)
-				return;
-			for (File file : a) {
-				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
-					continue;
-				files.add(file);
-			}
-			selectedFile = files.isEmpty() ? -1 : 0;
-			return;
+			addFiles();
 		}
 		updateDir(parent);
 	}
@@ -105,15 +100,7 @@ public class FileSelector implements IFileSelector {
 		currentDir = dir;
 		files.clear();
 		if (dir == null) {
-			File[] a = File.listRoots();
-			if (a == null)
-				return;
-			for (File file : a) {
-				if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
-					continue;
-				files.add(file);
-			}
-			selectedFile = files.isEmpty() ? -1 : 0;
+			addFiles();
 			return;
 		}
 		File[] a = dir.listFiles();
@@ -122,9 +109,25 @@ public class FileSelector implements IFileSelector {
 		for (File file : a) {
 			if (file.isHidden())
 				continue;
+			if(!isExtensionAllowed(file)) continue;
 			files.add(file);
 		}
 		selectedFile = files.isEmpty() ? -1 : 0;
+	}
+
+	private void addFiles() {
+		File[] a = File.listRoots();
+		if (a == null)
+			return;
+		for (File file : a) {
+			if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
+				continue;
+			String name = FilenameUtils.getExtension(file.getName());
+			if(!isExtensionAllowed(file)) continue;
+			files.add(file);
+		}
+		selectedFile = files.isEmpty() ? -1 : 0;
+		return;
 	}
 
 	@Override
@@ -408,6 +411,19 @@ public class FileSelector implements IFileSelector {
 			amountScrolled += (float) (var * getSlotHeight() / 2);
 		}
 
+	}
+
+	@Override
+	public void setAllowedExtensions(String... extensions) {
+		allowedExtensions.addAll(java.util.Arrays.asList(extensions));
+		updateDir(currentDir);
+	}
+
+	private boolean isExtensionAllowed(File file) {
+		if(allowedExtensions.size() == 0) return true;
+		if(file.isDirectory()) return true;
+		String ext = FilenameUtils.getExtension(file.getName());
+		return allowedExtensions.contains(ext);
 	}
 
 	protected void elementClicked(int id, boolean doubleClick, int mouseX, int mouseY) {
