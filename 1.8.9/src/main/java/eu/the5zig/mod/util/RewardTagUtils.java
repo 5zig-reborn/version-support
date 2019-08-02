@@ -33,6 +33,8 @@ import java.awt.*;
 
 public class RewardTagUtils {
 
+    private static final float SCALE_FACTOR = 0.5F;
+
     public static boolean shouldRender(EntityPlayer player) {
         if(player == Minecraft.getMinecraft().thePlayer && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
         if(player.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer)) return false;
@@ -49,9 +51,9 @@ public class RewardTagUtils {
     public static void render(RenderPlayer renderer, String str, EntityPlayer pl, double x, double y, double z) {
         FontRenderer fontRenderer = renderer.getFontRendererFromRenderManager();
         float f = 1.6F;
-        float f1 = 0.016666668F * f;
+        float f1 = 0.016666668F * f * SCALE_FACTOR;
         GlStateManager.pushMatrix();
-        GlStateManager.translate((float) x + 0.0F, (float) y + pl.height + 0.5F, (float) z);
+        GlStateManager.translate((float) x + 0.0F, (float) y + pl.height + 0.35F, (float) z);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(-renderer.getRenderManager().playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(renderer.getRenderManager().playerViewX, 1.0F, 0.0F, 0.0F);
