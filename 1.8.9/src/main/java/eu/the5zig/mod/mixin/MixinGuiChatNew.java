@@ -48,7 +48,7 @@ public abstract class MixinGuiChatNew {
     }
 
     @Inject(method = "drawChat", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
-        locals = LocalCapture.CAPTURE_FAILHARD)
+        locals = LocalCapture.CAPTURE_FAILSOFT)
     public void drawChatHighlight(int var1, CallbackInfo ci, int var2, boolean var3, int var4, int var5, float var6, float var7, int var8, int var9,
                                   ChatLine var10, int var11, double var12, int var14, int var15, int var16) {
         lastComponent = var10.getChatComponent();
