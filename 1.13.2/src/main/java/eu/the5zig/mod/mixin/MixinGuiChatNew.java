@@ -52,6 +52,7 @@ public abstract class MixinGuiChatNew {
     @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/GuiNewChat.drawRect(IIIII)V"),
         index = 4)
     public int customAlpha(int previous) {
+        if(lastComponent == null) return previous;
         if(ChatHighlighting.shouldHighlight(lastComponent.getString())) {
             return MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, previous) << 24);
         }
