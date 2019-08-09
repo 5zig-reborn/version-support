@@ -22,15 +22,15 @@ import com.mojang.authlib.GameProfile;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.Transformer;
-import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.mod.gui.IWrappedGui;
-import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
-import eu.the5zig.mod.util.*;
+import eu.the5zig.mod.util.GLUtil;
+import eu.the5zig.mod.util.Kernel32;
+import eu.the5zig.mod.util.NetworkPlayerInfo;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -1113,7 +1113,7 @@ public class Variables implements IVariables {
 	@Override
 	public void sendCustomPayload(String channel, ByteBuf payload) {
 		if (getNetworkManager() != null) {
-			getNetworkManager().sendPacket(new CPacketCustomPayload(new ResourceLocation("the5zigmod", channel),
+			getNetworkManager().sendPacket(new CPacketCustomPayload(ResourceLocation.create(channel, ':'),
 					new PacketBuffer(payload)));
 		}
 	}
