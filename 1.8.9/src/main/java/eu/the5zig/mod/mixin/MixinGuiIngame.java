@@ -49,4 +49,9 @@ public abstract class MixinGuiIngame {
         The5zigMod.getVars().get2ndChat().draw(updateCounter);
     }
 
+    @Inject(method = "renderPlayerStats", at = @At(value = "INVOKE", target = "net/minecraft/profiler/Profiler.endStartSection(Ljava/lang/String;)V",
+            ordinal = 1))
+    public void patchFood(ScaledResolution res, CallbackInfo _ci) {
+        The5zigMod.getGuiIngame().onRenderFood();
+    }
 }

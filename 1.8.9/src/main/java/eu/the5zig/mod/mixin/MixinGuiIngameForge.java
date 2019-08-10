@@ -39,4 +39,8 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
         The5zigMod.getVars().get2ndChat().draw(updateCounter);
     }
 
+    @Inject(remap = false, method = "renderFood", at = @At("HEAD"))
+    public void renderFood(int w, int h, CallbackInfo _ci) {
+        The5zigMod.getGuiIngame().onRenderFood();
+    }
 }
