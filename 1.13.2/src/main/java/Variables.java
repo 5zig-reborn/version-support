@@ -19,7 +19,6 @@
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
-import eu.the5zig.mod.util.Kernel32;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.Transformer;
@@ -45,7 +44,6 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.inventory.GuiEditSign;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.ServerData;
-import eu.the5zig.mod.util.NetworkPlayerInfo;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
@@ -82,7 +80,6 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
-import eu.the5zig.mod.util.GLUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
