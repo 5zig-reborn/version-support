@@ -148,7 +148,7 @@ public class Variables implements IVariables {
 
 			@Override
 			public int getY() {
-				return (int)getMinecraft().mouseHelper.getMouseY();
+				return (int) (getMinecraft().mainWindow.getHeight() - getMinecraft().mouseHelper.getMouseY());
 			}
 		});
 		Display.init(new Display.DisplayHandler() {
