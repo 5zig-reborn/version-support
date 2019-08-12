@@ -24,8 +24,6 @@ import eu.the5zig.mod.The5zigMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
@@ -75,11 +73,11 @@ public abstract class MixinAbstractClientPlayer {
             // is Flying
             modifier *= 1.1F;
         }
-        IAttributeInstance movementSpeedAttribute = playerInstance.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        if (movementSpeedAttribute.getModifier(SPRINT_MODIFIER_UUID) != null) {
-            modifier = (float) ((double) modifier * (movementSpeedAttribute.getValue() * 1.30000001192092896D
-                    / playerInstance.abilities.getWalkSpeed() + 1.0) / 2.0D);
-        }
+        double staticSpeed = 0.10000000149011612D;
+        if(playerInstance.isSprinting())
+            staticSpeed = 0.13000000312924387D;
+
+        modifier *= (staticSpeed / playerInstance.abilities.getWalkSpeed() + 1.0F) / 2.0F;
         if (playerInstance.abilities.getWalkSpeed() == 0.0F || Float.isNaN(modifier) || Float.isInfinite(modifier)) {
             modifier = 1.0F;
         }
