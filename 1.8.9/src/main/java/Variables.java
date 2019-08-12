@@ -1175,7 +1175,7 @@ public class Variables implements IVariables {
 	public void renderTextureOverlay(int x1, int x2, int y1, int y2) {
 		Tessellator var4 = Tessellator.getInstance();
 		WorldRenderer var5 = var4.getWorldRenderer();
-		bindTexture(net.minecraft.client.gui.Gui.icons);
+		bindTexture(net.minecraft.client.gui.Gui.optionsBackground);
 		GLUtil.color(1.0F, 1.0F, 1.0F, 1.0F);
 		var5.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 		var5.pos((double) x1, (double) y2, 0.0D).tex(0.0D, (double) ((float) y2 / 32.0F)).color(64, 64, 64, 255).endVertex();
