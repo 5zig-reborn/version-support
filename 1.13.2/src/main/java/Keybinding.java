@@ -43,7 +43,7 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 	}
 
 	public int callGetKeyCode() {
-		return keyMap.get(getTranslationKey());
+		return keyMap.getOrDefault(getTranslationKey(), -1);
 	}
 
 	@Override

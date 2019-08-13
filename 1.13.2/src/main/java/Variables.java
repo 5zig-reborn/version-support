@@ -80,6 +80,8 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -89,7 +91,7 @@ import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.util.*;
 
-public class Variables implements IVariables {
+public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	private static Field forgeChatField;
 	private static Method rightClickMouse;
@@ -116,6 +118,8 @@ public class Variables implements IVariables {
 	private MainWindow scaledResolution;
 	private IGui2ndChat gui2ndChat = new Gui2ndChat();
 
+	private final GLFWKeyCallback previousCallback;
+
 	private final ResourceManager resourceManager;
 	private Kernel32.SYSTEM_POWER_STATUS batteryStatus;
 
@@ -123,7 +127,7 @@ public class Variables implements IVariables {
 			new PotionEffectImpl("potion.moveSpeed", 20 * 50, "0:50", 1, 0, true, true, 0x7cafc6));
 
 	public Variables() {
-		Keyboard.initLegacy(new Keyboard.KeyboardHandler() {
+		Keyboard.init(new Keyboard.KeyboardHandler() {
 			@Override
 			public boolean isKeyDown(int key) {
 				return GLFW.glfwGetKey(scaledResolution.getHandle(), key) == GLFW.GLFW_PRESS;
@@ -158,6 +162,7 @@ public class Variables implements IVariables {
 						!= 0;
 			}
 		});
+		previousCallback = GLFW.glfwSetKeyCallback(getMinecraft().mainWindow.getHandle(), this);
 		updateScaledResolution();
 		try {
 			this.resourceManager = new ResourceManager(getGameProfile());
@@ -1274,5 +1279,12 @@ public class Variables implements IVariables {
 	@Override
 	public void shutdown() {
 		getMinecraft().shutdown();
+	}
+
+	@Override
+	public void invoke(long window, int key, int scancode, int action, int mods) {
+		previousCallback.invoke(window, key, scancode, action, mods);
+		if(action == GLFW.GLFW_PRESS)
+			MinecraftFactory.getClassProxyCallback().fireKeyPressEvent(key);
 	}
 }

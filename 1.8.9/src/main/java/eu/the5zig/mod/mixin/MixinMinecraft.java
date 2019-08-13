@@ -63,6 +63,10 @@ public abstract class MixinMinecraft {
         CombatRangeUtil.lastAttack = System.currentTimeMillis();
     }
 
+    @Inject(method = "dispatchKeypresses", at = @At("HEAD"))
+    public void dispatchKeyPresses(CallbackInfo _ci) {
+        The5zigMod.getVars().dispatchKeypresses();
+    }
 }
 
 
