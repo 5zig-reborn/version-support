@@ -73,17 +73,11 @@ public abstract class MixinNetHandlerPlayClient {
     }
 
     @Inject(method = "handleTitle", at = @At(value = "RETURN", ordinal = 0))
-    public void titleBar(S45PacketTitle packet, CallbackInfo _ci) {
-        The5zigMod.getListener().onActionBar(packet.getMessage().getFormattedText());
-    }
-
-
-    @Inject(method = "handleTitle", at = @At(value = "RETURN", ordinal = 1))
     public void titleClear(S45PacketTitle packet, CallbackInfo _ci) {
         The5zigMod.getListener().onTitle(null, null);
     }
 
-    @Inject(method = "handleTitle", at = @At(value = "RETURN", ordinal = 2))
+    @Inject(method = "handleTitle", at = @At(value = "RETURN", ordinal = 1))
     public void title(S45PacketTitle packet, CallbackInfo _ci) {
         String text = packet.getMessage().getFormattedText();
 
