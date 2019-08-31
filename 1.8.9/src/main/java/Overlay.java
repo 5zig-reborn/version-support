@@ -195,7 +195,8 @@ public class Overlay extends GuiAchievement implements IOverlay {
 		GLUtil.enableDepth();
 	}
 
-	public void b() {
+	@Override
+	public void clearAchievements() {
 		this.timeStarted = 0L;
 		this.title = null;
 		this.subtitle = null;

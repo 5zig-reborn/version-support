@@ -99,7 +99,7 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 		if (var5) {
 			if (clickable != null) {
 				synchronized (rows) {
-					boolean doubleClick = id == this.selectedElement && System.currentTimeMillis() - this.lastClicked < 250L;
+					boolean doubleClick = id == this.selected && System.currentTimeMillis() - this.lastClicked < 250L;
 					onSelect(id, rows.get(id), doubleClick);
 					this.lastClicked = System.currentTimeMillis();
 					return true;
@@ -513,6 +513,7 @@ public class GuiList<E extends Row> extends GuiSlot implements IGuiList<E> {
 				selected = 0;
 		}
 		this.selected = selected;
+		setSelectedEntry(selected);
 		return selected;
 	}
 

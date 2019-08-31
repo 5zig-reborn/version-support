@@ -71,6 +71,7 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Session;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -95,6 +96,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	private static Field forgeChatField;
 	private static Method rightClickMouse;
+	private static Field sessionField;
 
 	static {
 		try {
@@ -111,6 +113,17 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			rightClickMouse = Minecraft.class.getDeclaredMethod(Transformer.REFLECTION.RightClickMouse().get());
 			rightClickMouse.setAccessible(true);
 		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			for(Field f : Minecraft.class.getDeclaredFields()) {
+				if(f.getType().isAssignableFrom(Session.class)) {
+					sessionField = f;
+					break;
+				}
+			}
+			sessionField.setAccessible(true);
+		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -1286,5 +1299,15 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		previousCallback.invoke(window, key, scancode, action, mods);
 		if(action == GLFW.GLFW_PRESS)
 			MinecraftFactory.getClassProxyCallback().fireKeyPressEvent(key);
+	}
+
+	@Override
+	public void setSession(String name, String uuid, String token, String userType) {
+		Session session = new Session(name, uuid, token, userType);
+		try {
+			sessionField.set(Minecraft.getInstance(), session);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

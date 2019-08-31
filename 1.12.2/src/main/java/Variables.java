@@ -75,6 +75,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.Session;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -100,6 +101,8 @@ public class Variables implements IVariables {
 	private static Field forgeChatField;
 	private static Method rightClickMouse;
 
+	private static Field sessionField;
+
 	static {
 		try {
 			The5zigMod.logger.info("Field: ", Transformer.REFLECTION
@@ -115,6 +118,17 @@ public class Variables implements IVariables {
 			rightClickMouse = Minecraft.class.getDeclaredMethod(Transformer.REFLECTION.RightClickMouse().get());
 			rightClickMouse.setAccessible(true);
 		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			for(Field f : Minecraft.class.getDeclaredFields()) {
+				if(f.getType().isAssignableFrom(Session.class)) {
+					sessionField = f;
+					break;
+				}
+			}
+			sessionField.setAccessible(true);
+		} catch(Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -1333,5 +1347,15 @@ public class Variables implements IVariables {
 	@Override
 	public void shutdown() {
 		getMinecraft().shutdown();
+	}
+
+	@Override
+	public void setSession(String name, String uuid, String token, String userType) {
+		Session session = new Session(name, uuid, token, userType);
+		try {
+			sessionField.set(Minecraft.getMinecraft(), session);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

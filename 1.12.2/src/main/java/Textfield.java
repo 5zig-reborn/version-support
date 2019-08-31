@@ -16,6 +16,7 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.base.Strings;
 import eu.the5zig.mod.gui.elements.ITextfield;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
@@ -33,6 +34,8 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 * Width and height need to be declared in this class, since there is no direct access to it in original Textfield class.
 	 */
 	private final int width, height;
+
+	private boolean password;
 
 	/**
 	 * Creates a new Textfield, using the original super constructor.
@@ -238,5 +241,30 @@ public class Textfield extends GuiTextField implements ITextfield {
 	 */
 	public void callDraw() {
 		drawTextBox();
+	}
+
+	@Override
+	public void drawTextBox() {
+		if(password) {
+			String previous = getText();
+			makePasswordText(Strings.repeat("*", previous.length()));
+			super.drawTextBox();
+			makePasswordText(previous);
+		}
+		else super.drawTextBox();
+	}
+
+	@Override
+	public void setIsPassword(boolean b) {
+		this.password = b;
+	}
+
+	private void makePasswordText(String replaceWith) {
+		int cursor = getCursorPosition();
+		int selEnd = getSelectionEnd();
+
+		setText(replaceWith);
+		setCursorPosition(cursor);
+		setSelectionPos(selEnd);
 	}
 }
