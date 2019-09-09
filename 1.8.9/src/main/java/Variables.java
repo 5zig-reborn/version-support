@@ -304,11 +304,6 @@ public class Variables implements IVariables {
 	}
 
 	@Override
-	public IButton createIconTextButton(IResourceLocation resourceLocation, int u, int v, int id, int x, int y, String display) {
-		return new IconTextButton(resourceLocation, u, v, id, x, y, display);
-	}
-
-	@Override
 	public ITextfield createTextfield(int id, int x, int y, int width, int height) {
 		return new Textfield(id, x, y, width, height);
 	}

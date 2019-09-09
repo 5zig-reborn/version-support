@@ -16,21 +16,21 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.mod.gui.IWrappedGui;
-import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
-import eu.the5zig.mod.util.*;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -39,12 +39,18 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.*;
-import net.minecraft.client.gui.inventory.GuiEditSign;
-import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.IngameGui;
+import net.minecraft.client.gui.screen.*;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.multiplayer.PlayerController;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -53,19 +59,19 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.MobEffects;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ContainerChest;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.ChestContainer;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.network.play.client.CPacketChatMessage;
-import net.minecraft.network.play.client.CPacketCustomPayload;
-import net.minecraft.network.play.client.CPacketHeldItemChange;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.potion.PotionUtil;
+import net.minecraft.network.play.client.CChatMessagePacket;
+import net.minecraft.network.play.client.CCustomPayloadPacket;
+import net.minecraft.network.play.client.CHeldItemChangePacket;
+import net.minecraft.potion.Effect;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.EffectUtils;
+import net.minecraft.potion.Effects;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -75,9 +81,9 @@ import net.minecraft.util.Session;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
@@ -103,7 +109,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			The5zigMod.logger.info("Field: ", Transformer.REFLECTION
 					.GuiChatInput()
 					.get());
-			forgeChatField = GuiChat.class.getDeclaredField(Transformer.REFLECTION.GuiChatInput().get());
+			forgeChatField = ChatScreen.class.getDeclaredField(Transformer.REFLECTION.GuiChatInput().get());
 			forgeChatField.setAccessible(true);
 		}
 		catch(Exception e) {
@@ -183,14 +189,14 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			throw new RuntimeException(e);
 		}
 		try {
-			Class<?> enumGameSettings = GameSettings.Options.class;
+			Class<?> enumGameSettings = GameSettings.class;
 			Method setMaxValue = enumGameSettings.getDeclaredMethod(Transformer.REFLECTION.SetMaxValue().get(), float.class);
 			Field gamma = enumGameSettings.getDeclaredField(Transformer.REFLECTION.GAMMA().get());
 			setMaxValue.invoke(gamma.get(null), 10.0f);
 			Field fov = enumGameSettings.getDeclaredField(Transformer.REFLECTION.FOV().get());
 			setMaxValue.invoke(fov.get(null), 130f);
 		} catch (Exception e) {
-			MinecraftFactory.getClassProxyCallback().getLogger().warn("Could not patch game settings", e);
+			//MinecraftFactory.getClassProxyCallback().getLogger().warn("Could not patch game settings", e);
 		}
 		if (Utils.getPlatform() == Utils.Platform.WINDOWS) {
 			try {
@@ -336,7 +342,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public IWrappedTextfield createWrappedTextfield(Object handle) {
-		return new WrappedTextfield((GuiTextField) handle);
+		return new WrappedTextfield((TextFieldWidget) handle);
 	}
 
 	@Override
@@ -386,7 +392,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public IWrappedGui createWrappedGui(Object lastScreen) {
-		return new WrappedGui((GuiScreen) lastScreen);
+		return new WrappedGui((Screen) lastScreen);
 	}
 
 	@Override
@@ -401,7 +407,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public boolean isChatOpened() {
-		return getMinecraftScreen() instanceof GuiChat;
+		return getMinecraftScreen() instanceof ChatScreen;
 	}
 
 	@Override
@@ -415,17 +421,17 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public void typeInChatGUI(String text) {
 		if (!isChatOpened()) {
-			displayScreen(new GuiChat());
+			displayScreen(new ChatScreen(text));
 		}
-		GuiTextField chatField = getChatField();
+		TextFieldWidget chatField = getChatField();
 		chatField.setText(chatField.getText() + text);
 	}
 
-	private GuiTextField getChatField() {
-		GuiChat chatGUI = (GuiChat) getMinecraftScreen();
-		GuiTextField chatField;
+	private TextFieldWidget getChatField() {
+		ChatScreen chatGUI = (ChatScreen) getMinecraftScreen();
+		TextFieldWidget chatField;
 		try {
-			chatField = (GuiTextField) forgeChatField.get(chatGUI);
+			chatField = (TextFieldWidget) forgeChatField.get(chatGUI);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -434,12 +440,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public Object getChatComponentWithPrefix(String prefix, Object originalChatComponent) {
-		return new TextComponentString(prefix).appendSibling((ITextComponent) originalChatComponent);
+		return new StringTextComponent(prefix).appendSibling((ITextComponent) originalChatComponent);
 	}
 
 	@Override
 	public boolean isSignGUIOpened() {
-		return getMinecraftScreen() instanceof GuiEditSign;
+		return getMinecraftScreen() instanceof EditSignScreen;
 	}
 
 	@Override
@@ -449,7 +455,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		for (int i = 0; i < keybindings.size(); i++) {
 			customKeybindings[i] = (KeyBinding) keybindings.get(i);
 		}
-		getGameSettings().keyBindings = Utils.concat(currentKeybindings, customKeybindings);
+		//getGameSettings().keyBindings = Utils.concat(currentKeybindings, customKeybindings);
 
 		getGameSettings().loadOptions();
 	}
@@ -489,7 +495,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public List<NetworkPlayerInfo> getServerPlayers() {
 		List<NetworkPlayerInfo> result = Lists.newArrayList();
-		for (net.minecraft.client.network.NetworkPlayerInfo wrapped : getPlayer().connection.getPlayerInfoMap()) {
+		for (net.minecraft.client.network.play.NetworkPlayerInfo wrapped : getPlayer().connection.getPlayerInfoMap()) {
 			result.add(new WrappedNetworkPlayerInfo(wrapped));
 		}
 		return result;
@@ -503,12 +509,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void setFOV(float fov) {
-		getGameSettings().fovSetting = fov;
+		getGameSettings().fov = fov;
 	}
 
 	@Override
 	public float getFOV() {
-		return (float)getGameSettings().fovSetting;
+		return (float)getGameSettings().fov;
 	}
 
 	@Override
@@ -536,7 +542,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void displayScreen(Object gui) {
-		getMinecraft().displayGuiScreen((GuiScreen) gui);
+		getMinecraft().displayGuiScreen((Screen) gui);
 	}
 
 	@Override
@@ -546,7 +552,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		}
 
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		displayScreen(new GuiConnecting((GuiScreen) getMinecraftScreen(), getMinecraft(), new ServerData(host, host + ":" + port, false)));
+		displayScreen(new ConnectingScreen((Screen) getMinecraftScreen(), getMinecraft(), new ServerData(host, host + ":" + port, false)));
 	}
 
 	@Override
@@ -559,7 +565,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		}
 
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		displayScreen(new GuiConnecting((GuiConnecting) parentScreen, getMinecraft(), (ServerData) serverData));
+		displayScreen(new ConnectingScreen((ConnectingScreen) parentScreen, getMinecraft(), (ServerData) serverData));
 	}
 
 	@Override
@@ -571,12 +577,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		}
 		getMinecraft().loadWorld(null);
 		if (isOnIntegratedServer) {
-			displayScreen(new GuiMainMenu());
+			displayScreen(new MainMenuScreen());
 		} else if (isConnectedToRealms) {
 			RealmsBridge realmsBridge = new RealmsBridge();
-			realmsBridge.switchToRealms(new GuiMainMenu());
+			realmsBridge.switchToRealms(new MainMenuScreen());
 		} else {
-			displayScreen(new GuiMultiplayer(new GuiMainMenu()));
+			displayScreen(new MultiplayerScreen(new MainMenuScreen()));
 		}
 	}
 
@@ -602,7 +608,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		return getMinecraft().gameSettings;
 	}
 
-	public EntityPlayerSP getPlayer() {
+	public ClientPlayerEntity getPlayer() {
 		return getMinecraft().player;
 	}
 
@@ -610,13 +616,13 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		return getMinecraft().world;
 	}
 
-	public GuiIngame getGuiIngame() {
+	public IngameGui getGuiIngame() {
 		return getMinecraft().ingameGUI;
 	}
 
 	@Override
 	public boolean isSpectatingSelf() {
-		return getSpectatingEntity() instanceof EntityPlayer;
+		return getSpectatingEntity() instanceof PlayerEntity;
 	}
 
 	@Override
@@ -634,9 +640,10 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getOpenContainerTitle() {
-		if (!(getOpenContainer() instanceof ContainerChest))
+		if (!(getOpenContainer() instanceof ChestContainer))
 			return null;
-		return ((ContainerChest) getOpenContainer()).getLowerChestInventory().getDisplayName().getFormattedText();
+		// TODO return ((ChestContainer) getOpenContainer()).getLowerChestInventory().getDisplayName().getFormattedText();
+		return "";
 	}
 
 	@Override
@@ -676,7 +683,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public boolean isTerrainLoading() {
-		return getMinecraftScreen() instanceof GuiDownloadTerrain;
+		return getMinecraftScreen() instanceof DownloadTerrainScreen;
 	}
 
 	@Override
@@ -742,29 +749,28 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public boolean hasTargetBlock() {
-		return getMinecraft().objectMouseOver != null && getMinecraft().objectMouseOver.type.ordinal() == 1
-				&& getMinecraft().objectMouseOver.getBlockPos() != null;
+		return getMinecraft().objectMouseOver != null && getMinecraft().objectMouseOver.getType().ordinal() == 1;
 	}
 
 	@Override
 	public int getTargetBlockX() {
-		return getMinecraft().objectMouseOver.getBlockPos().getX();
+		return (int) getMinecraft().objectMouseOver.getHitVec().getX();
 	}
 
 	@Override
 	public int getTargetBlockY() {
-		return getMinecraft().objectMouseOver.getBlockPos().getY();
+		return (int) getMinecraft().objectMouseOver.getHitVec().getY();
 	}
 
 	@Override
 	public int getTargetBlockZ() {
-		return getMinecraft().objectMouseOver.getBlockPos().getZ();
+		return (int) getMinecraft().objectMouseOver.getHitVec().getZ();
 	}
 
 	@Override
 	public ResourceLocation getTargetBlockName() {
-		BlockPos blockPosition = getMinecraft().objectMouseOver.getBlockPos();
-		return new ResourceLocation("minecraft", getWorld().getBlockState(blockPosition).getBlock().getTranslationKey());
+		// TODO
+		return new ResourceLocation("minecraft", "stone");
 	}
 
 	@Override
@@ -778,7 +784,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		if (!getWorld().isBlockLoaded(localdt)) {
 			return null;
 		}
-		Chunk localObject = getMinecraft().world.getChunk(localdt);
+		IChunk localObject = getMinecraft().world.getChunk(localdt);
 		return localObject.getBiome(localdt).getDisplayName().getFormattedText();
 	}
 
@@ -788,14 +794,14 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		if (!getWorld().isBlockLoaded(localdt)) {
 			return 0;
 		}
-		Chunk localObject = getMinecraft().world.getChunk(localdt);
-		return localObject.getLightSubtracted(localdt, 0);
+		IChunk localObject = getMinecraft().world.getChunk(localdt);
+		return localObject.getLightValue(localdt);
 	}
 
 	@Override
 	public String getEntityCount() {
 		if(getMinecraft().world == null) return "No world";
-		return Integer.toString(getMinecraft().world.loadedEntityList.size());
+		return Integer.toString(Iterables.size(getMinecraft().world.getAllEntities()));
 	}
 
 	@Override
@@ -805,19 +811,19 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public int getFoodLevel() {
-		return isSpectatingSelf() ? ((EntityPlayer) getSpectatingEntity()).getFoodStats().getFoodLevel() : getPlayer().getFoodStats().getFoodLevel();
+		return isSpectatingSelf() ? ((PlayerEntity) getSpectatingEntity()).getFoodStats().getFoodLevel() : getPlayer().getFoodStats().getFoodLevel();
 	}
 
 	@Override
 	public float getSaturation() {
-		return isSpectatingSelf() ? ((EntityPlayer) getSpectatingEntity()).getFoodStats().getSaturationLevel() : 0;
+		return isSpectatingSelf() ? ((PlayerEntity) getSpectatingEntity()).getFoodStats().getSaturationLevel() : 0;
 	}
 
 	@Override
 	public float getHealth(Object entity) {
-		if (!(entity instanceof EntityLivingBase))
+		if (!(entity instanceof LivingEntity))
 			return -1;
-		return ((EntityLivingBase) entity).getHealth();
+		return ((LivingEntity) entity).getHealth();
 	}
 
 	@Override
@@ -852,8 +858,8 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		float d1 = referenceDamage * (float) i1;
 		referenceDamage = d1 / 25.0F;
 
-		if (getPlayer().isPotionActive(MobEffects.RESISTANCE)) {
-			int resistanceAmplifier = (getPlayer().getActivePotionEffect(MobEffects.RESISTANCE).getAmplifier() + 1) * 5;
+		if (getPlayer().isPotionActive(Effects.RESISTANCE)) {
+			int resistanceAmplifier = (getPlayer().getActivePotionEffect(Effects.RESISTANCE).getAmplifier() + 1) * 5;
 			int i = 25 - resistanceAmplifier;
 			float d = referenceDamage * (float) i;
 			referenceDamage = d / 25.0F;
@@ -883,26 +889,19 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public PotionEffectImpl getPotionForVignette() {
-		for (PotionEffect potionEffect : getActivePlayerPotionEffects()) {
-			Potion potion = getPotionByEffect(potionEffect);
-			if (potion != null && potion.isBadEffect()) {
+		for (EffectInstance potionEffect : getActivePlayerPotionEffects()) {
+			Effect potion = getPotionByEffect(potionEffect);
+			if (potion != null) {
 				return wrapPotionEffect(potionEffect);
 			}
 		}
-		for (PotionEffect potionEffect : getActivePlayerPotionEffects()) {
-			Potion potion = getPotionByEffect(potionEffect);
-			if (potion != null && !potion.isBadEffect()) {
-				return wrapPotionEffect(potionEffect);
-			}
-		}
-
 		return null;
 	}
 
 	@Override
 	public List<eu.the5zig.mod.gui.ingame.PotionEffect> getActivePotionEffects() {
 		List<eu.the5zig.mod.gui.ingame.PotionEffect> result = new ArrayList<>(getActivePlayerPotionEffects().size());
-		for (PotionEffect potionEffect : getActivePlayerPotionEffects()) {
+		for (EffectInstance potionEffect : getActivePlayerPotionEffects()) {
 			result.add(wrapPotionEffect(potionEffect));
 		}
 		Collections.sort(result);
@@ -914,11 +913,11 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		return DUMMY_POTIONS;
 	}
 
-	private PotionEffectImpl wrapPotionEffect(PotionEffect potionEffect) {
-		Potion potion = getPotionByEffect(potionEffect);
+	private PotionEffectImpl wrapPotionEffect(EffectInstance potionEffect) {
+		Effect potion = getPotionByEffect(potionEffect);
 		return new PotionEffectImpl(potion == null ? "" : potionEffect.getEffectName(), potionEffect.getDuration(),
-				PotionUtil.getPotionDurationString(potionEffect, 1), potionEffect.getAmplifier() + 1, potion == null ? -1 : potion.getStatusIconIndex(),
-				potion == null || !potion.isBadEffect(), true, potion == null ? 0 : potion.getLiquidColor());
+				EffectUtils.getPotionDurationString(potionEffect, 1), potionEffect.getAmplifier() + 1, potion == null ? -1 : potion.getEffectType().ordinal(),
+				potion == null || potionEffect.getPotion().isBeneficial(), true, potion == null ? 0 : potionEffect.getPotion().getLiquidColor());
 	}
 
 	@Override
@@ -928,7 +927,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public boolean isHungerPotionActive() {
-		return getPlayer().isPotionActive(MobEffects.HUNGER);
+		return getPlayer().isPotionActive(Effects.HUNGER);
 	}
 
 	@Override
@@ -946,11 +945,11 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		return getArmorItemBySlot(slot) == null ? null : new WrappedItemStack(getArmorItemBySlot(slot));
 	}
 
-	public Collection<PotionEffect> getActivePlayerPotionEffects() {
+	public Collection<EffectInstance> getActivePlayerPotionEffects() {
 		return getPlayer().getActivePotionEffects();
 	}
 
-	public Potion getPotionByEffect(PotionEffect potionEffect) {
+	public Effect getPotionByEffect(EffectInstance potionEffect) {
 		return potionEffect.getPotion();
 	}
 
@@ -995,7 +994,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public void setSelectedHotbarSlot(int slot) {
 		getPlayer().inventory.currentItem = slot;
-		getNetworkManager().sendPacket(new CPacketHeldItemChange(slot));
+		getNetworkManager().sendPacket(new CHeldItemChangePacket(slot));
 	}
 
 	@Override
@@ -1046,13 +1045,13 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public int getScaleFactor() {
-		return scaledResolution.getScaleFactor(getMinecraft().gameSettings.guiScale);
+		return (int) scaledResolution.getGuiScaleFactor();
 	}
 
 	@Override
 	public void drawIngameTexturedModalRect(int x, int y, int u, int v, int width, int height) {
 		if (getGuiIngame() != null)
-			getGuiIngame().drawTexturedModalRect(x, y, u, v, width, height);
+			getGuiIngame().blit(x, y, u, v, width, height);
 	}
 
 	@Override
@@ -1085,7 +1084,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		return key < 0 ? "M" + (key + 101) : (key < 256 ? org.lwjgl.input.Keyboard.getKeyName(key) : String.format("%c", (char) (key - 256)).toUpperCase());
 	}
 
-	private PlayerControllerMP getPlayerController() {
+	private PlayerController getPlayerController() {
 		return getMinecraft().playerController;
 	}
 
@@ -1115,7 +1114,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void sendMessage(String message) {
-		getPlayer().connection.sendPacket(new CPacketChatMessage(message));
+		getPlayer().connection.sendPacket(new CChatMessagePacket(message));
 	}
 
 	@Override
@@ -1126,7 +1125,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public void sendCustomPayload(String channel, ByteBuf payload) {
 		if (getNetworkManager() != null) {
-			getNetworkManager().sendPacket(new CPacketCustomPayload(ResourceLocation.create(channel, ':'),
+			getNetworkManager().sendPacket(new CCustomPayloadPacket(ResourceLocation.create(channel, ':'),
 					new PacketBuffer(payload)));
 		}
 	}
@@ -1198,7 +1197,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void renderPotionIcon(int index) {
-		getGuiIngame().drawTexturedModalRect(0, 0, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
+		getGuiIngame().blit(0, 0, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
 	}
 
 	public TextureManager getTextureManager() {
@@ -1209,7 +1208,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	public void renderTextureOverlay(int x1, int x2, int y1, int y2) {
 		Tessellator var4 = Tessellator.getInstance();
 		BufferBuilder var5 = var4.getBuffer();
-		bindTexture(net.minecraft.client.gui.Gui.OPTIONS_BACKGROUND);
+		bindTexture(AbstractGui.BACKGROUND_LOCATION);
 		GLUtil.color(1.0F, 1.0F, 1.0F, 1.0F);
 		var5.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 		var5.pos((double) x1, (double) y2, 0.0D).tex(0.0D, (double) ((float) y2 / 32.0F)).color(64, 64, 64, 255).endVertex();
@@ -1221,7 +1220,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void setIngameFocus() {
-		getMinecraft().focusChanged(true);
+		getMinecraft().setGameFocused(true);
 	}
 
 	@Override
@@ -1263,7 +1262,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public boolean isMainThread() {
-		return getMinecraft().isCallingFromMinecraftThread();
+		return getMinecraft().isOnExecutionThread();
 	}
 
 	@Override

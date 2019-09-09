@@ -19,8 +19,6 @@
 package eu.the5zig.mod.asm;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.network.PacketBuffer;
 
 public class Names {
@@ -36,7 +34,6 @@ public class Names {
 	public static Name leftClickMouse = new Name("aw", "()V");
 	public static Name rightClickMouse = new Name("ax", "()V");
 
-	public static Name guiMainMenu = new Name(GuiMainMenu.class.getName());
 	public static Name guiButton = new Name("avs", "(IIILjava/lang/String;)V");
 	public static Name fontRenderer = new Name("avn");
 	public static Name guiTextfield = new Name("avw", "(IL" + fontRenderer.getName() + ";IIII)V");
@@ -50,7 +47,6 @@ public class Names {
 	public static Name chatComponent = new Name("eu");
 	public static Name packetBuffer = new Name(PacketBuffer.class.getName());
 
-	public static Name guiIngame = new Name(GuiIngame.class.getName());
 	public static Name guiIngameForge = new Name("net.minecraftforge.client.GuiIngameForge");
 	public static Name renderGameOverlay = new Name("a", "(F)V");
 	public static Name scaledResolution = new Name("");
