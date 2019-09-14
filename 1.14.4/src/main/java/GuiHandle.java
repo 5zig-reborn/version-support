@@ -82,7 +82,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	@Override
 	public boolean mouseScrolled(double p_mouseScrolled_1_, double p_mouseScrolled_3_, double p_mouseScrolled_5_) {
 		boolean result = super.mouseScrolled(p_mouseScrolled_1_, p_mouseScrolled_3_, p_mouseScrolled_5_);
-		child.mouseScrolled0(p_mouseScrolled_1_);
+		child.mouseScrolled0(p_mouseScrolled_5_);
 		return result;
 	}
 

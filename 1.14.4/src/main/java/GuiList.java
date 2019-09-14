@@ -320,9 +320,9 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 			return true;
 		} else if (this.isVisible() && i == 0 && this.hasSelected && v > getScrollbarPosition() && v < getScrollbarPosition() + 6) {
 			if (v1 < (double)this.y0) {
-				this.scroll(0);
+				this.scrollTo(0);
 			} else if (v1 > (double)this.y1) {
-				this.scroll(this.getMaxScroll());
+				this.scrollTo(this.getMaxScroll());
 			} else {
 				double var10 = this.getMaxScroll();
 				if (var10 < 1.0D) {
@@ -336,7 +336,7 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 					var13 = 1.0D;
 				}
 
-				this.scroll((int) (getScroll() + v3 * var13));
+				this.scrollTo((int) (getScroll() + v3 * var13));
 				this.capYPosition();
 			}
 
@@ -351,7 +351,7 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 		if (!this.isVisible() || !(mouseX >= getLeft() && mouseX <= getRight() && mouseY >= getTop() & mouseY <= getBottom())) {
 			return false;
 		} else {
-			this.scroll((int) (getScroll() - var1 * (double)this.itemHeight / 2.0D));
+			this.scrollTo((int) (getScroll() - var1 * (double)this.itemHeight / 2.0D));
 			return true;
 		}
 	}
@@ -455,6 +455,8 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 
 	@Override
 	public void scrollTo(float to) {
+		// Reset scroll (1.14)
+		this.scroll(-this.getScroll());
 		this.scroll((int) to);
 	}
 
