@@ -65,6 +65,16 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.13.2-25.0.219'
 }
 
+dependencies {
+    embed('org.spongepowered:mixin:0.8-PREVIEW') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+}
+
+
 sourceSets.main {
     java.srcDirs 'src/main/java'
     resources.srcDirs 'src/main/resources'

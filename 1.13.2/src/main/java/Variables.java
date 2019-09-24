@@ -1082,7 +1082,9 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getKeyDisplayStringShort(int key) {
-		return key < 0 ? "M" + (key + 101) : (key < 256 ? org.lwjgl.input.Keyboard.getKeyName(key) : String.format("%c", (char) (key - 256)).toUpperCase());
+		String tempName;
+		return key < 0 ? "M" + (key + 101) : (key < 256 ? ((tempName = GLFW.glfwGetKeyName(key, -1)) == null ?
+				GLFW.glfwGetKeyName(-1, key) : tempName) : String.format("%c", (char) (key - 256)).toUpperCase());
 	}
 
 	private PlayerControllerMP getPlayerController() {

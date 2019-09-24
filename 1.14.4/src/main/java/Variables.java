@@ -27,13 +27,11 @@ import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.mod.gui.IWrappedGui;
-import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
 import eu.the5zig.mod.mixin.MixinGameSettings;
-import eu.the5zig.mod.util.*;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -59,6 +57,7 @@ import net.minecraft.client.renderer.texture.NativeImage;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.AbstractOption;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -191,16 +190,10 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		try {
-			Class<?> enumGameSettings = GameSettings.class;
-			Method setMaxValue = enumGameSettings.getDeclaredMethod(Transformer.REFLECTION.SetMaxValue().get(), float.class);
-			Field gamma = enumGameSettings.getDeclaredField(Transformer.REFLECTION.GAMMA().get());
-			setMaxValue.invoke(gamma.get(null), 10.0f);
-			Field fov = enumGameSettings.getDeclaredField(Transformer.REFLECTION.FOV().get());
-			setMaxValue.invoke(fov.get(null), 130f);
-		} catch (Exception e) {
-			//MinecraftFactory.getClassProxyCallback().getLogger().warn("Could not patch game settings", e);
-		}
+		// Set custom max values
+		AbstractOption.GAMMA.func_216728_a(10f);
+		AbstractOption.FOV.func_216728_a(130f);
+
 		if (Utils.getPlatform() == Utils.Platform.WINDOWS) {
 			try {
 				batteryStatus = new Kernel32.SYSTEM_POWER_STATUS();
@@ -1084,7 +1077,9 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getKeyDisplayStringShort(int key) {
-		return key < 0 ? "M" + (key + 101) : (key < 256 ? org.lwjgl.input.Keyboard.getKeyName(key) : String.format("%c", (char) (key - 256)).toUpperCase());
+		String tempName;
+		return key < 0 ? "M" + (key + 101) : (key < 256 ? ((tempName = GLFW.glfwGetKeyName(key, -1)) == null ?
+				GLFW.glfwGetKeyName(-1, key) : tempName) : String.format("%c", (char) (key - 256)).toUpperCase());
 	}
 
 	private PlayerController getPlayerController() {

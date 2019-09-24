@@ -70,3 +70,11 @@ sourceSets.main {
     resources.srcDirs 'src/main/resources'
 }
 
+dependencies {
+    embed('org.spongepowered:mixin:0.8-PREVIEW') {
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
+}
