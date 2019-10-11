@@ -559,7 +559,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		}
 
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		displayScreen(new GuiConnecting((GuiConnecting) parentScreen, getMinecraft(), (ServerData) serverData));
+		displayScreen(new GuiConnecting((GuiScreen) parentScreen, getMinecraft(), (ServerData) serverData));
 	}
 
 	@Override

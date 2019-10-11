@@ -563,7 +563,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		}
 
 		MinecraftFactory.getClassProxyCallback().resetServer();
-		displayScreen(new ConnectingScreen((ConnectingScreen) parentScreen, getMinecraft(), (ServerData) serverData));
+		displayScreen(new ConnectingScreen((Screen) parentScreen, getMinecraft(), (ServerData) serverData));
 	}
 
 	@Override
