@@ -25,10 +25,7 @@ import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.NewChatGui;
 import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -75,5 +72,13 @@ public abstract class MixinGuiChatNew {
             return (ITextComponent) The5zigMod.getDataManager().getChatComponentWithTime(chatComponent);
         }
         return chatComponent;
+    }
+
+    @ModifyConstant(method = "setChatLine")
+    public int maxLines(int maxIn) {
+        if(maxIn == 100) {
+            return MinecraftFactory.getClassProxyCallback().getMaxChatLines();
+        }
+        return maxIn;
     }
 }
