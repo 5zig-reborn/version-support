@@ -24,12 +24,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.Version;
-import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.ingame.resource.CapeResource;
 import eu.the5zig.mod.gui.ingame.resource.IResourceManager;
 import eu.the5zig.mod.gui.ingame.resource.PlayerResource;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.ITextureObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
@@ -54,15 +52,12 @@ public class ResourceManager implements IResourceManager {
 	private static final String BASE_URL = "https://secure.5zigreborn.eu/textures/";
 	private static final Gson gson = new Gson();
 
-	private final Object guiCameraTransform;
 
 	private final GameProfile playerProfile;
 	private PlayerResource ownPlayerResource;
 	private final Cache<UUID, PlayerResource> playerResources = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.MINUTES).build();
 
 	public ResourceManager(GameProfile playerProfile) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-		guiCameraTransform = Thread.currentThread().getContextClassLoader().loadClass(ItemCameraTransforms.class.getName() + (Transformer.FORGE ? "$TransformType" : "$b")).getDeclaredField(
-				Transformer.FORGE ? "GUI" : "e").get(null);
 		this.playerProfile = playerProfile;
 	}
 

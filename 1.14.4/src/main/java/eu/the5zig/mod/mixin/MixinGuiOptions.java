@@ -37,7 +37,7 @@ public class MixinGuiOptions extends Screen {
         super(p_i51108_1_);
     }
 
-    @Inject(method = "init", at = @At("TAIL"))
+    @Inject(method = "init", remap = false, at = @At("TAIL"))
     protected void initGui(CallbackInfo _ci) {
         Button btn = new Button(width / 2 - 155, height / 6 + 24 - 6, 150,
                 20,

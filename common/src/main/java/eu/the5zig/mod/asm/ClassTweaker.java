@@ -72,7 +72,7 @@ public class ClassTweaker implements ITweaker {
             this.version = "1.14.4";
             reflName = "ReflectionNames1144";
         }
-        LogWrapper.info("Minecraft Version: " + this.version);
+        LogWrapper.info("A Minecraft Version: " + this.version);
 
         try {
             Transformer.REFLECTION = (ReflectionNames) Class.forName("eu.the5zig.mod.asm." + reflName).newInstance();

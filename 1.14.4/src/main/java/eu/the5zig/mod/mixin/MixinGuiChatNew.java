@@ -44,14 +44,16 @@ public abstract class MixinGuiChatNew {
         The5zigMod.getVars().get2ndChat().draw(upd);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/AbstractGui.fill(IIIII)V"),
+
+    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/NewChatGui.fill(IIIII)V"),
         locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, double var4, boolean var5, double var6, int var7, int var8, int var9,
-                                  ChatLine var10, int var11, double var12, int var14, int var15, int var16) {
-        lastComponent = var10.getChatComponent();
+    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, boolean var4, double var5, int var7,
+                                  double var8, double var10, int var12, int var13, ChatLine var14, double var16,
+                                  int var18, int var19, int var20, int var21) {
+        lastComponent = var14.getChatComponent();
     }
 
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/AbstractGui.fill(IIIII)V"),
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/NewChatGui.fill(IIIII)V"),
         index = 4)
     public int customAlpha(int previous) {
         if(lastComponent == null) return previous;

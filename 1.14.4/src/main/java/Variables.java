@@ -23,6 +23,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
+import eu.the5zig.mod.asm.ReflectionNames;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
@@ -77,6 +78,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Effects;
 import net.minecraft.realms.RealmsBridge;
+import net.minecraft.realms.RealmsSharedConstants;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
@@ -110,6 +112,39 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	static {
 		try {
+			if(Transformer.REFLECTION == null) {
+				Transformer.FABRIC = true;
+				Field vf;
+				String reflName = null;
+				String version;
+				try {
+					vf = RealmsSharedConstants.class.getField("VERSION_STRING");
+
+					version = (String) vf.get(null);
+
+					switch (version) {
+						case "1.8.9":
+							reflName = "ReflectionNames189";
+							break;
+						case "1.12.2":
+							reflName = "ReflectionNames1122";
+							break;
+						case "1.13.2":
+							reflName = "ReflectionNames1132";
+							break;
+					}
+				} catch (Exception e) {
+					version = "1.14.4";
+					reflName = "ReflectionNames1144";
+				}
+				System.out.println("F Minecraft Version: " + version);
+
+				try {
+					Transformer.REFLECTION = (ReflectionNames) Class.forName("eu.the5zig.mod.asm." + reflName).newInstance();
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
 			The5zigMod.logger.info("Field: ", Transformer.REFLECTION
 					.GuiChatInput()
 					.get());

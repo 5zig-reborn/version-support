@@ -21,27 +21,27 @@ package eu.the5zig.mod.asm;
 public class ReflectionNames1144 implements ReflectionNames {
     @Override
     public ReflSimpleTuple GuiChatInput() {
-        return new ReflSimpleTuple("field_146415_a", "a");
+        return new ReflSimpleTriple("field_146415_a", "a", "field_2382");
     }
 
     @Override
     public ReflSimpleTuple ChatComponentClick() {
-        return new ReflSimpleTuple("handleComponentClicked", "handleComponentClicked");
+        return new ReflSimpleTriple("handleComponentClicked", "handleComponentClicked", "handleComponentClicked");
     }
 
     @Override
     public ReflSimpleTuple ChatComponentHover() {
-        return new ReflSimpleTuple("renderComponentHoverEffect", "renderComponentHoverEffect");
+        return new ReflSimpleTriple("renderComponentHoverEffect", "renderComponentHoverEffect", "renderComponentHoverEffect");
     }
 
     @Override
     public ReflSimpleTuple RightClickMouse() {
-        return new ReflSimpleTuple("func_147121_ag", "aF");
+        return new ReflSimpleTriple("func_147121_ag", "aF", "method_1583");
     }
 
     @Override
     public ReflSimpleTuple ButtonList() {
-        return new ReflSimpleTuple("field_146292_n", "o");
+        return new ReflSimpleTriple("field_146292_n", "o", "o");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ReflectionNames1144 implements ReflectionNames {
 
     @Override
     public ReflSimpleTuple ServerList() {
-        return new ReflSimpleTuple("field_148198_l", "v");
+        return new ReflSimpleTriple("field_148198_l", "v", "field_3040");
     }
 
     @Override

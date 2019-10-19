@@ -19,8 +19,8 @@
 package eu.the5zig.mod.asm;
 
 public class ReflSimpleTuple {
-    private String forge;
-    private String notch;
+    protected String forge;
+    protected String notch;
 
     public String getForge() {
         return forge;

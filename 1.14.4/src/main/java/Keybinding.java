@@ -54,7 +54,8 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 	private static void tryRegisterCategory(String category) {
 		Map<String, Integer> categories;
 		try {
-			Field field = Keybinding.class.getSuperclass().getDeclaredField(Transformer.FORGE ? "field_193627_d" : "d");
+			Field field = Keybinding.class.getSuperclass().getDeclaredField(Transformer.FABRIC ? "field_1656"
+					: (Transformer.FORGE ? "field_193627_d" : "d"));
 			field.setAccessible(true);
 			categories = (Map<String, Integer>) field.get(null);
 		} catch (Exception e) {

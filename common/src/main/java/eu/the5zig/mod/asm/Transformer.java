@@ -21,6 +21,7 @@ package eu.the5zig.mod.asm;
 public class Transformer {
 
 	public static boolean FORGE = false;
+	public static boolean FABRIC = false;
 	public static ReflectionNames REFLECTION;
 
 }
