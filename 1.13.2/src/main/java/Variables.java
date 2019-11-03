@@ -1200,7 +1200,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void renderPotionIcon(int index) {
-		getGuiIngame().drawTexturedModalRect(0, 0, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
+		getGuiIngame().drawTexturedModalRect(0, 0, index % 12 * 18, 198 + index / 12 * 18, 18, 18);
 	}
 
 	public TextureManager getTextureManager() {

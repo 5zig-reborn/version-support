@@ -55,9 +55,8 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.renderer.texture.NativeImage;
-import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.AbstractOption;
@@ -949,7 +948,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	private PotionEffectImpl wrapPotionEffect(EffectInstance potionEffect) {
 		Effect potion = getPotionByEffect(potionEffect);
 		return new PotionEffectImpl(potion == null ? "" : potionEffect.getEffectName(), potionEffect.getDuration(),
-				EffectUtils.getPotionDurationString(potionEffect, 1), potionEffect.getAmplifier() + 1, potion == null ? -1 : potion.getEffectType().ordinal(),
+				EffectUtils.getPotionDurationString(potionEffect, 1), potionEffect.getAmplifier() + 1, potion == null ? -1 : Effect.getId(potion),
 				potion == null || potionEffect.getPotion().isBeneficial(), true, potion == null ? 0 : potionEffect.getPotion().getLiquidColor());
 	}
 
@@ -1232,7 +1231,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void renderPotionIcon(int index) {
-		getGuiIngame().blit(0, 0, index % 8 * 18, 198 + index / 8 * 18, 18, 18);
+		this.getMinecraft().getTextureManager().bindTexture(AtlasTexture.LOCATION_EFFECTS_TEXTURE);
+		Effect effect = Effect.get(index);
+		if(effect == null) return;
+		PotionSpriteUploader potionspriteuploader = this.getMinecraft().getPotionSpriteUploader();
+		TextureAtlasSprite sprite = potionspriteuploader.getSprite(effect);
+		AbstractGui.blit(0, 0, 0, 18, 18, sprite);
 	}
 
 	public TextureManager getTextureManager() {
