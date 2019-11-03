@@ -1106,7 +1106,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		String[] result = new String[9];
 		KeyBinding[] hotbarBindings = getGameSettings().keyBindsHotbar;
 		for (int i = 0; i < Math.min(result.length, hotbarBindings.length); i++) {
-			result[i] = getKeyDisplayStringShort(hotbarBindings[i].getKey().getKeyCode());
+			result[i] = hotbarBindings[i].getLocalizedName();
 		}
 		return result;
 	}

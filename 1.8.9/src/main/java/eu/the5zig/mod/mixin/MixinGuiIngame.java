@@ -36,6 +36,7 @@ public abstract class MixinGuiIngame {
     @Inject(method = "renderTooltip", at = @At("HEAD"))
     protected void renderOverlay(ScaledResolution res, float pTicks, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().renderGameOverlay();
+        The5zigMod.getGuiIngame().onRenderHotbar();
     }
 
     @Inject(method = "updateTick", at = @At("TAIL"))
