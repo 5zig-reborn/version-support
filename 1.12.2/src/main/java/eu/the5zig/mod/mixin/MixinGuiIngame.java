@@ -55,4 +55,10 @@ public abstract class MixinGuiIngame {
     public void patchFood(ScaledResolution res, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().onRenderFood();
     }
+
+    @Inject(method = "renderPotionEffects", at = @At(value = "HEAD"), cancellable = true)
+    protected void renderVignette(ScaledResolution res, CallbackInfo ci) {
+        if(!The5zigMod.getConfig().getBool("showVanillaPotionIndicator"))
+            ci.cancel();
+    }
 }
