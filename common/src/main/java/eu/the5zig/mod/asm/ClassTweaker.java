@@ -23,15 +23,17 @@ import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.launchwrapper.LogWrapper;
-import net.minecraft.realms.RealmsSharedConstants;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.Manifest;
 
 public class ClassTweaker implements ITweaker {
 
@@ -49,30 +51,40 @@ public class ClassTweaker implements ITweaker {
         this.gameDir = gameDir;
         this.assetsDir = assetsDir;
 
-        Field vf;
         String reflName = null;
+
         try {
-            vf = RealmsSharedConstants.class.getField("VERSION_STRING");
-
-            this.version = (String) vf.get(null);
-
-
-            switch (this.version) {
-                case "1.8.9":
-                    reflName = "ReflectionNames189";
-                    break;
-                case "1.12.2":
-                    reflName = "ReflectionNames1122";
-                    break;
-                case "1.13.2":
-                    reflName = "ReflectionNames1132";
-                    break;
+            Enumeration<URL> resources = ClassTweaker.class.getClassLoader()
+                    .getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                try {
+                    URL url = resources.nextElement();
+                    Manifest manifest = new Manifest(url.openStream());
+                    if (manifest.getMainAttributes().getValue("5zig-Version") != null) {
+                        this.version = manifest.getMainAttributes().getValue("Minecraft-Version");
+                        switch (this.version) {
+                            case "1.8.9":
+                                reflName = "ReflectionNames189";
+                                break;
+                            case "1.12.2":
+                                reflName = "ReflectionNames1122";
+                                break;
+                            case "1.13.2":
+                                reflName = "ReflectionNames1132";
+                                break;
+                        }
+                        break;
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         } catch (Exception e) {
-            this.version = "1.14.4";
-            reflName = "ReflectionNames1144";
+            e.printStackTrace();
         }
-        LogWrapper.info("A Minecraft Version: " + this.version);
+
+
+        LogWrapper.info("Minecraft Version: " + this.version);
 
         try {
             Transformer.REFLECTION = (ReflectionNames) Class.forName("eu.the5zig.mod.asm." + reflName).newInstance();
