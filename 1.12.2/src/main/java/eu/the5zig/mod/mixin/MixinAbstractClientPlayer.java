@@ -52,6 +52,7 @@ public abstract class MixinAbstractClientPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     public void getCapeLocation(CallbackInfoReturnable<ResourceLocation> ci) {
+        if (playerInfo == null) return;
         Object loc = MinecraftFactory.getVars().getResourceManager().getCapeLocation(playerInfo);
         if(loc != null) {
             ci.setReturnValue((ResourceLocation)loc);
