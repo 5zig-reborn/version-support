@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiAchievement.class)
 public abstract class MixinGuiAchievement {
 
-    @Inject(method = "updateAchievementWindow", at = @At("TAIL"))
+    @Inject(method = "updateAchievementWindow", at = @At("HEAD"))
     public void updateAchievementWindow(CallbackInfo _ci) {
         Minecraft mc = Minecraft.getMinecraft();
         if(mc.currentScreen instanceof GuiMainMenu) {
