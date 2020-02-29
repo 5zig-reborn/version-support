@@ -24,6 +24,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.Version;
+import eu.the5zig.mod.api.rewards.RewardsCache;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.ingame.resource.CapeResource;
 import eu.the5zig.mod.gui.ingame.resource.IResourceManager;
@@ -51,7 +52,7 @@ public class ResourceManager implements IResourceManager {
 
 	private static final ExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder().setNameFormat("5zig Texture Downloader #%d").setDaemon(true)
 			.build());
-	private static final String BASE_URL = "https://secure.5zigreborn.eu/textures/";
+	private static final String BASE_URL = "https://textures.5zigreborn.eu/profile/";
 	private static final Gson gson = new Gson();
 
 	private final Object guiCameraTransform;
@@ -133,6 +134,9 @@ public class ResourceManager implements IResourceManager {
 								MinecraftFactory.getClassProxyCallback().getLogger().error("Could not parse cape for " + gameProfile.getId(), e);
 							}
 						}
+					if(data.r != null) {
+						RewardsCache.putReward(gameProfile.getId().toString(), data.r);
+					}
 				} catch (Exception e) {
 					MinecraftFactory.getClassProxyCallback().getLogger().error("Couldn\'t download http texture", e);
 				} finally {

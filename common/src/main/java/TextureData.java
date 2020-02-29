@@ -21,5 +21,5 @@ public class TextureData {
 
 	public int t;
 	public String d;
-
+	public String r;
 }
