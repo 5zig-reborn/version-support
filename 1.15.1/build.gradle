@@ -16,6 +16,8 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+project.ext.set("customVer", "1.15.2");
+
 apply plugin: 'java'
 apply from: '../../mod/common.gradle'
 
@@ -62,7 +64,7 @@ minecraft {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.15.1-30.0.26'
+    minecraft 'net.minecraftforge:forge:1.15.2-31.1.18'
 }
 
 sourceSets.main {

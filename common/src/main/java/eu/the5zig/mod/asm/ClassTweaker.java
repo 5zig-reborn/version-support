@@ -73,7 +73,7 @@ public class ClassTweaker implements ITweaker {
                                 reflName = "ReflectionNames1132";
                                 break;
                             case "1.14.4":
-                            case "1.15.1":
+                            case "1.15.2":
                                 reflName = "ReflectionNames1144";
                                 break;
                         }
