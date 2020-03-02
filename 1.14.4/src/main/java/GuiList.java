@@ -88,12 +88,13 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 
 	@Override
 	protected boolean selectItem(int id, int p_selectItem_2_, double p_selectItem_3_, double p_selectItem_5_) {
+		int last = selected;
 		selected = id;
 		boolean var5 = (GuiList.this.selected >= 0) && (GuiList.this.selected < getItemCount());
 		if (var5) {
 			if (clickable != null) {
 				synchronized (rows) {
-					boolean doubleClick = id == this.selected && System.currentTimeMillis() - this.lastClicked < 250L;
+					boolean doubleClick = id == last && System.currentTimeMillis() - this.lastClicked < 250L;
 					onSelect(id, rows.get(id), doubleClick);
 					this.lastClicked = System.currentTimeMillis();
 					return true;
@@ -363,7 +364,7 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 		if(item == null) return;
 		int id = rows.indexOf(item);
 		setSelectedId(id);
-		this.selectItem(id, 0, (double)mouseX, (double)mouseY);
+		this.selectItem(id, 0, mouseX, mouseY);
 
 		if (hasSelected) {
 			synchronized (rows) {
@@ -658,6 +659,7 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 
 	@Override
 	public E getHoverItem(int mouseX, int mouseY) {
+		calculateHeightMap();
 		int x1, x2;
 		if (leftbound) {
 			x1 = getLeft();

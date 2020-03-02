@@ -19,6 +19,7 @@
 import com.google.common.collect.Lists;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.Gui;
+import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.Minecraft;
