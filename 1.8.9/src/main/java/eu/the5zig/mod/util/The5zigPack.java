@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 5zig Reborn
+ * Copyright (c) 2019-2020 5zig Reborn
  *
  * This file is part of The 5zig Mod
  * The 5zig Mod is free software: you can redistribute it and/or modify
@@ -20,7 +20,6 @@ package eu.the5zig.mod.util;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.resources.DefaultResourcePack;
-import net.minecraft.client.resources.ResourceIndex;
 
 import java.io.File;
 import java.util.HashMap;

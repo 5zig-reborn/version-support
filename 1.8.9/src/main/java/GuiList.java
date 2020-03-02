@@ -1,6 +1,5 @@
 /*
- * Original: Copyright (c) 2015-2019 5zig [MIT]
- * Current: Copyright (c) 2019 5zig Reborn [GPLv3+]
+ * Copyright (c) 2019-2020 5zig Reborn
  *
  * This file is part of The 5zig Mod
  * The 5zig Mod is free software: you can redistribute it and/or modify
@@ -20,7 +19,6 @@
 import com.google.common.collect.Lists;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.Gui;
-import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.Minecraft;

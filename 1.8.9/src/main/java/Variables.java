@@ -1,6 +1,5 @@
 /*
- * Original: Copyright (c) 2015-2019 5zig [MIT]
- * Current: Copyright (c) 2019 5zig Reborn [GPLv3+]
+ * Copyright (c) 2019-2020 5zig Reborn
  *
  * This file is part of The 5zig Mod
  * The 5zig Mod is free software: you can redistribute it and/or modify
@@ -25,15 +24,12 @@ import com.mojang.authlib.GameProfile;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.Transformer;
-import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IOverlay;
 import eu.the5zig.mod.gui.IWrappedGui;
-import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
-import eu.the5zig.mod.util.*;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
