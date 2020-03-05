@@ -47,10 +47,18 @@ public abstract class MixinGuiPlayerTabOverlay extends Gui {
             else if(ping < 1000) color = 0xe33d2d;
             else color = 0x75140b;
             GLUtil.pushMatrix();
-            GLUtil.scale(0.5f, 0.5f, 0.5f); // 0.5 gives the best result in my opinion
-            int rescale = 2; // 1/0.5
-            drawCenteredString(Minecraft.getMinecraft().fontRenderer, display, (x + offset) * rescale - 11,
-                    y * rescale + 3, color);
+            if(Minecraft.getMinecraft().gameSettings.forceUnicodeFont) {
+                GLUtil.scale(1f, 1f, 1f); // Unicode fonts are much smaller
+                int rescale = 1;
+                drawCenteredString(Minecraft.getMinecraft().fontRenderer, display, (x + offset) * rescale - 5,
+                        y * rescale, color);
+            }
+            else {
+                GLUtil.scale(0.5f, 0.5f, 0.5f); // 0.5 gives the best result in my opinion
+                int rescale = 2; // 1/0.5
+                drawCenteredString(Minecraft.getMinecraft().fontRenderer, display, (x + offset) * rescale - 11,
+                        y * rescale + 3, color);
+            }
             GLUtil.popMatrix();
             ci.cancel();
         }
