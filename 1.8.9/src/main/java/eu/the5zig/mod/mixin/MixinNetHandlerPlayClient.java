@@ -79,6 +79,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleTitle", at = @At(value = "RETURN", ordinal = 1))
     public void title(S45PacketTitle packet, CallbackInfo _ci) {
+        if(packet.getMessage() == null) return;
         String text = packet.getMessage().getFormattedText();
 
         switch(packet.getType()) {
