@@ -76,6 +76,7 @@ public class GuiHandle extends GuiScreen implements IGuiHandle {
 	@Override
 	protected void keyTyped(char c, int i) {
 		child.keyTyped0(c, i);
+		child.keyPressed0(i, 0, 0);
 	}
 
 	@Override
