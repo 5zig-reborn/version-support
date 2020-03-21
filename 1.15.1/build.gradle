@@ -21,6 +21,10 @@ project.ext.set("customVer", "1.15.2");
 apply plugin: 'java'
 apply from: '../../mod/common.gradle'
 
+jar {
+    version = "1.15.2"
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '4.9'
 }
