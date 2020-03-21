@@ -22,7 +22,7 @@ apply plugin: 'java'
 apply from: '../../mod/common.gradle'
 
 jar {
-    version = "1.15.2"
+    baseName = "5zig-Reborn-1.15.2"
 }
 
 task wrapper(type: Wrapper) {
