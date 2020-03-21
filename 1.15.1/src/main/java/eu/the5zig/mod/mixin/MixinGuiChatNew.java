@@ -23,6 +23,7 @@ import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.ChatHighlighting;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.NewChatGui;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
@@ -31,6 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(NewChatGui.class)
 public abstract class MixinGuiChatNew {
+
+    private static final String fillTarget = "net/minecraft/client/gui/NewChatGui.fill(Lnet/minecraft/client/renderer/Matrix4f;IIIII)V";
 
     private ITextComponent lastComponent;
 
@@ -45,20 +48,19 @@ public abstract class MixinGuiChatNew {
     }
 
 
-    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/NewChatGui.fill(IIIII)V"),
+    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget),
         locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, boolean var4, double var5, int var7,
-                                  double var8, double var10, int var12, int var13, ChatLine var14, double var16,
-                                  int var18, int var19, int var20, int var21) {
-        lastComponent = var14.getChatComponent();
+    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, boolean var4, double var5, int var7, double var8,
+                                  double var10, int var12, Matrix4f var13, int var14, ChatLine var15, double var17, int var19, int var20, int var21, int var22) {
+        lastComponent = var15.getChatComponent();
     }
 
-    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = "net/minecraft/client/gui/NewChatGui.fill(IIIII)V"),
-        index = 4)
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget),
+        index = 5)
     public int customAlpha(int previous) {
         if(lastComponent == null) return previous;
         if(ChatHighlighting.shouldHighlight(lastComponent.getString())) {
-            return MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, previous) << 24);
+            return MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (0x80 << 24);
         }
         return previous * (The5zigMod.getConfig().getBool("transparentChatBackground") ? 0 : 1);
     }
