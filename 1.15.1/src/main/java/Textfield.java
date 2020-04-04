@@ -50,6 +50,7 @@ public class Textfield extends TextFieldWidget implements ITextfield {
 	 * @param height          The height of the Textfield.
 	 * @param maxStringLength The Max Length the Text of the Textfield can have.
 	 */
+	@SuppressWarnings("resource")
 	public Textfield(int id, int x, int y, int width, int height, int maxStringLength) {
 		super(Minecraft.getInstance().fontRenderer, x, y, width, height, "");
 		this.id = id;

@@ -54,6 +54,7 @@ public class ClassProxy {
 
 	private static boolean tryFix = false;
 
+	@SuppressWarnings("unused")
 	private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 
 	private ClassProxy() {

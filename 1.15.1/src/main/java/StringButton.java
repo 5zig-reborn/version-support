@@ -34,6 +34,7 @@ public class StringButton extends Button {
 		super(id, x, y, width, height, label);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void draw(int paramInt1, int paramInt2) {
 		if (!this.visible) {

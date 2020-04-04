@@ -51,6 +51,7 @@ public class FileSelector implements IFileSelector {
 
 	private List<String> allowedExtensions = new ArrayList<>();
 
+	@SuppressWarnings("unused")
 	private int width, height;
 
 	private int left;

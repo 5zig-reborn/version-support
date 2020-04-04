@@ -36,7 +36,8 @@ public class RewardTagUtils {
 
     private static final float SCALE_FACTOR = 0.5F;
 
-    public static boolean shouldRender(PlayerEntity player) {
+    @SuppressWarnings("resource")
+	public static boolean shouldRender(PlayerEntity player) {
         if(player == Minecraft.getInstance().player && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
         if(player.isInvisibleToPlayer(Minecraft.getInstance().player)) return false;
         if(player.isSneaking()) return false;
@@ -112,7 +113,8 @@ public class RewardTagUtils {
 
     }
 
-    private static boolean shouldRenderTeam(PlayerEntity player) {
+    @SuppressWarnings("resource")
+	private static boolean shouldRenderTeam(PlayerEntity player) {
         Team team = player.getTeam();
         Team team1 = Minecraft.getInstance().player.getTeam();
 

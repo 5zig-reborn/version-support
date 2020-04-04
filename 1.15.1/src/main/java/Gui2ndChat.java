@@ -47,7 +47,9 @@ import java.util.Locale;
  */
 public class Gui2ndChat implements IGui2ndChat {
 
+	@SuppressWarnings("unused")
 	private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
+	@SuppressWarnings("unused")
 	private static final Joiner NEWLINE_STRING_JOINER = Joiner.on("\\n");
 
 	private final List<String> sentMessages = Lists.newArrayList();
@@ -189,7 +191,8 @@ public class Gui2ndChat implements IGui2ndChat {
 		this.setChatLine(chatComponent, id, ((Variables) MinecraftFactory.getVars()).getGuiIngame().getTicks(), false);
 	}
 
-	private void setChatLine(TextComponent chatComponent, int id, int currentUpdateCounter, boolean refresh) {
+	@SuppressWarnings("resource")
+	private void setChatLine(StringTextComponent chatComponent, int id, int currentUpdateCounter, boolean refresh) {
 		if (!refresh && MinecraftFactory.getClassProxyCallback().isShowTimeBeforeChatMessage()) {
 			chatComponent = (TextComponent) MinecraftFactory.getClassProxyCallback().getChatComponentWithTime(chatComponent);
 		}

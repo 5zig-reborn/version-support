@@ -55,6 +55,7 @@ public class ResourceManager implements IResourceManager {
 	private static final String BASE_URL = "https://textures.5zigreborn.eu/profile/";
 	private static final Gson gson = new Gson();
 
+	@SuppressWarnings("unused")
 	private final Object guiCameraTransform;
 
 	private final GameProfile playerProfile;
@@ -105,6 +106,7 @@ public class ResourceManager implements IResourceManager {
 		}
 
 		EXECUTOR_SERVICE.execute(new Runnable() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				MinecraftFactory.getClassProxyCallback().getLogger().debug("Loading player resource textures from {} for player {}", minecraftProfileTexture.getUrl(), gameProfile.getName());

@@ -63,6 +63,10 @@ public abstract class MixinMinecraft {
         CombatRangeUtil.lastAttack = System.currentTimeMillis();
     }
 
+    @Inject(method = "launchIntegratedServer", at = @At("RETURN"))
+    public void launchIntegratedServer(CallbackInfo _ci) {
+        The5zigMod.getListener().onSingleplayer();
+    }
 }
 
 

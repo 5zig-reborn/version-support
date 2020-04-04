@@ -33,11 +33,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+@SuppressWarnings("resource")
 public class RewardTagUtils {
 
     private static final float SCALE_FACTOR = 0.5F;
 
-    public static boolean shouldRender(PlayerEntity player) {
+	public static boolean shouldRender(PlayerEntity player) {
         if(player == Minecraft.getInstance().player && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
         if(player.isInvisibleToPlayer(Minecraft.getInstance().player)) return false;
         if(player.func_226273_bm_()) return false; // Sneaking
@@ -50,7 +51,8 @@ public class RewardTagUtils {
 
     }
 
-    public static void render(PlayerRenderer renderer, String str, PlayerEntity pl, double x, double y, double z) {
+    @SuppressWarnings("deprecation")
+	public static void render(PlayerRenderer renderer, String str, PlayerEntity pl, double x, double y, double z) {
         FontRenderer fontRenderer = renderer.getFontRendererFromRenderManager();
         float f = 1.6F;
         float f1 = 0.016666668F * f * SCALE_FACTOR;
@@ -92,7 +94,8 @@ public class RewardTagUtils {
         renderTxt(renderer, str, x);
     }
 
-    private static void renderTxt(FontRenderer renderer, String toRender, int x) {
+    @SuppressWarnings("deprecation")
+	private static void renderTxt(FontRenderer renderer, String toRender, int x) {
         GlStateManager.func_227731_j_();
         GlStateManager.func_227667_a_(true);
         GlStateManager.func_227731_j_();

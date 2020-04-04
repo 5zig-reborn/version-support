@@ -51,6 +51,7 @@ public class FileSelector implements IFileSelector {
 	private int selectedFile;
 	private List<File> files = Lists.newArrayList();
 
+	@SuppressWarnings("unused")
 	private int width, height;
 
 	private int left;

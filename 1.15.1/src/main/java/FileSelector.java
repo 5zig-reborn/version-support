@@ -18,6 +18,7 @@
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
+
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.elements.IFileSelector;
 import eu.the5zig.mod.util.GLUtil;
@@ -51,6 +52,7 @@ public class FileSelector implements IFileSelector {
 	private int selectedFile;
 	private List<File> files = Lists.newArrayList();
 
+	@SuppressWarnings("unused")
 	private int width, height;
 
 	private int left;
@@ -146,6 +148,7 @@ public class FileSelector implements IFileSelector {
 		return allowedExtensions.contains(ext);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void draw(int mouseX, int mouseY, float partialTicks) {
 		this.mouseX = mouseX;

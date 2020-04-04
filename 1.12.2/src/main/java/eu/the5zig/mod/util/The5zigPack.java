@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.resources.DefaultResourcePack;
 import net.minecraft.client.resources.ResourceIndex;
 
-import java.util.HashMap;
 import java.util.Set;
 
 public class The5zigPack extends DefaultResourcePack {

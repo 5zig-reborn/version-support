@@ -51,6 +51,7 @@ public class FileSelector implements IFileSelector {
 
 	private List<String> allowedExtensions = new ArrayList<>();
 
+	@SuppressWarnings("unused")
 	private int width, height;
 
 	private int left;
@@ -121,6 +122,7 @@ public class FileSelector implements IFileSelector {
 		for (File file : a) {
 			if (!fsv.isDrive(file) || fsv.getSystemDisplayName(file).isEmpty())
 				continue;
+			@SuppressWarnings("unused")
 			String name = FilenameUtils.getExtension(file.getName());
 			if(!isExtensionAllowed(file)) continue;
 			files.add(file);

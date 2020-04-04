@@ -48,7 +48,9 @@ import java.util.Locale;
  */
 public class Gui2ndChat implements IGui2ndChat {
 
+	@SuppressWarnings("unused")
 	private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
+	@SuppressWarnings("unused")
 	private static final Joiner NEWLINE_STRING_JOINER = Joiner.on("\\n");
 
 	private final List<String> sentMessages = Lists.newArrayList();

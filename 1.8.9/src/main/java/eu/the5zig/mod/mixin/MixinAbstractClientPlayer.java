@@ -43,7 +43,8 @@ public abstract class MixinAbstractClientPlayer {
     @Shadow
     private NetworkPlayerInfo playerInfo;
 
-    private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
+    @SuppressWarnings("unused")
+	private static final UUID SPRINT_MODIFIER_UUID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void init(World w, GameProfile profile, CallbackInfo ci) {

@@ -40,6 +40,7 @@ public class ClassProxy {
 	private static Field buttonList;
 	private static final Field serverList;
 
+	@SuppressWarnings("unused")
 	private static boolean tryFix = false;
 
 	private ClassProxy() {

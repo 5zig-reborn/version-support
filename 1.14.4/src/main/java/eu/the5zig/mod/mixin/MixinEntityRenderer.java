@@ -28,10 +28,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("resource")
 @Mixin(GameRenderer.class)
 public class MixinEntityRenderer {
 
-    @Inject(method = "getMouseOver", at = @At(value = "FIELD", target =
+	@Inject(method = "getMouseOver", at = @At(value = "FIELD", target =
             "net/minecraft/client/Minecraft.pointedEntity:Lnet/minecraft/entity/Entity;",
             ordinal = 1,
             opcode = Opcodes.PUTFIELD))
