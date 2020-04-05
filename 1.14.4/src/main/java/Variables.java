@@ -104,7 +104,6 @@ import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.util.*;
 
-@SuppressWarnings({ "resource", "deprecation" })
 public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	private static Field forgeChatField;

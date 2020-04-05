@@ -19,7 +19,6 @@
 import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.util.IGLUtil;
 
-@SuppressWarnings("deprecation")
 public class GLUtilHandle implements IGLUtil {
 
 	@Override

@@ -96,7 +96,6 @@ public class Overlay implements IOverlay {
 			this.updateTime = true;
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public IToast.Visibility draw(ToastGui var1, long l) {
 			if (updateTime) {

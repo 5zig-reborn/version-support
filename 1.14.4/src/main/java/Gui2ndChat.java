@@ -191,7 +191,6 @@ public class Gui2ndChat implements IGui2ndChat {
 		this.setChatLine(chatComponent, id, ((Variables) MinecraftFactory.getVars()).getGuiIngame().getTicks(), false);
 	}
 
-	@SuppressWarnings("resource")
 	private void setChatLine(StringTextComponent chatComponent, int id, int currentUpdateCounter, boolean refresh) {
 		if (!refresh && MinecraftFactory.getClassProxyCallback().isShowTimeBeforeChatMessage()) {
 			chatComponent = (TextComponent) MinecraftFactory.getClassProxyCallback().getChatComponentWithTime(chatComponent);
@@ -310,7 +309,6 @@ public class Gui2ndChat implements IGui2ndChat {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	private StringTextComponent getChatComponent(int mouseX, int mouseY) {
 		if (!this.isChatOpened()) {
 			return null;

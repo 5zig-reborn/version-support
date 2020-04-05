@@ -32,7 +32,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerTabOverlayGui.class)
 public abstract class MixinGuiPlayerTabOverlay extends AbstractGui {
 
-    @SuppressWarnings("resource")
 	@Inject(method = "drawPing", at = @At("HEAD"), cancellable = true)
     public void drawPing(int offset, int x, int y, NetworkPlayerInfo info, CallbackInfo ci) {
         if(The5zigMod.getConfig().getBool("pingOnTab")) {

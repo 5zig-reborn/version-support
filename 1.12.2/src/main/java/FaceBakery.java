@@ -41,7 +41,6 @@ public class FaceBakery {
 	public FaceBakery() {
 	}
 
-	@SuppressWarnings("deprecation")
 	public BakedQuad a(Vector3f vector1, Vector3f vector2, BlockPartFace blockPartFace, EnumFacing enumFacing, ModelRotation modelRotation,
 					   BlockPartRotation blockPartRotation, boolean b1, boolean b2) {
 		int[] data = this.a(blockPartFace, enumFacing, this.a(vector1, vector2), modelRotation, blockPartRotation, b1, b2);

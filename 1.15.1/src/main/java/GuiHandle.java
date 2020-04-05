@@ -151,7 +151,6 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		blit(x, y, texX, texY, width, height);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void callDrawHoveringText(List<String> lines, int x, int y) {
 		if (!lines.isEmpty()) {
@@ -246,7 +245,6 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		GLUtil.disableBlend();
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void drawGradientRect(double left, double top, double right, double bottom, int startColor, int endColor, boolean vertical) {
 		float a1 = (float) (startColor >> 24 & 255) / 255.0F;
 		float r1 = (float) (startColor >> 16 & 255) / 255.0F;

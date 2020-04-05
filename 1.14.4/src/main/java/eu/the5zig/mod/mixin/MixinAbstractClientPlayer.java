@@ -60,7 +60,6 @@ public abstract class MixinAbstractClientPlayer {
         }
     }
 
-    @SuppressWarnings("resource")
 	@Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     public void getFovModifier(CallbackInfoReturnable<Float> ci) {
         if(The5zigMod.getConfig().getBool("staticFov")) {

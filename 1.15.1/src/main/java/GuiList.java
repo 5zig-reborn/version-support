@@ -158,7 +158,6 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 	/**
 	 * Draw Screen
 	 */
-	@SuppressWarnings("deprecation")
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		calculateHeightMap();
 		if (this.visible) {

@@ -148,7 +148,6 @@ public class FileSelector implements IFileSelector {
 		return allowedExtensions.contains(ext);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void draw(int mouseX, int mouseY, float partialTicks) {
 		this.mouseX = mouseX;
