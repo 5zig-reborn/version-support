@@ -7,3 +7,6 @@ gradle/
 gradlew
 gradlew.bat
 /artifacts/
+.settings/
+.classpath
+.project
