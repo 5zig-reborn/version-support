@@ -81,4 +81,12 @@ public abstract class MixinGuiChatNew {
         }
         return maxIn;
     }
+
+    @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"), cancellable = true)
+    public void printChatMessage(IChatComponent component, int lineId, CallbackInfo ci) {
+        String formatted = component.getFormattedText().replace("§r", "");
+        if(The5zigMod.getListener().onServerChat(formatted, component)) {
+            ci.cancel();
+        }
+    }
 }
