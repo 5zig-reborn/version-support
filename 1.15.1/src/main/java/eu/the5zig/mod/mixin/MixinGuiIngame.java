@@ -43,12 +43,6 @@ public abstract class MixinGuiIngame {
         The5zigMod.getGuiIngame().tick();
     }
 
-    @Inject(method = "renderGameOverlay", at = @At(value = "INVOKE",
-            target = "net/minecraft/profiler/Profiler.startSection(Ljava/lang/String;)V", ordinal = 4))
-    public void patchChat(float pTicks, CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().draw(ticks);
-    }
-
     @Inject(method = "renderPlayerStats", at = @At(value = "INVOKE", target = "net/minecraft/profiler/Profiler.endStartSection(Ljava/lang/String;)V",
             ordinal = 1))
     public void patchFood(CallbackInfo _ci) {

@@ -39,7 +39,7 @@ public abstract class MixinGuiChatNew {
         The5zigMod.getVars().get2ndChat().scroll((int)amount);
     }
 
-    @Inject(method = "render", at = @At("TAIL"))
+    @Inject(method = "render", at = @At("HEAD"))
     public void drawChat(int upd, CallbackInfo _ci) {
         The5zigMod.getVars().get2ndChat().draw(upd);
     }
