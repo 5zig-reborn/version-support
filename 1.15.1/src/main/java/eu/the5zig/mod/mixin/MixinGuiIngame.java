@@ -35,6 +35,10 @@ public abstract class MixinGuiIngame {
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     protected void renderHotbar(float pTicks, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().renderGameOverlay();
+    }
+
+    @Inject(method = "renderHotbar", at = @At("TAIL"))
+    protected void renderHotbarPost(float pTicks, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().onRenderHotbar();
     }
 
@@ -43,7 +47,7 @@ public abstract class MixinGuiIngame {
         The5zigMod.getGuiIngame().tick();
     }
 
-    @Inject(method = "renderPlayerStats", at = @At(value = "INVOKE", target = "net/minecraft/profiler/Profiler.endStartSection(Ljava/lang/String;)V",
+    @Inject(method = "renderPlayerStats", at = @At(value = "INVOKE", target = "net/minecraft/profiler/IProfiler.endStartSection(Ljava/lang/String;)V",
             ordinal = 1))
     public void patchFood(CallbackInfo _ci) {
         The5zigMod.getGuiIngame().onRenderFood();

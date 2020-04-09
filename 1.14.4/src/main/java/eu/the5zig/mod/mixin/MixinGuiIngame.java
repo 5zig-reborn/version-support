@@ -35,6 +35,10 @@ public abstract class MixinGuiIngame {
     @Inject(method = "renderHotbar", at = @At("HEAD"))
     protected void renderHotbar(float pTicks, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().renderGameOverlay();
+    }
+
+    @Inject(method = "renderHotbar", at = @At("TAIL"))
+    protected void renderHotbarPost(float pTicks, CallbackInfo _ci) {
         The5zigMod.getGuiIngame().onRenderHotbar();
     }
 
