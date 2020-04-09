@@ -26,6 +26,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
@@ -117,6 +118,6 @@ public class WrappedItemStack implements ItemStack {
 	}
 
 	public static String getResourceKey(net.minecraft.item.ItemStack item) {
-		return item.getItem().getName().getUnformattedComponentText();
+		return "minecraft:" + Registry.ITEM.getKey(item.getItem()).getPath();
 	}
 }

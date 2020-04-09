@@ -85,6 +85,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Session;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -996,14 +997,14 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public ItemStack getItemByName(String resourceName) {
-		//	return new WrappedItemStack(new net.minecraft.item.ItemStack TODO Find impl
-		return null;
+		return getItemByName(resourceName, 1);
 	}
 
 	@Override
 	public ItemStack getItemByName(String resourceName, int amount) {
-		//return new WrappedItemStack(new net.minecraft.item.ItemStack(Item.func_111206_d(resourceName), amount));
-		return null;
+		String[] data = resourceName.split(":");
+		ResourceLocation loc = new ResourceLocation(data[0], data[1]);
+		return new WrappedItemStack(new net.minecraft.item.ItemStack(Registry.ITEM.getOrDefault(loc), amount));
 	}
 
 	@Override
