@@ -31,5 +31,4 @@ public abstract class MixinEntityPlayerSP {
         The5zigMod.getListener().onSendChatMessage(msg);
     }
 
-
 }
