@@ -49,11 +49,16 @@ public abstract class MixinNetHandlerPlayClient {
         byte type = packet.getType();
         IChatComponent comp = packet.getChatComponent();
         String formatted = comp.getFormattedText().replace("§r", "");
+        boolean b;
         if(type == 2) {
-            if(The5zigMod.getListener().onActionBar(formatted)) {
-                ci.cancel();
-            }
+            b = The5zigMod.getListener().onActionBar(formatted);
         }
+        else {
+            b = The5zigMod.getListener().onServerChat(formatted, comp);
+        }
+
+        if(b)
+            ci.cancel();
     }
 
     @Inject(method = "handleSetSlot", at = @At("HEAD"))
