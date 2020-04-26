@@ -790,7 +790,7 @@ public class Variables implements IVariables {
 
 	@Override
 	public String getEntityCount() {
-		return Integer.toString(getMinecraft().world.loadedEntityList.size());
+		return getMinecraft().renderGlobal.getDebugInfoEntities().split("[ ,]")[1];
 	}
 
 	@Override

@@ -16,7 +16,6 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
@@ -833,8 +832,8 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getEntityCount() {
-		if(getMinecraft().world == null) return "No world";
-		return Integer.toString(Iterables.size(getMinecraft().world.getAllEntities()));
+		if(getMinecraft().worldRenderer == null) return "No world";
+		return getMinecraft().worldRenderer.getDebugInfoEntities().split("[ ,]")[1];
 	}
 
 	@Override
