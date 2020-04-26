@@ -18,6 +18,7 @@
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
+import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IGuiHandle;
 import eu.the5zig.mod.util.GLUtil;
@@ -96,6 +97,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 
 	@Override
 	public void onClose() {
+		The5zigMod.getVars().displayScreen(child.lastScreen);
 		child.guiClosed0();
 	}
 
