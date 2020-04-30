@@ -108,6 +108,7 @@ public class ClassTweaker implements ITweaker {
         LogWrapper.info("Initializing Mixins...");
         MixinBootstrap.init();
         MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
+        Mixins.addConfiguration("mixins.the5zigmod.optional.json");
         Mixins.addConfiguration("mixins.json");
 
         LogWrapper.info("Forge: %b", Transformer.FORGE);

@@ -32,6 +32,7 @@ import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
+import eu.the5zig.mod.mixin.IMinecraft;
 import eu.the5zig.mod.mixin.MixinGameSettings;
 import eu.the5zig.mod.util.*;
 import eu.the5zig.util.Callback;
@@ -705,7 +706,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getFPS() {
-		return Integer.toString(Minecraft.getInstance().func_223704_be());
+		return Integer.toString(IMinecraft.getDebugFPS());
 	}
 
 	@Override

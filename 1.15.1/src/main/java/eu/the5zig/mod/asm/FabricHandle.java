@@ -71,6 +71,7 @@ public class FabricHandle {
         System.out.println("Initializing Mixins...");
         MixinBootstrap.init();
         MixinEnvironment env = MixinEnvironment.getDefaultEnvironment();
+        Mixins.addConfiguration("mixins.the5zigmod.optional.json");
         Mixins.addConfiguration("mixins.json");
 
         System.out.println("Forge: " + Transformer.FORGE);
