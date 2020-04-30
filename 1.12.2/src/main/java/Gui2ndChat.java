@@ -34,7 +34,6 @@ import net.minecraft.client.gui.GuiUtilRenderComponents;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import org.apache.logging.log4j.LogManager;
 import org.lwjgl.input.Mouse;
 
@@ -176,23 +175,23 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public void printChatMessage(Object chatComponent) {
-		if (!(chatComponent instanceof TextComponentString))
-			throw new IllegalArgumentException(chatComponent.getClass().getName() + " != " + TextComponentString.class.getName());
-		printChatMessage((TextComponentString) chatComponent);
+		if (!(chatComponent instanceof ITextComponent))
+			throw new IllegalArgumentException(chatComponent.getClass().getName() + " != " + ITextComponent.class.getName());
+		printChatMessage((ITextComponent) chatComponent);
 	}
 
-	public void printChatMessage(TextComponentString chatComponent) {
+	public void printChatMessage(ITextComponent chatComponent) {
 		this.printChatMessage(chatComponent, 0);
 	}
 
-	public void printChatMessage(TextComponentString chatComponent, int id) {
+	public void printChatMessage(ITextComponent chatComponent, int id) {
 		LogManager.getLogger().info("[CHAT2] {}", chatComponent.getUnformattedComponentText());
 		this.setChatLine(chatComponent, id, ((Variables) MinecraftFactory.getVars()).getGuiIngame().getUpdateCounter(), false);
 	}
 
-	private void setChatLine(TextComponentString chatComponent, int id, int currentUpdateCounter, boolean refresh) {
+	private void setChatLine(ITextComponent chatComponent, int id, int currentUpdateCounter, boolean refresh) {
 		if (!refresh && MinecraftFactory.getClassProxyCallback().isShowTimeBeforeChatMessage()) {
-			chatComponent = (TextComponentString) MinecraftFactory.getClassProxyCallback().getChatComponentWithTime(chatComponent);
+			chatComponent = (ITextComponent) MinecraftFactory.getClassProxyCallback().getChatComponentWithTime(chatComponent);
 		}
 		if (id != 0) {
 			this.deleteChatLine(id);
@@ -203,9 +202,9 @@ public class Gui2ndChat implements IGui2ndChat {
 				.splitText(chatComponent, lineWidth, Minecraft.getMinecraft().fontRenderer, false, false);
 		boolean var6 = this.isChatOpened();
 
-		TextComponentString lineString;
+		ITextComponent lineString;
 		for (Iterator<ITextComponent> iterator = lines.iterator(); iterator.hasNext(); this.singleChatLines.add(0, new GuiChatLine(currentUpdateCounter, lineString, id))) {
-			lineString = (TextComponentString) iterator.next();
+			lineString = (ITextComponent) iterator.next();
 			if (var6 && this.scrollPos > 0) {
 				this.isScrolled = true;
 				this.scroll(1);
@@ -280,7 +279,7 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public void drawComponentHover(int mouseX, int mouseY) {
-		TextComponentString chatComponent = getChatComponent(Mouse.getX(), Mouse.getY());
+		ITextComponent chatComponent = getChatComponent(Mouse.getX(), Mouse.getY());
 		try {
 			hoverChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
 					chatComponent, mouseX, mouseY);
@@ -308,7 +307,7 @@ public class Gui2ndChat implements IGui2ndChat {
 		}
 	}
 
-	private TextComponentString getChatComponent(int mouseX, int mouseY) {
+	private ITextComponent getChatComponent(int mouseX, int mouseY) {
 		if (!this.isChatOpened()) {
 			return null;
 		} else {
@@ -329,10 +328,10 @@ public class Gui2ndChat implements IGui2ndChat {
 								(int) ((getChatWidth() - MinecraftFactory.getVars().getStringWidth(optStripColor(chatLine.getChatComponent().getFormattedText())) * chatScale) / chatScale);
 
 						for (ITextComponent chatComponent : chatLine.getChatComponent()) {
-							if (chatComponent instanceof TextComponentString) { // ChatComponentText
+							if (chatComponent instanceof ITextComponent) { // ChatComponentText
 								widthCounter += MinecraftFactory.getVars().getStringWidth(optStripColor(chatComponent.getUnformattedComponentText()));
 								if (widthCounter > x) {
-									return (TextComponentString) chatComponent;
+									return (ITextComponent) chatComponent;
 								}
 							}
 						}

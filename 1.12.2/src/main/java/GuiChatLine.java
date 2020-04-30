@@ -16,26 +16,26 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.ITextComponent;
 
 public class GuiChatLine {
 
 	private final int updateCounterCreated;
-	private final TextComponentString lineString;
+	private final ITextComponent lineString;
 
 	/**
 	 * int value to refer to existing Chat Lines, can be 0 which means unreferrable
 	 */
 	private final int chatLineID;
 
-	public GuiChatLine(int updateCounterCreated, TextComponentString lineString, int id)
+	public GuiChatLine(int updateCounterCreated, ITextComponent lineString, int id)
 	{
 		this.lineString = lineString;
 		this.updateCounterCreated = updateCounterCreated;
 		this.chatLineID = id;
 	}
 
-	public TextComponentString getChatComponent()
+	public ITextComponent getChatComponent()
 	{
 		return this.lineString;
 	}
