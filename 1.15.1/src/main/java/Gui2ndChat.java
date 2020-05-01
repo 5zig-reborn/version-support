@@ -18,15 +18,13 @@
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
+import eu.the5zig.mod.util.ChatUtils;
 import eu.the5zig.mod.util.GLUtil;
-import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.RenderComponentsUtil;
@@ -40,7 +38,6 @@ import org.apache.logging.log4j.LogManager;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Decompiled from avt.class
@@ -125,7 +122,7 @@ public class Gui2ndChat implements IGui2ndChat {
 								if (!MinecraftFactory.getClassProxyCallback().isChatBackgroundTransparent()) {
 									Gui.drawRect(x, y - 9, x + width + MathHelper.floor(4f * chatScale), y, alpha / 2 << 24);
 								}
-								highlightChatLine(chatLine.getChatComponent(), MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound() ? x :
+								ChatUtils.highlightChatLine(chatLine.getChatComponent(), MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound() ? x :
 										(int) ((getChatWidth() - MinecraftFactory.getVars().getStringWidth(optStripColor(chatLine.getChatComponent().getFormattedText())) * chatScale) / chatScale), y - 9, alpha);
 								String text = chatLine.getChatComponent().getFormattedText();
 								GLUtil.enableBlend();
@@ -398,54 +395,4 @@ public class Gui2ndChat implements IGui2ndChat {
 	public int getLineCount() {
 		return this.getChatHeight() / 9;
 	}
-
-	public static void highlightChatLine(ITextComponent chatComponent, int x, int y, int alpha) {
-		List<String> highlightWords;
-		boolean onlyWordMatch;
-		String chatSearchText = MinecraftFactory.getClassProxyCallback().getChatSearchText();
-		if (!Strings.isNullOrEmpty(chatSearchText)) {
-			onlyWordMatch = false;
-			highlightWords = ImmutableList.of(chatSearchText);
-		} else {
-			onlyWordMatch = true;
-			highlightWords = MinecraftFactory.getClassProxyCallback().getHighlightWords();
-		}
-		if (highlightWords.isEmpty()) {
-			return;
-		}
-		StringBuilder builder = new StringBuilder();
-		for (ITextComponent textComponent : chatComponent) {
-			int currIndex = builder.length();
-			String formattingCode = textComponent.getStyle().getFormattingCode();
-			String text = textComponent.getUnformattedComponentText();
-			builder.append(formattingCode).append(text).append(ChatColor.RESET);
-			text = ChatColor.stripColor(text.toLowerCase(Locale.ROOT));
-
-			for (String search : highlightWords) {
-				search = search.replace("%player%", MinecraftFactory.getVars().getGameProfile().getName()).toLowerCase(Locale.ROOT);
-				for (int nameIndex = builder.toString().toLowerCase(Locale.ROOT).indexOf(search, currIndex), unformattedIndex = text.indexOf(search); nameIndex != -1 && unformattedIndex != -1;
-					 nameIndex = builder.toString().toLowerCase(Locale.ROOT).indexOf(search, nameIndex + search.length()), unformattedIndex =
-								text.indexOf(search, unformattedIndex + search.length())) {
-					if (onlyWordMatch) {
-						if (unformattedIndex > 0) {
-							char previousChar = Character.toLowerCase(text.charAt(unformattedIndex - 1));
-							if ((previousChar >= 'a' && previousChar <= 'z') || (previousChar >= '0' && previousChar <= '9')) {
-								continue;
-							}
-						}
-						if (unformattedIndex + search.length() < text.length()) {
-							char nextChar = text.charAt(unformattedIndex + search.length());
-							if ((nextChar >= 'a' && nextChar <= 'z') || (nextChar >= '0' && nextChar <= '9')) {
-								continue;
-							}
-						}
-					}
-					int offset = MinecraftFactory.getVars().getStringWidth(builder.substring(0, nameIndex));
-					int width = MinecraftFactory.getVars().getStringWidth(formattingCode + builder.substring(nameIndex, nameIndex + search.length()));
-					Gui.drawRect(x + offset, y, x + offset + width, y + MinecraftFactory.getVars().getFontHeight(), MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, alpha) << 24));
-				}
-			}
-		}
-	}
-
 }

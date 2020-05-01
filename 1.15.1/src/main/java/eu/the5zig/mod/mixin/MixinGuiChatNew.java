@@ -20,15 +20,13 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
-import eu.the5zig.mod.util.ChatHighlighting;
+import eu.the5zig.mod.util.ChatUtils;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.NewChatGui;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(NewChatGui.class)
 public abstract class MixinGuiChatNew {
@@ -36,6 +34,7 @@ public abstract class MixinGuiChatNew {
     private static final String fillTarget = "net/minecraft/client/gui/NewChatGui.fill(Lnet/minecraft/client/renderer/Matrix4f;IIIII)V";
 
     private ITextComponent lastComponent;
+    private int lastY, lastAlpha;
 
     @Inject(method = "func_194813_a", at = @At("HEAD"))
     public void scroll(double amount, CallbackInfo _ci) {
@@ -48,21 +47,31 @@ public abstract class MixinGuiChatNew {
     }
 
 
-    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget),
-        locals = LocalCapture.CAPTURE_FAILSOFT)
-    public void drawChatHighlight(int var1, CallbackInfo ci, int var2, int var3, boolean var4, double var5, int var7, double var8,
-                                  double var10, int var12, Matrix4f var13, int var14, ChatLine var15, double var17, int var19, int var20, int var21, int var22) {
-        lastComponent = var15.getChatComponent();
+    @ModifyVariable(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget))
+    public ChatLine getComponent(ChatLine previous) {
+        lastComponent = previous.getChatComponent();
+        return previous;
     }
 
     @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget),
-        index = 5)
+            index = 2)
+    public int getLastY(int previous) {
+        lastY = previous;
+        return previous;
+    }
+
+    @ModifyArg(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget),
+            index = 5)
     public int customAlpha(int previous) {
+        lastAlpha = (previous >> 24) * 2;
         if(lastComponent == null) return previous;
-        if(ChatHighlighting.shouldHighlight(lastComponent.getString())) {
-            return MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (0x80 << 24);
-        }
         return previous * (The5zigMod.getConfig().getBool("transparentChatBackground") ? 0 : 1);
+    }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget, shift = At.Shift.AFTER))
+    public void callHighlight(int upd, CallbackInfo _ci) {
+        if(lastComponent == null) return;
+        ChatUtils.highlightChatLine(lastComponent, 0, lastY, lastAlpha);
     }
 
     @Inject(method = "clearChatMessages", at = @At("HEAD"))

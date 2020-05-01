@@ -18,6 +18,7 @@
 
 package eu.the5zig.mod.mixin;
 
+import eu.the5zig.mod.ModCompat;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.util.TabList;
@@ -49,11 +50,13 @@ public abstract class MixinNetHandlerPlayClient {
         byte type = packet.getType();
         IChatComponent comp = packet.getChatComponent();
         String formatted = comp.getFormattedText().replace("§r", "");
-        boolean b;
+        boolean b = false;
         if(type == 2) {
             b = The5zigMod.getListener().onActionBar(formatted);
         }
-        else {
+        // Only fire the event if Vanilla Enhancements is loaded, otherwise use the GuiChatNew method.
+        // (See MixinGuiChatNew)
+        else if(ModCompat.VANILLA_ENHANCEMENTS) {
             b = The5zigMod.getListener().onServerChat(formatted, comp);
         }
 
