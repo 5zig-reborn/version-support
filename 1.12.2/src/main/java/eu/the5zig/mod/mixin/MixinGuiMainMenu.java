@@ -22,7 +22,6 @@ import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.Version;
 import eu.the5zig.mod.gui.elements.IButton;
-import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,7 +42,7 @@ public abstract class MixinGuiMainMenu extends GuiScreen {
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void drawScreen(int mouseX, int mouseY, float pTicks, CallbackInfo _ci) {
-        The5zigMod.getVars().drawString(ChatColor.GOLD + "The 5zig Mod v" + Version.VERSION, 2, 2);
+        The5zigMod.getVars().drawString(Version.getVersionDisplay(), 2, 2);
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
