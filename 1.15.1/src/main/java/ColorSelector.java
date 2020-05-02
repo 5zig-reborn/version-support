@@ -104,48 +104,4 @@ public class ColorSelector extends Button implements IColorSelector {
 	private int getBoxY() {
 		return getY() + (callGetHeight() - boxHeight) / 2;
 	}
-
-	/**
-	 private void drawColor() {
-	 double white = 1;
-	 double d = 20;
-	 for (int x = 0; x < 120; x++) {
-	 for (int y = 0; y < 120; y++) {
-	 int cr = 0, cg = 0, cb = 0;
-	 if (x >= 0 && x <= d) {
-	 cr = 255;
-	 cg = (int) (255 * ((double) x / d));
-	 }
-	 if (x > d && x <= 2 * d) {
-	 cr = (int) (255 * ((2 * d - x) / d));
-	 cg = 255;
-	 }
-	 if (x > 2 * d && x <= 3 * d) {
-	 cg = 255;
-	 cb = (int) (255 * ((x - 2 * d) / d));
-	 }
-	 if (x > 3 * d && x <= 4 * d) {
-	 cg = (int) (255 * ((4 * d - x) / d));
-	 cb = 255;
-	 }
-	 if (x > 4 * d && x <= 5 * d) {
-	 cb = 255;
-	 cr = (int) (255 * ((x - 4 * d) / d));
-	 }
-	 if (x > 5 * d && x <= 6 * d) {
-	 cb = (int) (255 * ((6 * d - x) / d));
-	 cr = 255;
-	 }
-	 int i = ((int) (255.0 * white * (double) y / 120.0));
-	 cr += i;
-	 cg += i;
-	 cb += i;
-	 cr = Math.max(Math.min(cr, 255), 0);
-	 cg = Math.max(Math.min(cg, 255), 0);
-	 cb = Math.max(Math.min(cb, 255), 0);
-	 int color = Utils.getARBGInt(255, cr, cg, cb);
-	 Gui.drawRect(selectedX + x, selectedY + y, selectedX + x + 1, selectedY + y + 1, color);
-	 }
-	 }
-	 }*/
 }
