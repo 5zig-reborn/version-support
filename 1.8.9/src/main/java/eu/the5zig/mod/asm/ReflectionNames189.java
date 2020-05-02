@@ -21,51 +21,51 @@ package eu.the5zig.mod.asm;
 public class ReflectionNames189 implements ReflectionNames {
     @Override
     public ReflSimpleTuple GuiChatInput() {
-        return new ReflSimpleTuple("field_146415_a", "a");
+        return new ReflSimpleTripleDev("field_146415_a", "a", "inputField");
     }
 
     @Override
     public ReflSimpleTuple ChatComponentClick() {
-        return new ReflSimpleTuple("func_175276_a", "a");
+        return new ReflSimpleTripleDev("func_175276_a", "a", "handleComponentClick");
     }
 
     @Override
     public ReflSimpleTuple ChatComponentHover() {
-        return new ReflSimpleTuple("func_175272_a", "a");
+        return new ReflSimpleTripleDev("func_175272_a", "a", "handleComponentHover");
     }
 
     @Override
     public ReflSimpleTuple RightClickMouse() {
-        return new ReflSimpleTuple("func_147121_ag", "ax");
+        return new ReflSimpleTripleDev("func_147121_ag", "ax", "rightClickMouse");
     }
 
     @Override
     public ReflSimpleTuple ButtonList() {
-        return new ReflSimpleTuple("field_146292_n", "n");
+        return new ReflSimpleTripleDev("field_146292_n", "n", "buttonList");
     }
 
     @Override
     public ReflSimpleTuple ByteBuf() {
-        return new ReflSimpleTuple("field_150794_a", "a");
+        return new ReflSimpleTripleDev("field_150794_a", "a", "buf");
     }
 
     @Override
     public ReflSimpleTuple ServerList() {
-        return new ReflSimpleTuple("field_148198_l", "v");
+        return new ReflSimpleTripleDev("field_148198_l", "v", "serverListInternet");
     }
 
     @Override
     public ReflSimpleTuple SetMaxValue() {
-        return new ReflSimpleTuple("func_148263_a", "a");
+        return new ReflSimpleTripleDev("func_148263_a", "a", "setValueMax");
     }
 
     @Override
     public ReflSimpleTuple GAMMA() {
-        return new ReflSimpleTuple("GAMMA", "d");
+        return new ReflSimpleTripleDev("GAMMA", "d", "GAMMA");
     }
 
     @Override
     public ReflSimpleTuple FOV() {
-        return new ReflSimpleTuple("FOV", "c");
+        return new ReflSimpleTripleDev("FOV", "c", "FOV");
     }
 }

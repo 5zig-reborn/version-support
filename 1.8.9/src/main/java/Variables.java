@@ -98,7 +98,7 @@ public class Variables implements IVariables {
 
 	static {
 		try {
-			The5zigMod.logger.info("Field: ", Transformer.REFLECTION
+			The5zigMod.logger.info("Field: {}", Transformer.REFLECTION
 					.GuiChatInput()
 					.get());
 			forgeChatField = GuiChat.class.getDeclaredField(Transformer.REFLECTION.GuiChatInput().get());

@@ -87,6 +87,12 @@ public class ClassTweaker implements ITweaker {
             e.printStackTrace();
         }
 
+        // Development environment
+        if(version == null || reflName == null) {
+            this.version = "1.8.9";
+            reflName = "ReflectionNames189";
+            Transformer.DEVENV = true;
+        }
 
         LogWrapper.info("Minecraft Version: " + this.version);
 

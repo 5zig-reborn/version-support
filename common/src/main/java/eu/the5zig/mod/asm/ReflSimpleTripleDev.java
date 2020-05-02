@@ -18,11 +18,18 @@
 
 package eu.the5zig.mod.asm;
 
-public class Transformer {
+public class ReflSimpleTripleDev extends ReflSimpleTuple {
 
-	public static boolean FORGE = false;
-	public static boolean FABRIC = false;
-	public static boolean DEVENV = false;
-	public static ReflectionNames REFLECTION;
+    @Override
+    public String get()
+    {
+        return Transformer.DEVENV ? nameDev : (Transformer.FORGE ? forge : notch);
+    }
 
+    private String nameDev;
+
+    public ReflSimpleTripleDev(String nameForge, String nameNotch, String nameDev) {
+        super(nameForge, nameNotch);
+        this.nameDev = nameDev;
+    }
 }
