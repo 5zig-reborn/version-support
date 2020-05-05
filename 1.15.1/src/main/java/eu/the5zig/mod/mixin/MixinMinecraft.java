@@ -20,28 +20,15 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.CombatRangeUtil;
-import eu.the5zig.mod.util.The5zigPack;
-import net.minecraft.client.GameConfiguration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.SimpleReloadableResourceManager;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
-
-    @Shadow
-    private IReloadableResourceManager resourceManager;
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void startGame(GameConfiguration cfg, CallbackInfo _ci) {
-        ((SimpleReloadableResourceManager)resourceManager).addResourcePack(new The5zigPack());
-    }
 
     @Inject(method = "displayGuiScreen", at = @At("HEAD"))
     public void displayScreen(Screen guiIn, CallbackInfo _ci) {
