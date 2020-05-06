@@ -20,6 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.GLUtil;
+import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.overlay.PlayerTabOverlayGui;
@@ -38,14 +39,7 @@ public abstract class MixinGuiPlayerTabOverlay extends AbstractGui {
             GLUtil.color(1f, 1f, 1f);
             int ping = info.getResponseTime();
             String display = ping <= 0 ? "?" : Integer.toString(ping);
-
-            int color;
-            if(ping <= 0) color = 0x949191;
-            else if(ping < 100) color = 0x0ce813;
-            else if(ping < 300) color = 0x068a0a;
-            else if(ping < 600) color = 0xd6c360;
-            else if(ping < 1000) color = 0xe33d2d;
-            else color = 0x75140b;
+            int color = ChatColor.getPingColor(ping);
             GLUtil.pushMatrix();
             if(Minecraft.getInstance().gameSettings.forceUnicodeFont) {
                 GLUtil.scale(1f, 1f, 1f); // Unicode fonts are much smaller
@@ -63,4 +57,5 @@ public abstract class MixinGuiPlayerTabOverlay extends AbstractGui {
             ci.cancel();
         }
     }
+
 }
