@@ -8,3 +8,4 @@ gradlew
 gradlew.bat
 /artifacts/
 mc_out
+out/
