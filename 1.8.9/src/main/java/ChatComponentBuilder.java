@@ -16,8 +16,12 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.collect.ImmutableMap;
+import eu.the5zig.mod.util.component.MessageComponent;
+import eu.the5zig.mod.util.component.style.MessageAction;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
@@ -42,6 +46,31 @@ public class ChatComponentBuilder {
 		for (int i = 0; i < EnumChatFormatting.values().length; i++) {
 			TRANSLATE.put(ChatColor.values()[i], EnumChatFormatting.values()[i]);
 		}
+	}
+
+	private static final Map<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableMap.of(
+			MessageAction.Action.OPEN_URL, ClickEvent.Action.OPEN_URL,
+			MessageAction.Action.OPEN_FILE, ClickEvent.Action.OPEN_FILE,
+			MessageAction.Action.RUN_COMMAND, ClickEvent.Action.RUN_COMMAND,
+			MessageAction.Action.SUGGEST_COMMAND, ClickEvent.Action.SUGGEST_COMMAND);
+	private static final Map<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
+
+	public static IChatComponent fromInterface(MessageComponent api) {
+		ChatComponentText text = new ChatComponentText(api.getText());
+		ChatStyle style = new ChatStyle();
+		MessageAction click = api.getStyle().getOnClick();
+		if(click != null) {
+			style.setChatClickEvent(new ClickEvent(clickActions.get(click.getAction()), click.getString()));
+		}
+		MessageAction hover = api.getStyle().getOnHover();
+		if(hover != null) {
+			style.setChatHoverEvent(new HoverEvent(hoverActions.get(hover.getAction()), fromInterface(hover.getComponent())));
+		}
+		text.setChatStyle(style);
+		for(MessageComponent sibling : api.getSiblings()) {
+			text.appendSibling(fromInterface(sibling));
+		}
+		return text;
 	}
 
 	public static IChatComponent fromLegacyText(String message) {

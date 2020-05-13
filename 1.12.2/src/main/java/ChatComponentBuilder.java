@@ -16,12 +16,16 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.collect.ImmutableMap;
+import eu.the5zig.mod.util.component.MessageComponent;
+import eu.the5zig.mod.util.component.style.MessageAction;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +46,31 @@ public class ChatComponentBuilder {
 		for (int i = 0; i < TextFormatting.values().length; i++) {
 			TRANSLATE.put(ChatColor.values()[i], TextFormatting.values()[i]);
 		}
+	}
+
+	private static final Map<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableMap.of(
+			MessageAction.Action.OPEN_URL, ClickEvent.Action.OPEN_URL,
+			MessageAction.Action.OPEN_FILE, ClickEvent.Action.OPEN_FILE,
+			MessageAction.Action.RUN_COMMAND, ClickEvent.Action.RUN_COMMAND,
+			MessageAction.Action.SUGGEST_COMMAND, ClickEvent.Action.SUGGEST_COMMAND);
+	private static final Map<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
+
+	public static ITextComponent fromInterface(MessageComponent api) {
+		TextComponentString text = new TextComponentString(api.getText());
+		Style style = new Style();
+		MessageAction click = api.getStyle().getOnClick();
+		if(click != null) {
+			style.setClickEvent(new ClickEvent(clickActions.get(click.getAction()), click.getString()));
+		}
+		MessageAction hover = api.getStyle().getOnHover();
+		if(hover != null) {
+			style.setHoverEvent(new HoverEvent(hoverActions.get(hover.getAction()), fromInterface(hover.getComponent())));
+		}
+		text.setStyle(style);
+		for(MessageComponent sibling : api.getSiblings()) {
+			text.appendSibling(fromInterface(sibling));
+		}
+		return text;
 	}
 
 	public static ITextComponent fromLegacyText(String message) {

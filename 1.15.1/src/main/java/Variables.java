@@ -35,6 +35,7 @@ import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
 import eu.the5zig.mod.mixin.IMinecraft;
 import eu.the5zig.mod.mixin.MixinGameSettings;
 import eu.the5zig.mod.util.*;
+import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
@@ -1344,5 +1345,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public void sendChatComponent(MessageComponent component, boolean secondChat) {
+		ITextComponent result = ChatComponentBuilder.fromInterface(component);
+		if(secondChat) gui2ndChat.printChatMessage(result);
+		else getMinecraft().ingameGUI.getChatGUI().printChatMessage(result);
 	}
 }
