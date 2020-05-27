@@ -85,6 +85,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Session;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -802,8 +804,11 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public ResourceLocation getTargetBlockName() {
-		// TODO
-		return new ResourceLocation("minecraft", "stone");
+		if(!hasTargetBlock()) return null;
+		RayTraceResult mouseOver = getMinecraft().objectMouseOver;
+		BlockPos pos = ((BlockRayTraceResult) mouseOver).getPos();
+		if(getWorld() == null) return null;
+		return ResourceLocation.fromObfuscated(Registry.BLOCK.getKey(getWorld().getBlockState(pos).getBlock()));
 	}
 
 	@Override
@@ -828,7 +833,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			return 0;
 		}
 		IChunk localObject = getMinecraft().world.getChunk(localdt);
-		return localObject.getLightValue(localdt);
+		return localObject.getLightSubtracted(localdt, 0, false);
 	}
 
 	@Override
