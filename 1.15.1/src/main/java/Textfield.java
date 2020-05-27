@@ -265,6 +265,6 @@ public class Textfield extends TextFieldWidget implements ITextfield {
 
 		setText(replaceWith);
 		setCursorPosition(cursor);
-		setSelectionPos(selEnd);
+		if(selEnd != -1) setSelectionPos(selEnd);
 	}
 }
