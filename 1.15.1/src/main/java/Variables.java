@@ -835,7 +835,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getEntityCount() {
-		if(getMinecraft().worldRenderer == null) return "No world";
+		if(getMinecraft().worldRenderer == null || getMinecraft().world == null) return "No world";
 		return getMinecraft().worldRenderer.getDebugInfoEntities().split("[ ,]")[1];
 	}
 

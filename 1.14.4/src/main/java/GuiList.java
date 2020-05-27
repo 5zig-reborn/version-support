@@ -361,10 +361,11 @@ public class GuiList<E extends Row> extends SlotGui implements IGuiList<E> {
 		hasSelected = mouseX >= getLeft() && mouseX <= getRight() && mouseY >= getTop() & mouseY <= getBottom();
 
 		E item = getHoverItem(mouseX, mouseY);
-		if(item == null) return;
-		int id = rows.indexOf(item);
-		setSelectedId(id);
-		this.selectItem(id, 0, mouseX, mouseY);
+		if(item != null) {
+			int id = rows.indexOf(item);
+			setSelectedId(id);
+			this.selectItem(id, 0, mouseX, mouseY);
+		}
 
 		if (hasSelected) {
 			synchronized (rows) {
