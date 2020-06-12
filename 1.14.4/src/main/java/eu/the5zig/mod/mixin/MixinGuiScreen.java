@@ -18,17 +18,25 @@
 
 package eu.the5zig.mod.mixin;
 
+import eu.the5zig.mod.BytecodeHook;
 import eu.the5zig.mod.The5zigMod;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Screen.class)
 public abstract class MixinGuiScreen {
     @Inject(method = "renderBackground(I)V", at = @At("HEAD"), cancellable = true)
     public void drawWorldBackground(int tint, CallbackInfo ci) {
         if(!The5zigMod.shouldDrawWorldBackground()) ci.cancel();
+    }
+
+    @Inject(method = "hasControlDown", at = @At("HEAD"), cancellable = true)
+    private static void isCtrlKeyDown(CallbackInfoReturnable<Boolean> ci) {
+        ci.setReturnValue(BytecodeHook.isCtrlKeyDown(Minecraft.IS_RUNNING_ON_MAC));
     }
 }
