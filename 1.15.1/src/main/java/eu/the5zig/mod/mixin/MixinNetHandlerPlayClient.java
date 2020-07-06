@@ -32,6 +32,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPlayNetHandler.class)
 public abstract class MixinNetHandlerPlayClient {
 
+    @Inject(method = "handleServerDifficulty", at = @At(value = "TAIL"))
+    public void handleServerDifficulty(SServerDifficultyPacket _pkt, CallbackInfo _ci) {
+        The5zigMod.getListener().handleServerDifficulty();
+    }
+
     @Inject(method = "handleCustomPayload", at = @At(value = "RETURN", ordinal = 0))
     public void handleCustomPayload(SCustomPayloadPlayPacket packet, CallbackInfo _ci) {
         The5zigMod.getListener().handlePluginMessage(packet.getChannelName().toString(),
