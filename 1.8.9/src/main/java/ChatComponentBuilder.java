@@ -56,7 +56,7 @@ public class ChatComponentBuilder {
 	private static final Map<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
 
 	public static IChatComponent fromInterface(MessageComponent api) {
-		ChatComponentText text = new ChatComponentText(api.getText());
+		IChatComponent text = fromLegacyText(api.getText());
 		ChatStyle style = new ChatStyle();
 		MessageAction click = api.getStyle().getOnClick();
 		if(click != null) {
