@@ -20,6 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.ChatUtils;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
@@ -95,7 +96,7 @@ public abstract class MixinGuiChatNew {
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"), cancellable = true)
     public void printChatMessage(IChatComponent component, int lineId, CallbackInfo ci) {
         String formatted = component.getFormattedText().replace("§r", "");
-        if(The5zigMod.getListener().onServerChat(formatted, component)) {
+        if(The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(component))) {
             ci.cancel();
         }
     }

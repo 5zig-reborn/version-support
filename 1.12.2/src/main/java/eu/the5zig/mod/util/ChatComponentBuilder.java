@@ -16,13 +16,15 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.common.collect.ImmutableMap;
+package eu.the5zig.mod.util;import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.mod.util.component.style.MessageAction;
+import eu.the5zig.mod.util.component.style.MessageStyle;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.util.text.event.HoverEvent;
@@ -48,12 +50,12 @@ public class ChatComponentBuilder {
 		}
 	}
 
-	private static final Map<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableMap.of(
+	private static final BiMap<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableBiMap.of(
 			MessageAction.Action.OPEN_URL, ClickEvent.Action.OPEN_URL,
 			MessageAction.Action.OPEN_FILE, ClickEvent.Action.OPEN_FILE,
 			MessageAction.Action.RUN_COMMAND, ClickEvent.Action.RUN_COMMAND,
 			MessageAction.Action.SUGGEST_COMMAND, ClickEvent.Action.SUGGEST_COMMAND);
-	private static final Map<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
+	private static final BiMap<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableBiMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
 
 	public static ITextComponent fromInterface(MessageComponent api) {
 		ITextComponent text = fromLegacyText(api.getText());
@@ -73,10 +75,24 @@ public class ChatComponentBuilder {
 		return text;
 	}
 
+	public static MessageComponent toInterface(ITextComponent mc) {
+		MessageComponent base = new MessageComponent(mc.getFormattedText());
+		Style style = mc.getStyle();
+		MessageAction click = style.getClickEvent() == null ? null
+				: new MessageAction(clickActions.inverse().get(style.getClickEvent().getAction()), style.getClickEvent().getValue());
+		MessageAction hover = style.getHoverEvent() == null ? null
+				: new MessageAction(hoverActions.inverse().get(style.getHoverEvent().getAction()), toInterface(style.getHoverEvent().getValue()));
+		base.setStyle(new MessageStyle(hover, click));
+		for(ITextComponent sibling : mc.getSiblings()) {
+			base.getSiblings().add(toInterface(sibling));
+		}
+		return base;
+	}
+
 	public static ITextComponent fromLegacyText(String message) {
-		StringTextComponent base = new StringTextComponent("");
+		TextComponentString base = new TextComponentString("");
 		StringBuilder builder = new StringBuilder();
-		StringTextComponent currentComponent = new StringTextComponent("");
+		TextComponentString currentComponent = new TextComponentString("");
 		Style currentStyle = new Style();
 		currentComponent.setStyle(currentStyle);
 		Matcher matcher = url.matcher(message);
@@ -97,8 +113,8 @@ public class ChatComponentBuilder {
 				}
 
 				if (builder.length() > 0) {
-					StringTextComponent old = currentComponent;
-					currentComponent = old.shallowCopy();
+					TextComponentString old = currentComponent;
+					currentComponent = old.createCopy();
 					currentStyle = currentComponent.getStyle();
 					old.appendText(builder.toString());
 					builder = new StringBuilder();
@@ -124,7 +140,7 @@ public class ChatComponentBuilder {
 					case RESET:
 						format = ChatColor.WHITE;
 					default:
-						currentComponent = new StringTextComponent("");
+						currentComponent = new TextComponentString("");
 						currentStyle = new Style();
 						currentComponent.setStyle(currentStyle);
 						currentStyle.setColor(TRANSLATE.get(format));
@@ -138,16 +154,16 @@ public class ChatComponentBuilder {
 			}
 			if (matcher.region(i, pos).find()) {
 				if (builder.length() > 0) {
-					StringTextComponent old = currentComponent;
-					currentComponent = old.shallowCopy();
+					TextComponentString old = currentComponent;
+					currentComponent = old.createCopy();
 					currentStyle = currentComponent.getStyle();
 					old.appendText(builder.toString());
 					builder = new StringBuilder();
 					base.appendSibling(old);
 				}
 
-				StringTextComponent old = currentComponent;
-				currentComponent = old.shallowCopy();
+				TextComponentString old = currentComponent;
+				currentComponent = old.createCopy();
 				currentStyle = currentComponent.getStyle();
 				String urlStr = message.substring(i, pos);
 				if (!urlStr.startsWith("http"))

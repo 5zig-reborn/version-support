@@ -33,6 +33,7 @@ import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
 import eu.the5zig.mod.util.*;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;

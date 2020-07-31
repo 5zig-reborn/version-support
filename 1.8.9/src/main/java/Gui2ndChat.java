@@ -23,6 +23,7 @@ import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.ChatUtils;
 import eu.the5zig.mod.util.GLUtil;
 import net.minecraft.client.Minecraft;

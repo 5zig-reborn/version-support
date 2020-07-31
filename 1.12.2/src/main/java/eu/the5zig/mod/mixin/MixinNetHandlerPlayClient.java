@@ -20,6 +20,7 @@ package eu.the5zig.mod.mixin;
 
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.ingame.ItemStack;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.TabList;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.*;
@@ -61,7 +62,7 @@ public abstract class MixinNetHandlerPlayClient {
             b = The5zigMod.getListener().onActionBar(formatted);
         }
         else {
-            b = The5zigMod.getListener().onServerChat(formatted, comp);
+            b = The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(comp));
         }
 
         if(b)
