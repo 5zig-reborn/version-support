@@ -61,6 +61,10 @@ public abstract class MixinMinecraft {
         CombatRangeUtil.lastAttack = System.currentTimeMillis();
     }
 
+    @Inject(method = "processKeyBinds", at = @At(value = "INVOKE", target = "net/minecraft/client/Minecraft.rightClickMouse()V", ordinal = 0))
+    public void onRightClick(CallbackInfo _ci) {
+        The5zigMod.getDataManager().getCpsManager().getRightClickCounter().incrementCount();
+    }
 }
 
 

@@ -31,9 +31,4 @@ public abstract class MixinCommonMinecraft {
     public void leftClickCPS(CallbackInfo _ci) {
         The5zigMod.getDataManager().getCpsManager().getLeftClickCounter().incrementCount();
     }
-
-    @Inject(method = "rightClickMouse", at = @At("HEAD"))
-    public void rightClickCPS(CallbackInfo _ci) {
-        The5zigMod.getDataManager().getCpsManager().getRightClickCounter().incrementCount();
-    }
 }

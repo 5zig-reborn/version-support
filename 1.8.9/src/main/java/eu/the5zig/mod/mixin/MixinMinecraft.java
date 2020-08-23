@@ -67,6 +67,11 @@ public abstract class MixinMinecraft {
     public void dispatchKeyPresses(CallbackInfo _ci) {
         The5zigMod.getVars().dispatchKeypresses();
     }
+
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "net/minecraft/client/Minecraft.rightClickMouse()V", ordinal = 0))
+    public void onRightClick(CallbackInfo _ci) {
+        The5zigMod.getDataManager().getCpsManager().getRightClickCounter().incrementCount();
+    }
 }
 
 
