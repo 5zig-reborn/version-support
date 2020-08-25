@@ -63,7 +63,7 @@ public abstract class MixinNetHandlerPlayClient {
         // Only fire the event if Vanilla Enhancements is loaded, otherwise use the GuiChatNew method.
         // (See MixinGuiChatNew)
         else if(ModCompat.VANILLA_ENHANCEMENTS) {
-            b = The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(comp));
+            b = The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(comp), comp);
         }
 
         if(b)

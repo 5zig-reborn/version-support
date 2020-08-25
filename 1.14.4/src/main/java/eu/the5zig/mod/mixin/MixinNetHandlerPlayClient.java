@@ -56,7 +56,7 @@ public abstract class MixinNetHandlerPlayClient {
             b = The5zigMod.getListener().onActionBar(formatted);
         }
         else {
-            b = The5zigMod.getListener().onServerChat(formatted, comp);
+            b = The5zigMod.getListener().onServerChat(formatted, comp, comp);
         }
 
         if(b)

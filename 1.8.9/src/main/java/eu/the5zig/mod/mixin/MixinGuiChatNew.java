@@ -96,7 +96,7 @@ public abstract class MixinGuiChatNew {
     @Inject(method = "printChatMessageWithOptionalDeletion", at = @At("HEAD"), cancellable = true)
     public void printChatMessage(IChatComponent component, int lineId, CallbackInfo ci) {
         String formatted = component.getFormattedText().replace("§r", "");
-        if(The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(component))) {
+        if(The5zigMod.getListener().onServerChat(formatted, ChatComponentBuilder.toInterface(component), component)) {
             ci.cancel();
         }
     }
