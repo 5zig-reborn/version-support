@@ -33,7 +33,6 @@ import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
 import eu.the5zig.mod.util.*;
-import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
@@ -554,20 +553,16 @@ public class Variables implements IVariables {
 
 	@Override
 	public void disconnectFromWorld() {
-		boolean isOnIntegratedServer = getMinecraft().isIntegratedServerRunning();
-		boolean isConnectedToRealms = getMinecraft().isConnectedToRealms();
-		if (getWorld() != null) {
-			getWorld().init();
-		}
+		boolean sp = getMinecraft().isIntegratedServerRunning();
+		boolean realms = getMinecraft().isConnectedToRealms();
+		getWorld().sendQuittingDisconnectingPacket();
 		getMinecraft().loadWorld(null);
-		if (isOnIntegratedServer) {
-			displayScreen(new GuiMainMenu());
-		} else if (isConnectedToRealms) {
-			RealmsBridge realmsBridge = new RealmsBridge();
-			realmsBridge.switchToRealms(new GuiMainMenu());
-		} else {
-			displayScreen(new GuiMultiplayer(new GuiMainMenu()));
+		if (sp) getMinecraft().displayGuiScreen(new GuiMainMenu());
+		else if (realms) {
+			RealmsBridge realmsbridge = new RealmsBridge();
+			realmsbridge.switchToRealms(new GuiMainMenu());
 		}
+		else getMinecraft().displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
 	}
 
 	@Override

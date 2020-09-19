@@ -560,20 +560,16 @@ public class Variables implements IVariables {
 
 	@Override
 	public void disconnectFromWorld() {
-		boolean isOnIntegratedServer = getMinecraft().isIntegratedServerRunning();
-		boolean isConnectedToRealms = getMinecraft().isConnectedToRealms();
-		if (getWorld() != null) {
-			getWorld().init();
-		}
+		boolean sp = getMinecraft().isIntegratedServerRunning();
+		boolean realms = getMinecraft().isConnectedToRealms();
+		getWorld().sendQuittingDisconnectingPacket();
 		getMinecraft().loadWorld(null);
-		if (isOnIntegratedServer) {
-			displayScreen(new GuiMainMenu());
-		} else if (isConnectedToRealms) {
-			RealmsBridge realmsBridge = new RealmsBridge();
-			realmsBridge.switchToRealms(new GuiMainMenu());
-		} else {
-			displayScreen(new GuiMultiplayer(new GuiMainMenu()));
+		if (sp) getMinecraft().displayGuiScreen(new GuiMainMenu());
+		else if (realms) {
+			RealmsBridge realmsbridge = new RealmsBridge();
+			realmsbridge.switchToRealms(new GuiMainMenu());
 		}
+		else getMinecraft().displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
 	}
 
 	@Override
