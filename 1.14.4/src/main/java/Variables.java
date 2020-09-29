@@ -457,6 +457,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	public void typeInChatGUI(String text) {
 		if (!isChatOpened()) {
 			displayScreen(new ChatScreen(text));
+			return;
 		}
 		TextFieldWidget chatField = getChatField();
 		chatField.setText(chatField.getText() + text);
