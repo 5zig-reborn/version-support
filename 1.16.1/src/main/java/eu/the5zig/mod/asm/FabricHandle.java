@@ -18,7 +18,6 @@
 
 package eu.the5zig.mod.asm;
 
-import net.minecraft.realms.RealmsSharedConstants;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
@@ -32,7 +31,7 @@ public class FabricHandle {
         String reflName = null;
         String version;
         try {
-            vf = RealmsSharedConstants.class.getField("VERSION_STRING");
+            vf = null; // ZIG116
 
             version = (String) vf.get(null);
 

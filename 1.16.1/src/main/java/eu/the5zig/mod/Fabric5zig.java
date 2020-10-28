@@ -16,19 +16,15 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.the5zig.mod.mixin;
+package eu.the5zig.mod;
 
-import eu.the5zig.mod.The5zigMod;
-import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import eu.the5zig.mod.listener.RenderEvents;
+import net.fabricmc.api.ClientModInitializer;
 
-@Mixin(Minecraft.class)
-public abstract class MixinCommonMinecraft {
-    @Inject(method = "clickMouse", at = @At("HEAD"))
-    public void leftClickCPS(CallbackInfo _ci) {
-        The5zigMod.getDataManager().getCpsManager().getLeftClickCounter().incrementCount();
+public class Fabric5zig implements ClientModInitializer {
+    @Override
+    public void onInitializeClient() {
+        RenderEvents.register();
+        The5zigMod.init();
     }
 }

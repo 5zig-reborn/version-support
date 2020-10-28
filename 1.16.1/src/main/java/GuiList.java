@@ -17,26 +17,16 @@
  */
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
-import eu.the5zig.mod.MinecraftFactory;
-import eu.the5zig.mod.gui.Gui;
-import eu.the5zig.mod.gui.elements.*;
-import eu.the5zig.mod.util.GLUtil;
-import eu.the5zig.util.minecraft.ChatColor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.SlotGui;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.MathHelper;
+import eu.the5zig.mod.gui.elements.Clickable;
+import eu.the5zig.mod.gui.elements.IButton;
+import eu.the5zig.mod.gui.elements.IGuiList;
+import eu.the5zig.mod.gui.elements.Row;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.widget.ElementListWidget;
 
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.*;
-
-public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
+public class GuiList<E extends Row> extends ElementListWidget implements IGuiList<E> {
 
 	protected final List<E> rows;
 	private final Clickable<E> clickable;
@@ -64,7 +54,7 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 	protected List<Integer> heightMap = Lists.newArrayList();
 
 	public GuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, List<E> rows) {
-		super(Minecraft.getInstance(), width, height, top, bottom, 18);
+		super(MinecraftClient.getInstance(), width, height, top, bottom, 18);
 
 		this.rows = rows;
 		this.clickable = clickable;
@@ -72,9 +62,256 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 		setRight(right);
 	}
 
+	// ZIG116: todo reimplement
+	@Override
+	public void callDrawScreen(int mouseX, int mouseY, float partialTicks) {
+
+	}
+
+	@Override
+	public void callHandleMouseInput() {
+
+	}
+
+	@Override
+	public void onSelect(int id, E row, boolean doubleClick) {
+
+	}
+
+	@Override
+	public void mouseClicked(int mouseX, int mouseY) {
+
+	}
+
+	@Override
+	public void mouseReleased(int mouseX, int mouseY, int state) {
+
+	}
+
+	@Override
+	public boolean callMouseDragged(double v, double v1, int i, double v2, double v3) {
+		return false;
+	}
+
+	@Override
+	public boolean callMouseScrolled(double v) {
+		return false;
+	}
+
+	@Override
+	public void scrollToBottom() {
+
+	}
+
+	@Override
+	public float getCurrentScroll() {
+		return 0;
+	}
+
+	@Override
+	public void scrollTo(float to) {
+
+	}
+
+	@Override
+	public boolean callIsSelected(int id) {
+		return false;
+	}
+
+	@Override
+	public int callGetContentHeight() {
+		return 0;
+	}
+
+	@Override
+	public int callGetRowWidth() {
+		return 0;
+	}
+
+	@Override
+	public void setRowWidth(int rowWidth) {
+
+	}
+
+	@Override
+	public int getSelectedId() {
+		return 0;
+	}
+
+	@Override
+	public int setSelectedId(int id) {
+		return 0;
+	}
+
+	@Override
+	public E getSelectedRow() {
+		return null;
+	}
+
+	@Override
+	public int getWidth() {
+		return 0;
+	}
+
+	@Override
+	public void setWidth(int width) {
+
+	}
+
+	@Override
+	public int getHeight() {
+		return 0;
+	}
+
+	@Override
+	public void setHeight(int height) {
+
+	}
+
+	@Override
+	public int getHeight(int id) {
+		return 0;
+	}
+
+	@Override
+	public int getTop() {
+		return 0;
+	}
+
+	@Override
+	public void setTop(int top) {
+
+	}
+
+	@Override
+	public int getBottom() {
+		return 0;
+	}
+
+	@Override
+	public void setBottom(int bottom) {
+
+	}
+
+	@Override
+	public int getLeft() {
+		return 0;
+	}
+
+	@Override
+	public void setLeft(int left) {
+
+	}
+
+	@Override
+	public int getRight() {
+		return 0;
+	}
+
+	@Override
+	public void setRight(int right) {
+
+	}
+
+	@Override
+	public int getScrollX() {
+		return 0;
+	}
+
+	@Override
+	public void setScrollX(int scrollX) {
+
+	}
+
+	@Override
+	public boolean isLeftbound() {
+		return false;
+	}
+
+	@Override
+	public void setLeftbound(boolean leftbound) {
+
+	}
+
+	@Override
+	public boolean isDrawSelection() {
+		return false;
+	}
+
+	@Override
+	public void setDrawSelection(boolean drawSelection) {
+
+	}
+
+	@Override
+	public int getHeaderPadding() {
+		return 0;
+	}
+
+	@Override
+	public void callSetHeaderPadding(int headerPadding) {
+
+	}
+
+	@Override
+	public String getHeader() {
+		return null;
+	}
+
+	@Override
+	public void setHeader(String header) {
+
+	}
+
+	@Override
+	public int getBottomPadding() {
+		return 0;
+	}
+
+	@Override
+	public void setBottomPadding(int bottomPadding) {
+
+	}
+
+	@Override
+	public boolean isDrawDefaultBackground() {
+		return false;
+	}
+
+	@Override
+	public void setDrawDefaultBackground(boolean drawDefaultBackground) {
+
+	}
+
+	@Override
+	public Object getBackgroundTexture() {
+		return null;
+	}
+
+	@Override
+	public void setBackgroundTexture(Object resourceLocation, int imageWidth, int imageHeight) {
+
+	}
+
+	@Override
+	public List<E> getRows() {
+		return null;
+	}
+
+	@Override
+	public void calculateHeightMap() {
+
+	}
+
+	@Override
+	public E getHoverItem(int mouseX, int mouseY) {
+		return null;
+	}
+
 	/**
 	 * @return the size of all rows
 	 */
+	/* ZIG116
 	@Override
 	protected int getItemCount() {
 		synchronized (rows) {
@@ -122,11 +359,8 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 		return selected == id;
 	}
 
-	/**
-	 * drawBackground
-	 */
 	@Override
-	protected void renderBackground() {
+	protected void renderBackground(MatrixStack matrixStack) {
 	}
 
 	@Override
@@ -135,11 +369,11 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 	}
 
 	@Override
-	protected void renderItem(int id, int x, int y, int slotHeight, int mouseX, int mouseY, float pTicks) {
-		_drawSlot(id, x, y, slotHeight, mouseX, mouseY, pTicks);
+	protected void renderList(MatrixStack matrixStack, int x, int y, int mouseX, int mouseY, float pTicks) {
+		_drawSlot(matrixStack, id, x, y, slotHeight, mouseX, mouseY, pTicks);
 	}
 
-	protected void _drawSlot(int id, int x, int y, int slotHeight, int mouseX, int mouseY, float pTicks) {
+	protected void _drawSlot(MatrixStack stack, int id, int x, int y, int slotHeight, int mouseX, int mouseY, float pTicks) {
 		synchronized (rows) {
 			if (id < 0 || id >= rows.size())
 				return;
@@ -156,15 +390,11 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 		drawScreen(mouseX, mouseY, partialTicks);
 	}
 
-	/**
-	 * Draw Screen
-	 */
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		calculateHeightMap();
-		if (this.visible) {
 			this.mouseX = mouseX;
 			this.mouseY = mouseY;
-			this.renderBackground();
+			this.renderBackground(null);
 			int var3 = this.getScrollbarPosition();
 			int var4 = var3 + 6;
 			this.capYPosition();
@@ -261,12 +491,8 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 		}
 		getSelectedRow();
 	}
-
-	@Override
-	protected void renderHoleBackground(int p_renderHoleBackground_1_, int p_renderHoleBackground_2_, int p_renderHoleBackground_3_, int p_renderHoleBackground_4_) {
-		super.renderHoleBackground(p_renderHoleBackground_1_, p_renderHoleBackground_2_, p_renderHoleBackground_3_, p_renderHoleBackground_4_);
-	}
-
+	*/
+/* ZIG116
 	@Override
 	protected void renderList(int x, int y, int p_renderList_3_, int p_renderList_4_, float pTicks) {
 		if (leftbound) {
@@ -390,11 +616,12 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 			}
 		}
 
-	}
+	}*/
 
 	/**
 	 * @return x-coordinate of the scroll bar
 	 */
+	/*ZIG116
 	@Override
 	protected int getScrollbarPosition() {
 		return scrollX > 0 ? scrollX : super.getScrollbarPosition();
@@ -726,5 +953,5 @@ public class GuiList<E extends Row> extends Slot implements IGuiList<E> {
 	@Override
 	public List<E> getRows() {
 		return rows;
-	}
+	}*/
 }

@@ -17,19 +17,12 @@
  */
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.elements.IFileSelector;
-import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.util.Callback;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
@@ -150,7 +143,7 @@ public class FileSelector implements IFileSelector {
 	public void draw(int mouseX, int mouseY, float partialTicks) {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
-
+		/* ZIG116
 		int scrollX0 = getScrollBarX();
 		int scrollX1 = scrollX0 + 6;
 		bindAmountScrolled();
@@ -241,10 +234,11 @@ public class FileSelector implements IFileSelector {
 		int id = idX + idY * columnCount;
 		if (id < files.size() && id >= 0 && mouseX >= 0 && mouseY >= 0 && idX < columnCount) {
 			elementHovered(id, mouseX, mouseY);
-		}
+		}*/
 	}
 
 	protected void drawSelectionBox(int x, int y, int mouseX, int mouseY) {
+		/*ZIG116
 		int rows = (int) Math.ceil((double) files.size() / (double) columnCount);
 		int columns = columnCount;
 		Tessellator tessellator = Tessellator.getInstance();
@@ -278,7 +272,7 @@ public class FileSelector implements IFileSelector {
 				}
 				drawSlot(id, nx, ny, padding, mouseX, mouseY);
 			}
-		}
+		}*/
 
 	}
 
@@ -309,7 +303,9 @@ public class FileSelector implements IFileSelector {
 	}
 
 	protected void overlayBackground(int var, int var1, int var2, int var3) {
+		/*ZIG116
 		Tessellator var4 = Tessellator.getInstance();
+
 		BufferBuilder var5 = var4.getBuffer();
 		MinecraftFactory.getVars().bindTexture(AbstractGui.BACKGROUND_LOCATION);
 		GLUtil.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -319,6 +315,7 @@ public class FileSelector implements IFileSelector {
 		var5.func_225582_a_((double) (left + (right - left)), (double) var, 0.0D).func_225583_a_(((float) (right - left) / 32.0F), ((float) var / 32.0F)).func_225586_a_(64, 64, 64, var2).endVertex();
 		var5.func_225582_a_((double) left, (double) var, 0.0D).func_225583_a_(0.0f, ((float) var / 32.0F)).func_225586_a_(64, 64, 64, var2).endVertex();
 		var4.draw();
+		 */
 	}
 
 	public int getContentHeight() {

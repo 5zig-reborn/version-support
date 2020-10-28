@@ -44,10 +44,10 @@ public class ChatUtils {
             return;
         }
         StringBuilder builder = new StringBuilder();
-        for (Text textComponent : chatComponent) {
+        for (Text textComponent : chatComponent.getSiblings()) {
             int currIndex = builder.length();
-            String formattingCode = textComponent.getStyle().getFormattingCode();
-            String text = textComponent.getUnformattedComponentText();
+            String formattingCode = textComponent.getStyle().getColor().toString();
+            String text = textComponent.asString();
             builder.append(formattingCode).append(text).append(ChatColor.RESET);
             text = ChatColor.stripColor(text.toLowerCase(Locale.ROOT));
 

@@ -20,7 +20,6 @@ import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.mod.util.SliderCallback;
 import eu.the5zig.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -75,8 +74,9 @@ public class Slider extends Button {
 
 			MinecraftFactory.getVars().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 			GLUtil.color(1, 1, 1, 1);
-			blit(getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
-			blit(getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
+			// ZIG116
+			//blit(getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
+			//blit(getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
 		}
 	}
 

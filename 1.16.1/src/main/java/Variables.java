@@ -32,8 +32,6 @@ import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
-import eu.the5zig.mod.mixin.IMinecraft;
-import eu.the5zig.mod.mixin.MixinGameSettings;
 import eu.the5zig.mod.util.*;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.util.Callback;
@@ -42,12 +40,8 @@ import eu.the5zig.util.minecraft.ChatColor;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.ConnectScreen;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -61,16 +55,12 @@ import net.minecraft.client.options.Option;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.*;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -83,14 +73,12 @@ import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.realms.RealmsBridge;
-import net.minecraft.realms.RealmsSharedConstants;
-import net.minecraft.scoreboard.Score;
-import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringRenderable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -113,6 +101,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Proxy;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Variables implements IVariables, GLFWKeyCallbackI {
 
@@ -128,7 +117,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 				String reflName = null;
 				String version;
 				try {
-					vf = RealmsSharedConstants.class.getField("VERSION_STRING");
+					vf = null; /*RealmsSharedConstants.class.getField("VERSION_STRING"); ZIG116*/
 
 					version = (String) vf.get(null);
 
@@ -186,7 +175,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	private Window scaledResolution;
 	private IGui2ndChat gui2ndChat = new Gui2ndChat();
 
-	private final GLFWKeyCallback previousCallback;
+	private GLFWKeyCallback previousCallback; // ZIG116 - was final
 
 	private final ResourceManager resourceManager;
 	private Kernel32.SYSTEM_POWER_STATUS batteryStatus;
@@ -230,7 +219,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 						!= 0;
 			}
 		});
-		previousCallback = GLFW.glfwSetKeyCallback(getMinecraft().getWindow().getHandle(), this);
+		//ZIG116 investigate null - previousCallback = GLFW.glfwSetKeyCallback(getMinecraft().getWindow().getHandle(), this);
 		updateScaledResolution();
 		try {
 			this.resourceManager = new ResourceManager(getGameProfile());
@@ -282,10 +271,10 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public void drawString(String string, int x, int y, int color, boolean withShadow) {
 		if(withShadow) {
-			getFontrenderer().drawStringWithShadow(string, x, y, color);
+			getFontrenderer().drawWithShadow(MatrixStacks.hudMatrixStack, string, x, y, color);
 		}
 		else {
-			getFontrenderer().drawString(string, x, y, color);
+			getFontrenderer().draw(MatrixStacks.hudMatrixStack, string, x, y, color);
 		}
 
 	}
@@ -297,7 +286,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			return Collections.emptyList();
 		if (string.isEmpty())
 			return Collections.singletonList("");
-		return getFontrenderer().trimToWidth(string, width);
+		return getFontrenderer().wrapLines(ChatComponentBuilder.fromLegacyText(string), width).stream().map(StringRenderable::getString).collect(Collectors.toList());
 	}
 
 	@Override
@@ -493,14 +482,14 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void registerKeybindings(List<IKeybinding> keybindings) {
-		KeyBinding[] currentKeybindings = getGameSettings().keysAll;
+		//ZIG116 KeyBinding[] currentKeybindings = getGameSettings().keysAll;
 		KeyBinding[] customKeybindings = new KeyBinding[keybindings.size()];
 		for (int i = 0; i < keybindings.size(); i++) {
 			customKeybindings[i] = (KeyBinding) keybindings.get(i);
 		}
-		((MixinGameSettings)getGameSettings()).setKeyBindings(Utils.concat(currentKeybindings, customKeybindings));
+		//ZIG116 ((MixinGameSettings)getGameSettings()).setKeyBindings(Utils.concat(currentKeybindings, customKeybindings));
 
-		getGameSettings().load();
+		//ZIG116 getGameSettings().load();
 	}
 
 	@Override
@@ -609,12 +598,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		boolean isConnectedToRealms = getMinecraft().isConnectedToRealms();
 		getMinecraft().joinWorld(null);
 		if (isOnIntegratedServer) {
-			displayScreen(new MainMenuScreen());
+			displayScreen(new TitleScreen());
 		} else if (isConnectedToRealms) {
 			RealmsBridge realmsBridge = new RealmsBridge();
-			realmsBridge.switchToRealms(new MainMenuScreen());
+			realmsBridge.switchToRealms(new TitleScreen());
 		} else {
-			displayScreen(new MultiplayerScreen(new MainMenuScreen()));
+			displayScreen(new MultiplayerScreen(new TitleScreen()));
 		}
 	}
 
@@ -698,7 +687,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public String getFPS() {
-		return Integer.toString(IMinecraft.getDebugFPS());
+		return MinecraftClient.getInstance().fpsDebugString;
 	}
 
 	@Override
@@ -798,7 +787,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		HitResult mouseOver = getMinecraft().crosshairTarget;
 		BlockPos pos = ((BlockHitResult)mouseOver).getBlockPos();
 		if(getWorld() == null) return null;
-		return ResourceLocation.fromObfuscated(Registry.BLOCK.getKey(getWorld().getBlockState(pos).getBlock()));
+		return ResourceLocation.fromObfuscated(Registry.BLOCK.getId(getWorld().getBlockState(pos).getBlock()));
 	}
 
 	@Override
@@ -894,7 +883,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		if (referenceDamage <= 0.0F) {
 			return 100;
 		} else {
-			int enchantmentModifierDamage = EnchantmentHelper.getAttackDamage(getPlayer().inventory.armor, EntityGroup.DEFAULT);
+			int enchantmentModifierDamage = 0; //ZIG116 EnchantmentHelper.getAttackDamage(getPlayer().inventory.armor, EntityGroup.DEFAULT);
 			if (enchantmentModifierDamage > 20) {
 				enchantmentModifierDamage = 20;
 			}
@@ -1032,7 +1021,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	}
 
 	public void renderItem(net.minecraft.item.ItemStack itemStack, int x, int y) {
-		RenderHelper.func_227780_a_();
+		/*ZIG116 RenderHelper.func_227780_a_();
 		GlStateManager.func_227740_m_();
 		GlStateManager.func_227706_d_(770, 771, 1, 0);
 		ItemRenderer itemRenderer = getMinecraft().getItemRenderer();
@@ -1040,7 +1029,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		itemRenderer.renderItemOverlays(getFontrenderer(), itemStack, x, y);
 		GlStateManager.func_227737_l_();
 		RenderHelper.disableStandardItemLighting();
-		GlStateManager.func_227700_d_();
+		GlStateManager.func_227700_d_();*/
 	}
 
 	@Override
@@ -1075,8 +1064,9 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void drawIngameTexturedModalRect(int x, int y, int u, int v, int width, int height) {
-		if (getGuiIngame() != null)
-			getGuiIngame().blit(x, y, u, v, width, height);
+		if (getGuiIngame() != null) {
+			//ZIG116 getGuiIngame().blit(x, y, u, v, width, height);
+		}
 	}
 
 	@Override
@@ -1207,7 +1197,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public Object createDynamicImage(Object resourceLocation, int width, int height) {
 		NativeImageBackedTexture dynamicImage = new NativeImageBackedTexture(width, height, false);
-		getTextureManager().registerDynamicTexture((Identifier) resourceLocation, dynamicImage);
+		getTextureManager().registerDynamicTexture(resourceLocation.toString(), dynamicImage);
 		return dynamicImage;
 	}
 
@@ -1229,7 +1219,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		StatusEffectSpriteManager potionspriteuploader = this.getMinecraft().getStatusEffectSpriteManager();
 		Sprite sprite = potionspriteuploader.getSprite(effect);
 		this.getMinecraft().getTextureManager().bindTexture(sprite.getAtlas().getId());
-		AbstractGui.blit(0, 0, 0, 18, 18, sprite);
+		//ZIG116 AbstractGui.blit(0, 0, 0, 18, 18, sprite);
 	}
 
 	public TextureManager getTextureManager() {
@@ -1243,11 +1233,12 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		bindTexture(Screen.BACKGROUND_TEXTURE);
 		GLUtil.color(1.0F, 1.0F, 1.0F, 1.0F);
 		var5.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
+		/*ZIG116
 		var5.func_225582_a_((double) x1, (double) y2, 0.0D).func_225583_a_(0.0F, ((float) y2 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
 		var5.func_225582_a_((double) (x1 + x2), (double) y2, 0.0D).func_225583_a_(((float) x2 / 32.0F), ((float) y2 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
 		var5.func_225582_a_((double) (x1 + x2), (double) y1, 0.0D).func_225583_a_(((float) x2 / 32.0F), ((float) y1 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
 		var5.func_225582_a_((double) x1, (double) y1, 0.0D).func_225583_a_(0.0F, ((float) y1 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
-		var4.draw();
+		*/var4.draw();
 	}
 
 	@Override

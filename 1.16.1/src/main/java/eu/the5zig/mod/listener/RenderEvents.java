@@ -16,16 +16,21 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.the5zig.mod.mixin;
+package eu.the5zig.mod.listener;
 
-import net.minecraft.client.Minecraft;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import eu.the5zig.mod.The5zigMod;
+import eu.the5zig.mod.util.MatrixStacks;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.util.math.MatrixStack;
 
-@Mixin(Minecraft.class)
-public interface IMinecraft {
-    @Accessor
-    static int getDebugFPS() {
-        throw new RuntimeException("Mixin not loaded");
+public class RenderEvents {
+    public static void register() {
+        HudRenderCallback.EVENT.register(new HudRenderCallback() {
+            @Override
+            public void onHudRender(MatrixStack matrixStack, float v) {
+                MatrixStacks.hudMatrixStack = matrixStack;
+                The5zigMod.getGuiIngame().renderGameOverlay();
+            }
+        });
     }
 }

@@ -18,38 +18,27 @@
 
 package eu.the5zig.mod.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
 import eu.the5zig.mod.The5zigMod;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.Team;
-import org.lwjgl.opengl.GL11;
-
-import java.awt.*;
 
 public class RewardTagUtils {
 
     private static final float SCALE_FACTOR = 0.5F;
 
     public static boolean shouldRender(PlayerEntity player) {
-        if(player == Minecraft.getInstance().player && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
-        if(player.isInvisibleToPlayer(Minecraft.getInstance().player)) return false;
-        if(player.func_226273_bm_()) return false; // Sneaking
-        if(player.isBeingRidden()) return false;
+        if(player == MinecraftClient.getInstance().player && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
+        if(player.isInvisibleTo(MinecraftClient.getInstance().player)) return false;
+        if(player.isSneaking()) return false; // Sneaking
+        if(player.hasPlayerRider()) return false;
 
         int renderDist = 4096; // 64^2
-        if(player.getDistanceSq(Minecraft.getInstance().player) > renderDist) return false;
+        if(player.squaredDistanceTo(MinecraftClient.getInstance().player) > renderDist) return false;
 
-        return shouldRenderTeam(player);
-
+        //ZIG116 return shouldRenderTeam(player);
+        return false;
     }
-
+    /* ZIG116
     public static void render(PlayerRenderer renderer, String str, PlayerEntity pl, double x, double y, double z) {
         FontRenderer fontRenderer = renderer.getFontRendererFromRenderManager();
         float f = 1.6F;
@@ -136,5 +125,5 @@ public class RewardTagUtils {
     private static IVertexBuilder color(IVertexBuilder in, float red, float green, float blue, float alpha)
     {
         return in.func_225586_a_((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
-    }
+    }*/
 }

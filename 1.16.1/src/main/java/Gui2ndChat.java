@@ -25,21 +25,16 @@ import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.util.ChatUtils;
 import eu.the5zig.mod.util.GLUtil;
-import net.minecraft.client.MainWindow;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.RenderComponentsUtil;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.Window;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponent;
 import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +59,7 @@ public class Gui2ndChat implements IGui2ndChat {
 	}
 
 	static {
+		/* ZIG116
 		try {
 			clickChatComponent = Screen.class.getDeclaredMethod(Transformer.REFLECTION.ChatComponentClick().get(), Text.class);
 			clickChatComponent.setAccessible(true);
@@ -73,7 +69,7 @@ public class Gui2ndChat implements IGui2ndChat {
 			hoverChatComponent.setAccessible(true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
+		} */
 	}
 
 	@Override
@@ -199,8 +195,8 @@ public class Gui2ndChat implements IGui2ndChat {
 		}
 
 		int lineWidth = MathHelper.floor((float) this.getChatWidth() / this.getChatScale());
-		List<Text> lines = RenderComponentsUtil
-				.splitText(chatComponent, lineWidth, MinecraftClient.getInstance().textRenderer, false, false);
+		List<Text> lines = new ArrayList<>(); /* ZIG116 RenderComponentsUtil
+				.splitText(chatComponent, lineWidth, MinecraftClient.getInstance().textRenderer, false, false);*/
 		boolean var6 = this.isChatOpened();
 
 		Text lineString;
@@ -349,7 +345,8 @@ public class Gui2ndChat implements IGui2ndChat {
 	}
 
 	private String optStripColor(String text) {
-		return RenderComponentsUtil.removeTextColorsIfConfigured(text, false);
+		return text;
+		//ZIG116 return RenderComponentsUtil.removeTextColorsIfConfigured(text, false);
 	}
 
 	public boolean isChatOpened() {

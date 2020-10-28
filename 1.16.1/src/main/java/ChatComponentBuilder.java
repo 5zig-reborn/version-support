@@ -22,8 +22,6 @@ import eu.the5zig.mod.util.component.style.MessageAction;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +53,7 @@ public class ChatComponentBuilder {
 
 	public static Text fromInterface(MessageComponent api) {
 		LiteralText text = new LiteralText(api.getText());
-		Style style = new Style();
+		Style style = text.getStyle();
 		MessageAction click = api.getStyle().getOnClick();
 		if(click != null) {
 			style = style.withClickEvent(new ClickEvent(clickActions.get(click.getAction()), click.getString()));
@@ -74,9 +72,9 @@ public class ChatComponentBuilder {
 	public static Text fromLegacyText(String message) {
 		LiteralText base = new LiteralText("");
 		StringBuilder builder = new StringBuilder();
-		LiteralText currentComponent = new LiteralText("");
-		Style currentStyle = new Style();
-		currentComponent.setStyle(currentStyle);
+		MutableText currentComponent1 = new LiteralText("");
+		Style currentStyle = base.getStyle();
+		currentComponent1.setStyle(currentStyle);
 		Matcher matcher = url.matcher(message);
 
 		for (int i = 0; i < message.length(); i++) {
@@ -95,39 +93,40 @@ public class ChatComponentBuilder {
 				}
 
 				if (builder.length() > 0) {
-					LiteralText old = currentComponent;
-					currentComponent = old.shallowCopy();
-					currentStyle = currentComponent.getStyle();
-					old.appendText(builder.toString());
+					MutableText old = currentComponent1;
+					currentComponent1 = old.shallowCopy();
+					currentStyle = currentComponent1.getStyle();
+					old.append(builder.toString());
 					builder = new StringBuilder();
-					base.appendSibling(old);
+					base.append(old);
 				}
 
 				switch (format) {
 					case BOLD:
-						currentStyle.setBold(true);
+						currentStyle = currentStyle.withBold(true);
 						break;
 					case ITALIC:
-						currentStyle.setItalic(true);
+						currentStyle = currentStyle.withItalic(true);
 						break;
 					case STRIKETHROUGH:
-						currentStyle.setStrikethrough(true);
+						currentStyle = currentStyle.withFormatting(Formatting.STRIKETHROUGH);
 						break;
 					case UNDERLINE:
-						currentStyle.setUnderlined(true);
+						currentStyle = currentStyle.withFormatting(Formatting.UNDERLINE);
 						break;
 					case MAGIC:
-						currentStyle.setObfuscated(true);
+						currentStyle = currentStyle.withFormatting(Formatting.OBFUSCATED);
 						break;
 					case RESET:
 						format = ChatColor.WHITE;
 					default:
-						currentComponent = new LiteralText("");
-						currentStyle = new Style();
-						currentComponent.setStyle(currentStyle);
-						currentStyle.setColor(TRANSLATE.get(format));
+						currentComponent1 = new LiteralText("");
+						currentStyle = currentComponent1.getStyle();
+						currentStyle = currentStyle.withColor(TRANSLATE.get(format));
+						currentComponent1.setStyle(currentStyle);
 						break;
 				}
+				currentComponent1.setStyle(currentStyle);
 				continue;
 			}
 			int pos = message.indexOf(' ', i);
@@ -136,34 +135,34 @@ public class ChatComponentBuilder {
 			}
 			if (matcher.region(i, pos).find()) {
 				if (builder.length() > 0) {
-					LiteralText old = currentComponent;
-					currentComponent = old.shallowCopy();
-					currentStyle = currentComponent.getStyle();
-					old.appendText(builder.toString());
+					MutableText old = currentComponent1;
+					currentComponent1 = old.shallowCopy();
+					currentStyle = currentComponent1.getStyle();
+					old.append(builder.toString());
 					builder = new StringBuilder();
-					base.appendSibling(old);
+					base.append(old);
 				}
 
-				LiteralText old = currentComponent;
-				currentComponent = old.shallowCopy();
-				currentStyle = currentComponent.getStyle();
+				MutableText old = currentComponent1;
+				currentComponent1 = old.shallowCopy();
+				currentStyle = currentComponent1.getStyle();
 				String urlStr = message.substring(i, pos);
 				if (!urlStr.startsWith("http"))
 					urlStr = "http://" + urlStr;
-				currentComponent.appendText(urlStr);
+				currentComponent1.append(urlStr);
 				ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, urlStr);
-				currentStyle.setClickEvent(clickEvent);
-				base.appendSibling(currentComponent);
+				currentComponent1.setStyle(currentStyle.withClickEvent(clickEvent));
+				base.append(currentComponent1);
 				i += pos - i - 1;
-				currentComponent = old;
-				currentStyle = currentComponent.getStyle();
+				currentComponent1 = old;
+				currentStyle = currentComponent1.getStyle();
 				continue;
 			}
 			builder.append(c);
 		}
 		if (builder.length() > 0) {
-			currentComponent.appendText(builder.toString());
-			base.appendSibling(currentComponent);
+			currentComponent1.append(builder.toString());
+			base.append(currentComponent1);
 		}
 
 

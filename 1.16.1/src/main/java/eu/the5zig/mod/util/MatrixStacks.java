@@ -16,41 +16,10 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import eu.the5zig.mod.util.IServerData;
+package eu.the5zig.mod.util;
 
-public class ServerData extends net.minecraft.client.multiplayer.ServerData implements IServerData {
+import net.minecraft.client.util.math.MatrixStack;
 
-	public ServerData(String serverIP) {
-		super(serverIP, serverIP, false);
-	}
-
-	@Override
-	public String getServerName() {
-		return serverName;
-	}
-
-	@Override
-	public String getServerIP() {
-		return serverIP;
-	}
-
-	@Override
-	public String getPopulationInfo() {
-		return populationInfo;
-	}
-
-	@Override
-	public String getMOTD() {
-		return serverMOTD;
-	}
-
-	@Override
-	public long getPing() {
-		return pingToServer;
-	}
-
-	@Override
-	public String getServerIcon() {
-		return getBase64EncodedIconData();
-	}
+public class MatrixStacks {
+    public static MatrixStack hudMatrixStack;
 }

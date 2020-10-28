@@ -28,8 +28,8 @@ import eu.the5zig.mod.api.rewards.RewardsCache;
 import eu.the5zig.mod.gui.ingame.resource.CapeResource;
 import eu.the5zig.mod.gui.ingame.resource.IResourceManager;
 import eu.the5zig.mod.gui.ingame.resource.PlayerResource;
-import net.minecraft.client.network.play.NetworkPlayerInfo;
-import net.minecraft.data.client.model.Texture;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.texture.AbstractTexture;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 
@@ -90,13 +90,13 @@ public class ResourceManager implements IResourceManager {
 
 		final ResourceLocation capeLocation = new ResourceLocation("the5zigmod", "capes/" + gameProfile.getId().toString().replace("-", ""));
 		final SimpleTickingTexture capeTexture;
-		Texture texture = ((Variables) MinecraftFactory.getVars()).getTextureManager().func_229267_b_(capeLocation);
+		AbstractTexture texture = ((Variables) MinecraftFactory.getVars()).getTextureManager().getTexture(capeLocation);
 		if (texture instanceof SimpleTickingTexture) {
 			capeTexture = (SimpleTickingTexture) texture;
 			capeTexture.setBufferedImage(null);
 		} else {
 			capeTexture = new SimpleTickingTexture(capeLocation);
-			((Variables) MinecraftFactory.getVars()).getTextureManager().func_229263_a_(capeLocation, capeTexture);
+			((Variables) MinecraftFactory.getVars()).getTextureManager().registerTexture(capeLocation, capeTexture);
 		}
 
 		EXECUTOR_SERVICE.execute(new Runnable() {
@@ -171,7 +171,7 @@ public class ResourceManager implements IResourceManager {
 
 	@Override
 	public Object getCapeLocation(Object player) {
-		GameProfile profile = ((NetworkPlayerInfo) player).getGameProfile();
+		GameProfile profile = ((PlayerListEntry) player).getProfile();
 		if (playerProfile.getName().equals(profile.getName())) {
 			return getCapeLocation(ownPlayerResource);
 		} else {

@@ -16,11 +16,42 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package eu.the5zig.mod.mixin;
+import eu.the5zig.mod.util.IServerData;
+import net.minecraft.client.network.ServerInfo;
 
-import net.minecraft.client.gui.advancements.AdvancementsScreen;
-import org.spongepowered.asm.mixin.Mixin;
+public class ServerData extends ServerInfo implements IServerData {
 
-@Mixin(AdvancementsScreen.class)
-public abstract class MixinGuiAchievement {
+	public ServerData(String serverIP) {
+		super(serverIP, serverIP, false);
+	}
+
+	@Override
+	public String getServerName() {
+		return name;
+	}
+
+	@Override
+	public String getServerIP() {
+		return address;
+	}
+
+	@Override
+	public String getPopulationInfo() {
+		return playerCountLabel.asString();
+	}
+
+	@Override
+	public String getMOTD() {
+		return label.asString();
+	}
+
+	@Override
+	public long getPing() {
+		return ping;
+	}
+
+	@Override
+	public String getServerIcon() {
+		return getIcon();
+	}
 }

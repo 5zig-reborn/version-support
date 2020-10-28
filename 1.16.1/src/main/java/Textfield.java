@@ -242,7 +242,7 @@ public class Textfield extends TextFieldWidget implements ITextfield {
 	 * Draws the Textfield. Called from Gui when iterating through all textfields.
 	 */
 	public void callDraw() {
-		render(0, 0, 0);
+		// ZIG116 render(0, 0, 0);
 	}
 
 	@Override

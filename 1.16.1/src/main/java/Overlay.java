@@ -107,7 +107,7 @@ public class Overlay implements IOverlay {
 			GlStateManager.scalef(1.0F, 1.0F, 1.0F); // scaleF
 			int overlayTexture = MinecraftFactory.getClassProxyCallback().getOverlayTexture();
 			//toastManager.?(0, 0, 0, overlayTexture * 32, 160, 32);
-			toastManager.draw(matrixStack);
+			//ZIG116 toastManager.draw(matrixStack);
 			MinecraftFactory.getVars().drawString(title, overlayTexture == 2 ? 16 : 6, 7);
 			MinecraftFactory.getVars().drawString(subTitle, overlayTexture == 2 ? 16 : 6, 18);
 
