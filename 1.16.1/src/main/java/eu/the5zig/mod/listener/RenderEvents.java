@@ -21,16 +21,12 @@ package eu.the5zig.mod.listener;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.MatrixStacks;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class RenderEvents {
     public static void register() {
-        HudRenderCallback.EVENT.register(new HudRenderCallback() {
-            @Override
-            public void onHudRender(MatrixStack matrixStack, float v) {
-                MatrixStacks.hudMatrixStack = matrixStack;
-                The5zigMod.getGuiIngame().renderGameOverlay();
-            }
+        HudRenderCallback.EVENT.register((matrixStack, v) -> {
+            MatrixStacks.hudMatrixStack = matrixStack;
+            The5zigMod.getGuiIngame().renderGameOverlay();
         });
     }
 }

@@ -21,7 +21,6 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
-import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.asm.ReflectionNames;
 import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.Gui;
@@ -144,22 +143,10 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 					e.printStackTrace();
 				}
 			}
-			The5zigMod.logger.info("Field: ", Transformer.REFLECTION
-					.GuiChatInput()
-					.get());
 			forgeChatField = ChatScreen.class.getDeclaredField(Transformer.REFLECTION.GuiChatInput().get());
 			forgeChatField.setAccessible(true);
-		}
-		catch(Exception e) {
-			throw new RuntimeException(e);
-		}
-		try {
 			rightClickMouse = MinecraftClient.class.getDeclaredMethod(Transformer.REFLECTION.RightClickMouse().get());
 			rightClickMouse.setAccessible(true);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		try {
 			for(Field f : MinecraftClient.class.getDeclaredFields()) {
 				if(f.getType().isAssignableFrom(Session.class)) {
 					sessionField = f;
@@ -168,7 +155,8 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			}
 			sessionField.setAccessible(true);
 		} catch(Exception e) {
-			throw new RuntimeException(e);
+			//ZIG116 throw new RuntimeException(e);
+			e.printStackTrace();
 		}
 	}
 
@@ -1295,6 +1283,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void dispatchKeypresses() {
+		/* ZIG116
 		int eventKey = org.lwjgl.input.Keyboard.getEventKey();
 		int currentcode = eventKey == 0 ? org.lwjgl.input.Keyboard.getEventCharacter() : eventKey;
 		if ((currentcode == 0) || (org.lwjgl.input.Keyboard.isRepeatEvent()))
@@ -1303,7 +1292,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		if (org.lwjgl.input.Keyboard.getEventKeyState()) {
 			int keyCode = currentcode + (eventKey == 0 ? 256 : 0);
 			MinecraftFactory.getClassProxyCallback().fireKeyPressEvent(keyCode);
-		}
+		}*/
 	}
 
 	@Override

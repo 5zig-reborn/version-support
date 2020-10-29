@@ -16,19 +16,34 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.IGuiHandle;
+import eu.the5zig.mod.util.GLUtil;
 import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 
 import java.util.List;
 
 public class GuiHandle extends Screen implements IGuiHandle {
-
+	private MatrixStack currentStack;
 	private Gui child;
+
+	@Override
+	public void render(MatrixStack matrixStack, int i, int j, float f) {
+		this.currentStack = matrixStack;
+		callDrawDefaultBackground();
+		child.drawScreen0(i, j, f);
+		super.render(matrixStack, i, j, f);
+	}
 
 	public GuiHandle(Gui child) {
 		super(new LiteralText("The 5zig Mod"));
@@ -41,39 +56,17 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		child.initGui0();
 	}
 
-	/*
-	@Override
-	protected void actionPerformed(GuiButton button)
-	{
-		button.onClick(0, 0);
-	}
-*/
-
 	@Override
 	public boolean charTyped(char c, int keyCode) {
 		boolean result = super.charTyped(c, keyCode);
 		child.keyTyped0(c, keyCode);
 		return result;
 	}
-/* zig116
-	@Override
-	public void render(int mouseX, int mouseY, float partialTicks) {
-		callDrawDefaultBackground();
-		child.drawScreen0(mouseX, mouseY, partialTicks);
-		super.render(mouseX, mouseY, partialTicks);
-	}*/
 
 	@Override
 	public void tick() {
 		child.tick0();
 	}
-/*
-	@Override
-	public void handleMouseInput() throws IOException {
-		child.handleMouseInput0();
-		super.();
-	}
-*/
 
 	public static void callDrawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight) {
 		Screen.drawTexture(MatrixStacks.hudMatrixStack, x, y, u, v, width, height, (int)textureWidth, (int)textureHeight);
@@ -138,17 +131,17 @@ public class GuiHandle extends Screen implements IGuiHandle {
 
 	@Override
 	public void callDrawDefaultBackground() {
-		//ZIG116 renderBackground();
+		renderBackground(currentStack);
 	}
 
 	@Override
 	public void drawMenuBackground() {
-		//ZIG116 renderBackground(0);
+		renderBackgroundTexture(0);
 	}
 
 	@Override
 	public void callDrawTexturedModalRect(int x, int y, int texX, int texY, int width, int height) {
-		// zig116 blit(x, y, texX, texY, width, height);
+		drawTexture(currentStack, x, y, texX, texY, width, height);
 	}
 
 	@Override
@@ -214,7 +207,7 @@ public class GuiHandle extends Screen implements IGuiHandle {
 	}
 	*/
 	public static void drawGradientRect(double left, double top, double right, double bottom, int startColor, int endColor, boolean vertical) {
-		/*ZIG116 float a1 = (float) (startColor >> 24 & 255) / 255.0F;
+		float a1 = (float) (startColor >> 24 & 255) / 255.0F;
 		float r1 = (float) (startColor >> 16 & 255) / 255.0F;
 		float g1 = (float) (startColor >> 8 & 255) / 255.0F;
 		float b1 = (float) (startColor & 255) / 255.0F;
@@ -223,35 +216,33 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		float g2 = (float) (endColor >> 8 & 255) / 255.0F;
 		float b2 = (float) (endColor & 255) / 255.0F;
 
-		GlStateManager.func_227621_I_();
+		GlStateManager.disableTexture();
 		GLUtil.enableBlend();
 		GLUtil.disableAlpha();
 		GLUtil.tryBlendFuncSeparate(770, 771, 1, 0);
-		GlStateManager.func_227762_u_(7425);
+		GlStateManager.shadeModel(7425);
 		Tessellator tesselator = Tessellator.getInstance();
 		BufferBuilder vertex = tesselator.getBuffer();
-		vertex.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		vertex.begin(7, VertexFormats.POSITION_COLOR);
 		if (!vertical) {
-			color(vertex.func_225582_a_(right, top, 1.0), r1, g1, b1, a1).endVertex();
-			color(vertex.func_225582_a_(left, top, 1.0), r1, g1, b1, a1).endVertex();
-			color(vertex.func_225582_a_(left, bottom, 1.0), r2, g2, b2, a2).endVertex();
-			color(vertex.func_225582_a_(right, bottom, 1.0), r2, g2, b2, a2).endVertex();
+			color(vertex.vertex(right, top, 1.0), r1, g1, b1, a1).next();
+			color(vertex.vertex(left, top, 1.0), r1, g1, b1, a1).next();
+			color(vertex.vertex(left, bottom, 1.0), r2, g2, b2, a2).next();
+			color(vertex.vertex(right, bottom, 1.0), r2, g2, b2, a2).next();
 		} else {
-			color(vertex.func_225582_a_(right, top, 1.0), r2, g2, b2, a2).endVertex();
-			color(vertex.func_225582_a_(left, top, 1.0), r1, g1, b1, a1).endVertex();
-			color(vertex.func_225582_a_(left, bottom, 1.0), r1, g1, b1, a1).endVertex();
-			color(vertex.func_225582_a_(right, bottom, 1.0), r2, g2, b2, a2).endVertex();
+			color(vertex.vertex(right, top, 1.0), r2, g2, b2, a2).next();
+			color(vertex.vertex(left, top, 1.0), r1, g1, b1, a1).next();
+			color(vertex.vertex(left, bottom, 1.0), r1, g1, b1, a1).next();
+			color(vertex.vertex(right, bottom, 1.0), r2, g2, b2, a2).next();
 		}
 		tesselator.draw();
-		GlStateManager.func_227762_u_(7424);
+		GlStateManager.shadeModel(7424);
 		GLUtil.disableBlend();
-		GlStateManager.func_227709_e_();
-		GlStateManager.func_227619_H_();
-		*/
+		GlStateManager.enableAlphaTest();
+		GlStateManager.enableTexture();
 	}
 
 	public static void drawRect(double left, double top, double right, double bottom, int color) {
-		/* ZIG116
 		double i;
 		if (left < right) {
 			i = left;
@@ -272,24 +263,24 @@ public class GuiHandle extends Screen implements IGuiHandle {
 		Tessellator worldRenderer = Tessellator.getInstance();
 		BufferBuilder tesselator = worldRenderer.getBuffer();
 		GLUtil.enableBlend();
-		GlStateManager.func_227621_I_();
+		GlStateManager.disableTexture();
 		GLUtil.tryBlendFuncSeparate(770, 771, 1, 0);
 		GLUtil.color(b, g, r, a);
-		tesselator.begin(7, DefaultVertexFormats.POSITION);
-		tesselator.func_225582_a_(left, bottom, 0.0D).endVertex();
-		tesselator.func_225582_a_(right, bottom, 0.0D).endVertex();
-		tesselator.func_225582_a_(right, top, 0.0D).endVertex();
-		tesselator.func_225582_a_(left, top, 0.0D).endVertex();
+		tesselator.begin(7, VertexFormats.POSITION);
+		tesselator.vertex(left, bottom, 0.0D).next();
+		tesselator.vertex(right, bottom, 0.0D).next();
+		tesselator.vertex(right, top, 0.0D).next();
+		tesselator.vertex(left, top, 0.0D).next();
 		worldRenderer.draw();
-		GlStateManager.func_227619_H_();
-		GLUtil.disableBlend();*/
+		GlStateManager.enableTexture();
+		GLUtil.disableBlend();
 	}
 
-	/*
-	private static IVertexBuilder color(IVertexBuilder in, float red, float green, float blue, float alpha)
+
+	private static VertexConsumer color(VertexConsumer in, float red, float green, float blue, float alpha)
 	{
-		return in.func_225586_a_((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
-	}*/
+		return in.color((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
+	}
 
 	public Gui getChild() {
 		return child;

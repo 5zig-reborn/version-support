@@ -22,7 +22,6 @@ import eu.the5zig.mod.gui.elements.IFileSelector;
 import eu.the5zig.util.Callback;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.FilenameUtils;
-import org.lwjgl.input.Mouse;
 
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
@@ -348,6 +347,7 @@ public class FileSelector implements IFileSelector {
 			return;
 
 		int var;
+		/* ZIG116
 		if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState() && mouseY >= top && mouseY <= bottom) {
 			int x = mouseX - left;
 			int y = mouseY - top + (int) amountScrolled - 4;
@@ -423,7 +423,7 @@ public class FileSelector implements IFileSelector {
 
 			amountScrolled += (float) (var * getSlotHeight() / 2);
 		}
-
+		*/
 	}
 
 	protected void elementClicked(int id, boolean doubleClick, int mouseX, int mouseY) {

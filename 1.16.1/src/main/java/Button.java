@@ -151,7 +151,7 @@ public class Button extends ButtonWidget implements IButton {
 
 	@Override
 	public void draw(int mouseX, int mouseY) {
-		renderButton(stack, mouseX, mouseY, 0);
+		if(stack != null) renderButton(stack, mouseX, mouseY, 0);
 	}
 
 	@Override

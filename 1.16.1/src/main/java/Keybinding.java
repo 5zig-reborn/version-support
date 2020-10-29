@@ -59,7 +59,9 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 			field.setAccessible(true);
 			categories = (Map<String, Integer>) field.get(null);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			//ZIG116 throw new RuntimeException(e);
+			e.printStackTrace();
+			return;
 		}
 		if (!categories.containsKey(category)) {
 			categories.put(category, categories.size() + 1);
