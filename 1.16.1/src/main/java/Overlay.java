@@ -16,12 +16,10 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.IOverlay;
-import eu.the5zig.util.minecraft.ChatColor;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.toast.SystemToast;
 
 import java.util.List;
 
@@ -38,12 +36,12 @@ public class Overlay implements IOverlay {
 
 	@Override
 	public void displayMessage(String title, String subtitle) {
-		Toast.create(ChatColor.YELLOW + title, subtitle, null);
+		displayMessage(title, subtitle, null);
 	}
 
 	@Override
 	public void displayMessage(String title, String subtitle, Object uniqueReference) {
-		Toast.create(ChatColor.YELLOW + title, subtitle, uniqueReference);
+		SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, ChatComponentBuilder.fromLegacyText(title), ChatComponentBuilder.fromLegacyText(subtitle));
 	}
 
 	@Override
@@ -74,65 +72,4 @@ public class Overlay implements IOverlay {
 		}
 		displayMessage(title, subTitle, uniqueReference);
 	}
-
-	private static class Toast implements net.minecraft.client.toast.Toast {
-
-		private boolean updateTime = true;
-		private long startedTime;
-		private final Object uniqueReference;
-		private String title;
-		private String subTitle;
-
-		private Toast(Object uniqueReference, String title, String subTitle) {
-			this.uniqueReference = uniqueReference;
-			this.title = title;
-			this.subTitle = subTitle;
-		}
-
-		private void update(String title, String subTitle) {
-			this.title = title;
-			this.subTitle = subTitle;
-			this.startedTime = System.currentTimeMillis();
-			this.updateTime = true;
-		}
-
-		@Override
-		public Visibility draw(MatrixStack matrixStack, ToastManager toastManager, long l) {
-			if (updateTime) {
-				startedTime = l;
-				updateTime = false;
-			}
-
-			MinecraftFactory.getVars().bindTexture(TOASTS_TEX);
-			GlStateManager.scalef(1.0F, 1.0F, 1.0F); // scaleF
-			int overlayTexture = MinecraftFactory.getClassProxyCallback().getOverlayTexture();
-			//toastManager.?(0, 0, 0, overlayTexture * 32, 160, 32);
-			//ZIG116 toastManager.draw(matrixStack);
-			MinecraftFactory.getVars().drawString(title, overlayTexture == 2 ? 16 : 6, 7);
-			MinecraftFactory.getVars().drawString(subTitle, overlayTexture == 2 ? 16 : 6, 18);
-
-			return l - startedTime < 5000L ? Visibility.SHOW : Visibility.HIDE;
-		}
-
-		@Override
-		public Object getType() {
-			return uniqueReference == null ? TYPE : uniqueReference;
-		}
-
-		public static void create(String title, String subTitle, Object uniqueReference) {
-			ToastManager toastFactory = ((Variables) MinecraftFactory.getVars()).getMinecraft().getToastManager();
-
-			if (uniqueReference == null) {
-				toastFactory.add(new Toast(null, title, subTitle));
-			} else {
-				Toast toast = toastFactory.getToast(Toast.class, uniqueReference);
-				if (toast == null) {
-					toastFactory.add(new Toast(uniqueReference, title, subTitle));
-				} else {
-					toast.update(title, subTitle);
-				}
-			}
-		}
-	}
-
 }
