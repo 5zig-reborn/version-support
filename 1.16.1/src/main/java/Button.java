@@ -17,6 +17,7 @@
  */
 
 import eu.the5zig.mod.gui.elements.IButton;
+import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -147,11 +148,12 @@ public class Button extends ButtonWidget implements IButton {
 	@Override
 	public void render(MatrixStack matrixStack, int i, int j, float f) {
 		this.stack = matrixStack;
+		super.render(matrixStack, i, j, f);
 	}
 
 	@Override
 	public void draw(int mouseX, int mouseY) {
-		if(stack != null) renderButton(stack, mouseX, mouseY, 0);
+		render(stack == null ? MatrixStacks.hudMatrixStack : stack, mouseX, mouseY, 0);
 	}
 
 	@Override

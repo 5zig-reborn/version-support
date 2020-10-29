@@ -39,10 +39,10 @@ public class GuiHandle extends Screen implements IGuiHandle {
 
 	@Override
 	public void render(MatrixStack matrixStack, int i, int j, float f) {
-		this.currentStack = matrixStack;
+		MatrixStacks.hudMatrixStack = this.currentStack = matrixStack;
 		callDrawDefaultBackground();
-		child.drawScreen0(i, j, f);
 		super.render(matrixStack, i, j, f);
+		child.drawScreen0(i, j, f);
 	}
 
 	public GuiHandle(Gui child) {

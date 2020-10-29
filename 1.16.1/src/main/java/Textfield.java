@@ -18,6 +18,7 @@
 
 import com.google.common.base.Strings;
 import eu.the5zig.mod.gui.elements.ITextfield;
+import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -242,7 +243,7 @@ public class Textfield extends TextFieldWidget implements ITextfield {
 	 * Draws the Textfield. Called from Gui when iterating through all textfields.
 	 */
 	public void callDraw() {
-		// ZIG116 render(0, 0, 0);
+		render(MatrixStacks.hudMatrixStack, 0, 0, 0);
 	}
 
 	@Override
