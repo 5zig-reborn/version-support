@@ -104,8 +104,8 @@ public class AudioButton extends IconButton {
 	}
 
 	@Override
-	public void callMouseReleased(int mouseX, int mouseY) {
-		super.callMouseReleased(mouseX, mouseY);
+	public void callMouseReleased(int mouseX, int mouseY, int state) {
+		super.callMouseReleased(mouseX, mouseY, state);
 		stopRecording();
 	}
 

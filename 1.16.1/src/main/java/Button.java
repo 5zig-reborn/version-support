@@ -174,8 +174,8 @@ public class Button extends ButtonWidget implements IButton {
 	}
 
 	@Override
-	public void callMouseReleased(int mouseX, int mouseY) {
-		mouseReleased(mouseX, mouseY, 0);
+	public void callMouseReleased(int mouseX, int mouseY, int state) {
+		mouseReleased(mouseX, mouseY, state);
 	}
 
 	@Override

@@ -75,8 +75,8 @@ public class Slider extends Button {
 			MinecraftFactory.getVars().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 			GLUtil.color(1, 1, 1, 1);
 			// ZIG116
-			//blit(getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
-			//blit(getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
+			drawTexture(matrixStack, getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
+			drawTexture(matrixStack, getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class Slider extends Button {
 	}
 
 	@Override
-	public void callMouseReleased(int x, int y) {
+	public void callMouseReleased(int mouseX, int mouseY, int state) {
 		if (this.dragging) {
 			// play button press sound
 			playClickSound();
@@ -136,5 +136,4 @@ public class Slider extends Button {
 		}
 		this.dragging = false;
 	}
-
 }

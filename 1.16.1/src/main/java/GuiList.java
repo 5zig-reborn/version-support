@@ -81,7 +81,13 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 		public boolean mouseClicked(double d, double e, int i) {
 			boolean doubleClick = getSelected() == this && MinecraftFactory.getVars().getSystemTime() - GuiList.this.lastClicked < 250L;
 			GuiList.this.lastClicked = MinecraftFactory.getVars().getSystemTime();
-			if(element instanceof RowExtended) ((RowExtended) element).mousePressed((int)d, (int)e);
+			if(element instanceof RowExtended) {
+				IButton pressed = ((RowExtended) element).mousePressed((int)d, (int)e);
+				if(pressed != null) {
+					if (selectedButton != null && pressed != selectedButton) pressed.mouseClicked((int)d, (int)e);
+					GuiList.this.selectedButton = pressed;
+				}
+			}
 			GuiList.this.onSelect(GuiList.this.children().indexOf(this), element, doubleClick);
 			return true;
 		}
@@ -89,6 +95,11 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 		public E getElement() {
 			return element;
 		}
+	}
+
+	@Override
+	protected int getScrollbarPositionX() {
+		return scrollX > 0 ? scrollX : super.getScrollbarPositionX();
 	}
 
 	@Override
@@ -155,6 +166,10 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int state) {
 		mouseReleased((double) mouseX, mouseY, state);
+		if (this.selectedButton != null && state == 0) {
+			this.selectedButton.callMouseReleased(mouseX, mouseY, state);
+			this.selectedButton = null;
+		}
 	}
 
 	@Override
