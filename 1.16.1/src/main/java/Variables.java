@@ -52,6 +52,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.options.Option;
+import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -72,13 +73,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
-import net.minecraft.realms.RealmsBridge;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -181,7 +182,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 			@Override
 			public void enableRepeatEvents(boolean repeat) {
-				getMinecraft().keyboard.enableRepeatEvents(repeat);
+				getMinecraft().keyboard.setRepeatEvents(repeat);
 			}
 		});
 		Mouse.init(new Mouse.MouseHandler() {
@@ -275,7 +276,22 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			return Collections.emptyList();
 		if (string.isEmpty())
 			return Collections.singletonList("");
-		return getFontrenderer().wrapLines(ChatComponentBuilder.fromLegacyText(string), width).stream().map(StringRenderable::getString).collect(Collectors.toList());
+		return getFontrenderer().wrapLines(ChatComponentBuilder.fromLegacyText(string), width).stream().map(t -> {
+			CharacterVisitor visitor = new CharacterVisitor() {
+				final StringBuilder sb = new StringBuilder();
+				@Override
+				public boolean accept(int index, Style style, int codePoint) {
+					sb.appendCodePoint(codePoint);
+					return true;
+				}
+
+				@Override
+				public String toString() {
+					return sb.toString();
+				}
+			};
+			return visitor.toString();
+		}).collect(Collectors.toList());
 	}
 
 	@Override
@@ -369,7 +385,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public <E extends Row> IGuiList<E> createGuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, GuiArrayList<E> rows) {
 		GuiList<E> list = new GuiList<>(clickable, width, height, top, bottom, left, right, rows);
-		rows.setParentList(list);
+		if(rows != null) rows.setParentList(list);
 		return list;
 	}
 
@@ -591,7 +607,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		if (isOnIntegratedServer) {
 			displayScreen(new TitleScreen());
 		} else if (isConnectedToRealms) {
-			RealmsBridge realmsBridge = new RealmsBridge();
+			RealmsBridgeScreen realmsBridge = new RealmsBridgeScreen();
 			realmsBridge.switchToRealms(new TitleScreen());
 		} else {
 			displayScreen(new MultiplayerScreen(new TitleScreen()));
@@ -793,8 +809,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			return null;
 		}
 		Chunk localObject = getMinecraft().world.getChunk(localdt);
-		return localObject.getBiomeArray().getBiomeForNoiseGen((int) getPlayerPosX(), (int) getPlayerPosY(), (int) getPlayerPosZ())
-				.getName().getString();
+		return localObject.getBiomeArray().getBiomeForNoiseGen((int) getPlayerPosX(), (int) getPlayerPosY(), (int) getPlayerPosZ()).getCategory().getName();
 	}
 
 	@Override
@@ -1221,15 +1236,14 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	public void renderTextureOverlay(int x1, int x2, int y1, int y2) {
 		Tessellator var4 = Tessellator.getInstance();
 		BufferBuilder var5 = var4.getBuffer();
-		bindTexture(Screen.BACKGROUND_TEXTURE);
+		bindTexture(Screen.OPTIONS_BACKGROUND_TEXTURE);
 		GLUtil.color(1.0F, 1.0F, 1.0F, 1.0F);
 		var5.begin(7, VertexFormats.POSITION_TEXTURE_COLOR);
-		/*ZIG116
-		var5.func_225582_a_((double) x1, (double) y2, 0.0D).func_225583_a_(0.0F, ((float) y2 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
-		var5.func_225582_a_((double) (x1 + x2), (double) y2, 0.0D).func_225583_a_(((float) x2 / 32.0F), ((float) y2 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
-		var5.func_225582_a_((double) (x1 + x2), (double) y1, 0.0D).func_225583_a_(((float) x2 / 32.0F), ((float) y1 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
-		var5.func_225582_a_((double) x1, (double) y1, 0.0D).func_225583_a_(0.0F, ((float) y1 / 32.0F)).func_225586_a_(64, 64, 64, 255).endVertex();
-		*/var4.draw();
+		var5.vertex(x1, y2, 0.0D).texture(0.0F, ((float) y2 / 32.0F)).color(64, 64, 64, 255).next();
+		var5.vertex(x1 + x2, y2, 0.0D).texture(((float) x2 / 32.0F), ((float) y2 / 32.0F)).color(64, 64, 64, 255).next();
+		var5.vertex(x1 + x2, y1, 0.0D).texture(((float) x2 / 32.0F), ((float) y1 / 32.0F)).color(64, 64, 64, 255).next();
+		var5.vertex(x1, y1, 0.0D).texture(0.0F, ((float) y1 / 32.0F)).color(64, 64, 64, 255).next();
+		var4.draw();
 	}
 
 	@Override

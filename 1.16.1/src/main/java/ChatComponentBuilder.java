@@ -60,7 +60,7 @@ public class ChatComponentBuilder {
 		}
 		MessageAction hover = api.getStyle().getOnHover();
 		if(hover != null) {
-			style.setHoverEvent(new HoverEvent(hoverActions.get(hover.getAction()), fromInterface(hover.getComponent())));
+			style = style.withHoverEvent(new HoverEvent(hoverActions.get(hover.getAction()), fromInterface(hover.getComponent())));
 		}
 		text.setStyle(style);
 		for(MessageComponent sibling : api.getSiblings()) {

@@ -18,25 +18,9 @@
 
 package eu.the5zig.mod.mixin;
 
-import eu.the5zig.mod.util.The5zigPack;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceReloadMonitor;
-import net.minecraft.util.Unit;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 
 @Mixin(ReloadableResourceManagerImpl.class)
 public abstract class MixinAddPack {
-    @Inject(method = "beginMonitoredReload", at = @At("HEAD"))
-    private void onReload(Executor _executor, Executor _executor2, CompletableFuture<Unit> _future, List<ResourcePack> packsIn,
-                          CallbackInfoReturnable<ResourceReloadMonitor> _ci) {
-        packsIn.add(new The5zigPack());
-    }
 }

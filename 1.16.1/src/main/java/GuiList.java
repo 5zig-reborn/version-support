@@ -119,7 +119,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	}
 
 	private void calculateHeight() {
-		if(!rows.isEmpty()) ((MixinEntryListWidget) this).setItemHeight(rows.get(0).getLineHeight());
+		if(rows != null && !rows.isEmpty()) ((MixinEntryListWidget) this).setItemHeight(rows.get(0).getLineHeight());
 	}
 
 	public GuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, List<E> rows) {
@@ -360,7 +360,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	@Override
 	public void setDrawSelection(boolean drawSelection) {
 		this.renderSelection = drawSelection;
-		method_29344(drawSelection); // setRenderSelection
+		setRenderSelection(drawSelection);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.IOverlay;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.text.LiteralText;
 
 import java.util.List;
 
@@ -41,7 +42,9 @@ public class Overlay implements IOverlay {
 
 	@Override
 	public void displayMessage(String title, String subtitle, Object uniqueReference) {
-		SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT, ChatComponentBuilder.fromLegacyText(title), ChatComponentBuilder.fromLegacyText(subtitle));
+		SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.TUTORIAL_HINT,
+				title == null ? new LiteralText("") : ChatComponentBuilder.fromLegacyText(title),
+				subtitle == null ? null : ChatComponentBuilder.fromLegacyText(subtitle));
 	}
 
 	@Override

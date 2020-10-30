@@ -17,8 +17,10 @@
  */
 
 plugins {
-    id 'fabric-loom' version '0.4-SNAPSHOT'
+    id 'fabric-loom' version '0.5-SNAPSHOT'
 }
+
+project.ext.set("customVer", "1.16.3")
 
 apply plugin: 'java'
 apply from: '../../mod/common.gradle'
@@ -27,11 +29,18 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.9'
 }
 
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand "version": project.ext.get("buildNumber")
+        expand "mc": project.ext.has("customVer") ? project.ext.get("customVer") : project.name
+    }
+}
+
 dependencies {
-    minecraft "com.mojang:minecraft:1.16.1"
-    mappings "net.fabricmc:yarn:1.16.1+build.1"
-    modImplementation "net.fabricmc:fabric-loader:0.8.8+build.202"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:0.13.1+build.370-1.16"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     compile 'com.google.code.findbugs:jsr305:3.0.2'
 }
 

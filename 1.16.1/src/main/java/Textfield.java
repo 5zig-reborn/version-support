@@ -232,6 +232,11 @@ public class Textfield extends TextFieldWidget implements ITextfield {
 		return super.charTyped(character, key);
 	}
 
+	@Override
+	public boolean onKeyPressed(int i, int j, int k) {
+		return keyPressed(i, j, k);
+	}
+
 	/**
 	 * Used for blinking caret. Called from Gui when iterating through all textfields.
 	 */
