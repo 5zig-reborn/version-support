@@ -16,18 +16,21 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import eu.the5zig.mod.gui.elements.Clickable;
-import eu.the5zig.mod.gui.elements.IButton;
-import eu.the5zig.mod.gui.elements.IGuiList;
-import eu.the5zig.mod.gui.elements.Row;
+import eu.the5zig.mod.gui.elements.*;
+import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.util.math.MatrixStack;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiList<E extends Row> extends ElementListWidget implements IGuiList<E> {
-
+	private MatrixStack matrixStack;
 	protected final List<E> rows;
 	private final Clickable<E> clickable;
 
@@ -52,20 +55,70 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	private long lastClicked;
 
 	protected List<Integer> heightMap = Lists.newArrayList();
+	private boolean renderSelection;
+
+	public static class ListElement<E extends Row> extends ElementListWidget.Entry {
+		private final E element;
+
+		public ListElement(E element) {
+			this.element = element;
+		}
+
+		@Override
+		public List<? extends Element> children() {
+			return ImmutableList.of();
+		}
+
+		@Override
+		public void render(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
+			if(element instanceof RowExtended) ((RowExtended) element).draw(i, j, k, n, o);
+			else element.draw(i, j);
+		}
+
+		@Override
+		public boolean mouseClicked(double d, double e, int i) {
+			if(element instanceof RowExtended) ((RowExtended) element).mousePressed((int)d, (int)e);
+			return super.mouseClicked(d, e, i);
+		}
+
+		public E getElement() {
+			return element;
+		}
+	}
+
+	@Override
+	public void addEntry(int slot, E entry) {
+		children().add(slot, new ListElement<>(entry));
+	}
+
+	@Override
+	public void removeEntry(E entry) {
+		children().removeIf(e -> ((ListElement) e).getElement() == entry);
+	}
+
+	@Override
+	public void doClearEntries() {
+		clearEntries();
+	}
 
 	public GuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, List<E> rows) {
 		super(MinecraftClient.getInstance(), width, height, top, bottom, 18);
-
 		this.rows = rows;
 		this.clickable = clickable;
 		setLeft(left);
 		setRight(right);
+		replaceEntries(rows == null ? new ArrayList() : rows.stream().map(ListElement::new).collect(Collectors.toList()));
 	}
 
-	// ZIG116: todo reimplement
 	@Override
 	public void callDrawScreen(int mouseX, int mouseY, float partialTicks) {
+		render(this.matrixStack == null ? MatrixStacks.hudMatrixStack : matrixStack, mouseX, mouseY, partialTicks);
+	}
 
+	@Override
+	public void render(MatrixStack matrixStack, int i, int j, float f) {
+		this.matrixStack = matrixStack;
+		super.render(matrixStack, i, j, f);
 	}
 
 	@Override
@@ -80,22 +133,22 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY) {
-
+		mouseClicked(mouseX, mouseY, 0);
 	}
 
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int state) {
-
+		mouseReleased((double) mouseX, mouseY, state);
 	}
 
 	@Override
 	public boolean callMouseDragged(double v, double v1, int i, double v2, double v3) {
-		return false;
+		return mouseDragged(v, v1, i, v2, v3);
 	}
 
 	@Override
 	public boolean callMouseScrolled(double v) {
-		return false;
+		return mouseScrolled(v, 0, 0);
 	}
 
 	@Override
@@ -128,184 +181,246 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 		return 0;
 	}
 
+	public int getRowWidth() {
+		return rowWidth;
+	}
+
 	@Override
 	public void setRowWidth(int rowWidth) {
-
+		this.rowWidth = rowWidth;
 	}
 
 	@Override
 	public int getSelectedId() {
-		return 0;
+		synchronized (rows) {
+			if (selected < 0 || selected > rows.size())
+				selected = setSelectedId(0);
+		}
+		return selected;
 	}
 
 	@Override
-	public int setSelectedId(int id) {
-		return 0;
+	public int setSelectedId(int selected) {
+		synchronized (rows) {
+			if (selected < 0 || selected > rows.size())
+				selected = 0;
+		}
+		this.selected = selected;
+		return selected;
 	}
 
 	@Override
 	public E getSelectedRow() {
-		return null;
+		synchronized (rows) {
+			if (rows.isEmpty())
+				return null;
+			if (selected < 0) {
+				selected = 0;
+				return rows.get(0);
+			}
+			while (selected >= rows.size()) {
+				selected--;
+			}
+			return rows.get(selected);
+		}
 	}
 
 	@Override
 	public int getWidth() {
-		return 0;
+		return width;
 	}
 
 	@Override
 	public void setWidth(int width) {
-
+		this.width = width;
 	}
 
 	@Override
 	public int getHeight() {
-		return 0;
+		return height;
 	}
 
 	@Override
 	public void setHeight(int height) {
-
+		this.height = height;
 	}
 
 	@Override
 	public int getHeight(int id) {
-		return 0;
+		return heightMap.get(id);
 	}
 
 	@Override
 	public int getTop() {
-		return 0;
+		return top;
 	}
 
 	@Override
 	public void setTop(int top) {
-
+		this.top = top;
 	}
 
 	@Override
 	public int getBottom() {
-		return 0;
+		return bottom;
 	}
 
 	@Override
 	public void setBottom(int bottom) {
-
+		this.bottom = bottom;
 	}
 
 	@Override
 	public int getLeft() {
-		return 0;
+		return left;
 	}
 
 	@Override
 	public void setLeft(int left) {
-
+		this.left = left;
 	}
 
 	@Override
 	public int getRight() {
-		return 0;
+		return right;
 	}
 
 	@Override
 	public void setRight(int right) {
-
+		this.right = right;
 	}
 
 	@Override
 	public int getScrollX() {
-		return 0;
+		return scrollX;
 	}
 
 	@Override
 	public void setScrollX(int scrollX) {
-
+		this.scrollX = scrollX;
 	}
 
 	@Override
 	public boolean isLeftbound() {
-		return false;
+		return leftbound;
 	}
 
 	@Override
 	public void setLeftbound(boolean leftbound) {
-
+		this.leftbound = leftbound;
 	}
 
 	@Override
 	public boolean isDrawSelection() {
-		return false;
+		return renderSelection;
 	}
 
 	@Override
 	public void setDrawSelection(boolean drawSelection) {
-
+		this.renderSelection = drawSelection;
 	}
 
 	@Override
 	public int getHeaderPadding() {
-		return 0;
+		return headerHeight;
 	}
 
 	@Override
 	public void callSetHeaderPadding(int headerPadding) {
-
+		this.setRenderHeader(headerPadding > 0, headerPadding);
 	}
 
 	@Override
 	public String getHeader() {
-		return null;
+		return header;
 	}
 
 	@Override
 	public void setHeader(String header) {
-
+		this.header = header;
 	}
 
 	@Override
 	public int getBottomPadding() {
-		return 0;
+		return bottomPadding;
 	}
 
 	@Override
 	public void setBottomPadding(int bottomPadding) {
+		this.bottomPadding = bottomPadding;
+	}
 
+	@Override
+	public E getHoverItem(int mouseX, int mouseY) {
+		calculateHeightMap();
+		int x1, x2;
+		if (leftbound) {
+			x1 = getLeft();
+			x2 = getLeft() + getRowWidth();
+		} else {
+			x1 = getLeft() + (getWidth() / 2 - getRowWidth() / 2);
+			x2 = getLeft() + getWidth() / 2 + getRowWidth() / 2;
+		}
+		if (mouseX >= x1 && mouseX <= x2) {
+			synchronized (rows) {
+				for (int i = 0; i < heightMap.size(); i++) {
+					Integer y = (int) (heightMap.get(i) + getTop() + getHeaderPadding() - getCurrentScroll());
+					E element = rows.get(i);
+					if (mouseY >= y && mouseY <= y + element.getLineHeight()) {
+						return element;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean isDrawDefaultBackground() {
-		return false;
+		return drawDefaultBackground;
 	}
 
 	@Override
 	public void setDrawDefaultBackground(boolean drawDefaultBackground) {
-
+		this.drawDefaultBackground = drawDefaultBackground;
 	}
 
 	@Override
 	public Object getBackgroundTexture() {
-		return null;
+		return backgroundTexture;
 	}
 
 	@Override
-	public void setBackgroundTexture(Object resourceLocation, int imageWidth, int imageHeight) {
+	public void setBackgroundTexture(Object backgroundTexture, int imageWidth, int imageHeight) {
+		this.backgroundTexture = backgroundTexture;
 
+		if (backgroundTexture != null) {
+			double w = imageWidth;
+			double h = imageHeight;
+			int listWidth = getRight() - getLeft();
+			int listHeight = getBottom() - getTop();
+
+			while (w > listWidth && h > listHeight) {
+				w -= 1;
+				h -= h / w;
+			}
+			while (w < listWidth || h < listHeight) {
+				w += 1;
+				h += h / w;
+			}
+			this.backgroundWidth = (int) w;
+			this.backgroundHeight = (int) h;
+		}
 	}
 
 	@Override
 	public List<E> getRows() {
-		return null;
+		return rows;
 	}
 
 	@Override
 	public void calculateHeightMap() {
 
-	}
-
-	@Override
-	public E getHoverItem(int mouseX, int mouseY) {
-		return null;
 	}
 
 	/**

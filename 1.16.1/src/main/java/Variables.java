@@ -31,6 +31,7 @@ import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.gui.ingame.ItemStack;
 import eu.the5zig.mod.gui.ingame.PotionEffectImpl;
 import eu.the5zig.mod.gui.ingame.ScoreboardImpl;
+import eu.the5zig.mod.gui.list.GuiArrayList;
 import eu.the5zig.mod.util.*;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.util.Callback;
@@ -366,8 +367,10 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	}
 
 	@Override
-	public <E extends Row> IGuiList<E> createGuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, List<E> rows) {
-		return new GuiList<E>(clickable, width, height, top, bottom, left, right, rows);
+	public <E extends Row> IGuiList<E> createGuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, GuiArrayList<E> rows) {
+		GuiList<E> list = new GuiList<>(clickable, width, height, top, bottom, left, right, rows);
+		rows.setParentList(list);
+		return list;
 	}
 
 	@Override
