@@ -18,15 +18,23 @@
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.elements.*;
 import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class GuiList<E extends Row> extends ElementListWidget implements IGuiList<E> {
@@ -57,7 +65,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	protected List<Integer> heightMap = Lists.newArrayList();
 	private boolean renderSelection;
 
-	public static class ListElement<E extends Row> extends ElementListWidget.Entry {
+	public class ListElement extends ElementListWidget.Entry {
 		private final E element;
 
 		public ListElement(E element) {
@@ -70,15 +78,18 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 		}
 
 		@Override
-		public void render(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-			if(element instanceof RowExtended) ((RowExtended) element).draw(i, j, k, n, o);
-			else element.draw(i, j);
+		public void render(MatrixStack matrixStack, int slotId, int y, int x, int rowLeft, int slotHeight, int mouseX, int mouseY, boolean focused, float partialTicks) {
+			if(element instanceof RowExtended) ((RowExtended) element).draw(x, y, slotHeight, mouseX, mouseY);
+			else element.draw(x, y);
 		}
 
 		@Override
 		public boolean mouseClicked(double d, double e, int i) {
+			boolean doubleClick = getSelected() == this && MinecraftFactory.getVars().getSystemTime() - GuiList.this.lastClicked < 250L;
+			GuiList.this.lastClicked = MinecraftFactory.getVars().getSystemTime();
 			if(element instanceof RowExtended) ((RowExtended) element).mousePressed((int)d, (int)e);
-			return super.mouseClicked(d, e, i);
+			GuiList.this.onSelect(GuiList.this.children().indexOf(this), element, doubleClick);
+			return true;
 		}
 
 		public E getElement() {
@@ -87,8 +98,13 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	}
 
 	@Override
+	protected int getRowLeft() {
+		return left;
+	}
+
+	@Override
 	public void addEntry(int slot, E entry) {
-		children().add(slot, new ListElement<>(entry));
+		children().add(slot, new ListElement(entry));
 	}
 
 	@Override
@@ -101,13 +117,60 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 		clearEntries();
 	}
 
+	@Override
+	protected int getScrollbarPositionX() {
+		return right;
+	}
+
 	public GuiList(Clickable<E> clickable, int width, int height, int top, int bottom, int left, int right, List<E> rows) {
 		super(MinecraftClient.getInstance(), width, height, top, bottom, 18);
 		this.rows = rows;
 		this.clickable = clickable;
 		setLeft(left);
 		setRight(right);
+		setDrawSelection(true);
 		replaceEntries(rows == null ? new ArrayList() : rows.stream().map(ListElement::new).collect(Collectors.toList()));
+	}
+
+	@Override
+	protected void renderList(MatrixStack matrixStack, int i, int j, int k, int l, float f) {
+		int m = this.getItemCount();
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBuffer();
+		for(int n = 0; n < m; ++n) {
+			int o = this.getRowTop(n);
+			int p = o + this.itemHeight;
+			if (p >= this.top && o <= this.bottom) {
+				int q = j + n * this.itemHeight + this.headerHeight;
+				int r = this.itemHeight - 4;
+				EntryListWidget.Entry entry = this.getEntry(n);
+				int s = this.getRowWidth();
+				int v;
+				if (this.renderSelection && this.isSelectedItem(n)) {
+					v = this.left;
+					int u = this.left + s;
+					RenderSystem.disableTexture();
+					float g = this.isFocused() ? 1.0F : 0.5F;
+					RenderSystem.color4f(g, g, g, 1.0F);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
+					bufferBuilder.vertex(v, q + r + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q + r + 2, 0.0D).next();
+					bufferBuilder.vertex(u, q - 2, 0.0D).next();
+					bufferBuilder.vertex(v, q - 2, 0.0D).next();
+					tessellator.draw();
+					RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
+					bufferBuilder.begin(7, VertexFormats.POSITION);
+					bufferBuilder.vertex(v + 1, q + r + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q + r + 1, 0.0D).next();
+					bufferBuilder.vertex(u - 1, q - 1, 0.0D).next();
+					bufferBuilder.vertex(v + 1, q - 1, 0.0D).next();
+					tessellator.draw();
+					RenderSystem.enableTexture();
+				}
+				v = this.getRowLeft();
+				entry.render(matrixStack, n, o, v, s, r, k, l, this.isMouseOver(k, l) && Objects.equals(this.getAtPos(k, l), entry), f);
+			}
+		}
 	}
 
 	@Override
@@ -118,6 +181,8 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	@Override
 	public void render(MatrixStack matrixStack, int i, int j, float f) {
 		this.matrixStack = matrixStack;
+		this.mouseX = i;
+		this.mouseY = j;
 		super.render(matrixStack, i, j, f);
 	}
 
@@ -128,12 +193,46 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 
 	@Override
 	public void onSelect(int id, E row, boolean doubleClick) {
-
+		setSelectedId(id);
+		if (clickable != null && row != null)
+			clickable.onSelect(id, row, doubleClick);
 	}
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY) {
 		mouseClicked(mouseX, mouseY, 0);
+	}
+
+	private Entry getAtPos(double d, double e) {
+		int i = this.getRowWidth();
+		int j = this.left;
+		int k = j - i;
+		int l = j + i;
+		int m = MathHelper.floor(e - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
+		int n = m / this.itemHeight;
+		return d < (double)this.getScrollbarPositionX() && d >= (double)k && d <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount() ? (Entry) this.children().get(n) : null;
+	}
+
+	@Override
+	public boolean mouseClicked(double d, double e, int i) {
+		this.updateScrollingState(d, e, i);
+		if (!this.isMouseOver(d, e)) {
+			return false;
+		} else {
+			EntryListWidget.Entry entry = this.getAtPos(d, e);
+			if (entry != null) {
+				if (entry.mouseClicked(d, e, i)) {
+					this.setFocused(entry);
+					this.setDragging(true);
+					return true;
+				}
+			} else if (i == 0) {
+				this.clickedHeader((int)(d - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(e - (double)this.top) + (int)this.getScrollAmount() - 4);
+				return true;
+			}
+
+			return i == 0 && d >= (double)this.getScrollbarPositionX() && d < (double)(this.getScrollbarPositionX() + 6);
+		}
 	}
 
 	@Override
@@ -147,8 +246,13 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	}
 
 	@Override
+	public void setScrollAmount(double d) {
+		super.setScrollAmount(isMouseOver(mouseX, mouseY) ? d : 0);
+	}
+
+	@Override
 	public boolean callMouseScrolled(double v) {
-		return mouseScrolled(v, 0, 0);
+		return mouseScrolled(0, 0, v);
 	}
 
 	@Override
@@ -168,7 +272,12 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 
 	@Override
 	public boolean callIsSelected(int id) {
-		return false;
+		return isSelectedItem(id);
+	}
+
+	@Override
+	protected boolean isSelectedItem(int i) {
+		return selected == i;
 	}
 
 	@Override
@@ -206,6 +315,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 				selected = 0;
 		}
 		this.selected = selected;
+		this.setSelected(getEntry(selected));
 		return selected;
 	}
 
@@ -318,6 +428,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	@Override
 	public void setDrawSelection(boolean drawSelection) {
 		this.renderSelection = drawSelection;
+		method_29344(drawSelection); // setRenderSelection
 	}
 
 	@Override
