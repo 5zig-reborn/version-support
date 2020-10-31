@@ -74,7 +74,6 @@ public class Slider extends Button {
 
 			MinecraftFactory.getVars().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 			GLUtil.color(1, 1, 1, 1);
-			// ZIG116
 			drawTexture(matrixStack, getX() + (int) (this.value * (callGetWidth() - 8)), getY(), 0, 66, 4, 20);
 			drawTexture(matrixStack, getX() + (int) (this.value * (callGetWidth() - 8)) + 4, getY(), 196, 66, 4, 20);
 		}

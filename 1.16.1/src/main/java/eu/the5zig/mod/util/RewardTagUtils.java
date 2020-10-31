@@ -20,7 +20,14 @@ package eu.the5zig.mod.util;
 
 import eu.the5zig.mod.The5zigMod;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.util.math.Matrix4f;
 
 public class RewardTagUtils {
 
@@ -29,101 +36,48 @@ public class RewardTagUtils {
     public static boolean shouldRender(PlayerEntity player) {
         if(player == MinecraftClient.getInstance().player && !The5zigMod.getConfig().getBool("showOwnNameTag")) return false;
         if(player.isInvisibleTo(MinecraftClient.getInstance().player)) return false;
-        if(player.isSneaking()) return false; // Sneaking
         if(player.hasPlayerRider()) return false;
-
         int renderDist = 4096; // 64^2
         if(player.squaredDistanceTo(MinecraftClient.getInstance().player) > renderDist) return false;
-
-        //ZIG116 return shouldRenderTeam(player);
-        return false;
-    }
-    /* ZIG116
-    public static void render(PlayerRenderer renderer, String str, PlayerEntity pl, double x, double y, double z) {
-        FontRenderer fontRenderer = renderer.getFontRendererFromRenderManager();
-        float f = 1.6F;
-        float f1 = 0.016666668F * f * SCALE_FACTOR;
-        GlStateManager.func_227626_N_();
-        GlStateManager.func_227688_c_((float) x + 0.0F, (float) y + pl.getHeight() + 0.35F, (float) z);
-        GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-        GlStateManager.func_227689_c_((float) -renderer.getRenderManager().info.getProjectedView().y, 0.0F, 1.0F, 0.0F);
-        GlStateManager.func_227689_c_((float) renderer.getRenderManager().info.getProjectedView().x, 1.0F, 0.0F, 0.0F);
-        GlStateManager.func_227672_b_(-f1, -f1, f1);
-        GlStateManager.func_227722_g_();
-        GlStateManager.func_227667_a_(false);
-        GlStateManager.func_227731_j_();
-        GlStateManager.func_227740_m_();
-        GlStateManager.func_227706_d_(770, 771, 1, 0);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder worldrenderer = tessellator.getBuffer();
-        int i = 0;
-
-        int j = fontRenderer.getStringWidth(str) / 2;
-        GlStateManager.func_227621_I_();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-        color(worldrenderer.func_225582_a_((double) (-j - 1), (double) (-1 + i), 0.0D),0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        color(worldrenderer.func_225582_a_((double) (-j - 1), (double) (8 + i), 0.0D), 0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        color(worldrenderer.func_225582_a_((double) (j + 1), (double) (8 + i), 0.0D), 0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        color(worldrenderer.func_225582_a_((double) (j + 1), (double) (-1 + i), 0.0D),0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-        tessellator.draw();
-        GlStateManager.func_227619_H_();
-
-        makeStr(fontRenderer, str);
-
-        GlStateManager.func_227716_f_();
-        GlStateManager.func_227737_l_();
-        GlStateManager.func_227702_d_(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.func_227627_O_();
+        return shouldRenderTeam(player);
     }
 
-    private static void makeStr(FontRenderer renderer, String str) {
-        int x = -renderer.getStringWidth(str) / 2;
-        renderTxt(renderer, str, x);
-    }
-
-    private static void renderTxt(FontRenderer renderer, String toRender, int x) {
-        GlStateManager.func_227731_j_();
-        GlStateManager.func_227667_a_(true);
-        GlStateManager.func_227731_j_();
-        GlStateManager.func_227667_a_(false);
-
-        int y = 0;
-        GlStateManager.func_227702_d_(255, 255, 255, .5F);
-        renderer.drawString(toRender, x, y, Color.WHITE.darker().darker().darker().darker().darker().getRGB() * 255);
-
-
-        GlStateManager.func_227734_k_();
-        GlStateManager.func_227667_a_(true);
-
-        GlStateManager.func_227702_d_(1.0F, 1.0F, 1.0F, 1.0F);
-        renderer.drawString(toRender, x, y, Color.WHITE.darker().getRGB());
-
+    public static void render(MatrixStack stack, PlayerEntityRenderer renderer, String str, PlayerEntity pl, VertexConsumerProvider vertexConsumers, int light) {
+        float scale = 0.016666668F * 1.6F * SCALE_FACTOR;
+        stack.push();
+        stack.translate(0.0, pl.getHeight() + 0.65, 0.0);
+        stack.multiply(renderer.getRenderManager().getRotation());
+        stack.scale(-scale, -scale, scale);
+        Matrix4f matrix4f = stack.peek().getModel();
+        float opacity = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
+        int color = (int)(opacity * 255.0f) << 24;
+        TextRenderer textRenderer = renderer.getFontRenderer();
+        float h = -textRenderer.getWidth(str) / 2;
+        boolean sneaky = pl.isSneaky();
+        textRenderer.draw(str, h, 0f, 0x20FFFFFF, false, matrix4f, vertexConsumers, !sneaky, color, light);
+        if (!sneaky) {
+            textRenderer.draw(str, h, 0f, -1, false, matrix4f, vertexConsumers, false, 0, light);
+        }
+        stack.pop();
     }
 
     private static boolean shouldRenderTeam(PlayerEntity player) {
-        Team team = player.getTeam();
-        Team team1 = Minecraft.getInstance().player.getTeam();
+        AbstractTeam team = player.getScoreboardTeam();
+        AbstractTeam team1 = MinecraftClient.getInstance().player.getScoreboardTeam();
 
         if (team != null) {
-            Team.Visible enumVisible = team.getNameTagVisibility();
+            Team.VisibilityRule enumVisible = team.getNameTagVisibilityRule();
             switch (enumVisible) {
-                case ALWAYS:
-                    return true;
                 case NEVER:
                     return false;
                 case HIDE_FOR_OTHER_TEAMS:
-                    return team1 == null || team.isSameTeam(team1);
+                    return team1 == null || team.isEqual(team1);
                 case HIDE_FOR_OWN_TEAM:
-                    return team1 == null || !team.isSameTeam(team1);
+                    return team1 == null || !team.isEqual(team1);
                 default:
                     return true;
             }
         }
         return true;
     }
-
-    private static IVertexBuilder color(IVertexBuilder in, float red, float green, float blue, float alpha)
-    {
-        return in.func_225586_a_((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
-    }*/
 }

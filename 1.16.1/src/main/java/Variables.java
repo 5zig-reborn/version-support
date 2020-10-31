@@ -168,7 +168,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	private Window scaledResolution;
 	private IGui2ndChat gui2ndChat = new Gui2ndChat();
 
-	private GLFWKeyCallback previousCallback; // ZIG116 - was final
+	private final GLFWKeyCallback previousCallback;
 
 	private final ResourceManager resourceManager;
 	private Kernel32.SYSTEM_POWER_STATUS batteryStatus;
@@ -212,7 +212,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 						!= 0;
 			}
 		});
-		//ZIG116 investigate null - previousCallback = GLFW.glfwSetKeyCallback(getMinecraft().getWindow().getHandle(), this);
+		previousCallback = GLFW.glfwSetKeyCallback(getMinecraft().getWindow().getHandle(), this);
 		updateScaledResolution();
 		try {
 			this.resourceManager = new ResourceManager(getGameProfile());
@@ -293,6 +293,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 					return sb.toString();
 				}
 			};
+			t.accept(visitor);
 			return visitor.toString();
 		}).collect(Collectors.toList());
 	}
