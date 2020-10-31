@@ -114,6 +114,12 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 	}
 
 	@Override
+	public void setEntry(int slot, E entry) {
+		children().set(slot, new ListElement(entry));
+		calculateHeight();
+	}
+
+	@Override
 	public void doClearEntries() {
 		clearEntries();
 	}
