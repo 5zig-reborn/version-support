@@ -16,42 +16,19 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import eu.the5zig.mod.util.IServerData;
-import net.minecraft.client.network.ServerInfo;
+package eu.the5zig.mod.mixin;
 
-public class ServerData extends ServerInfo implements IServerData {
+import eu.the5zig.mod.The5zigMod;
+import net.minecraft.client.network.ClientPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-	public ServerData(String serverIP) {
-		super(serverIP, serverIP, false);
-	}
-
-	@Override
-	public String getServerName() {
-		return name;
-	}
-
-	@Override
-	public String getServerIP() {
-		return address;
-	}
-
-	@Override
-	public String getPopulationInfo() {
-		return playerCountLabel.getString();
-	}
-
-	@Override
-	public String getMOTD() {
-		return label.getString();
-	}
-
-	@Override
-	public long getPing() {
-		return ping;
-	}
-
-	@Override
-	public String getServerIcon() {
-		return getIcon();
-	}
+@Mixin(ClientPlayerEntity.class)
+public class MixinEntityPlayerSP {
+    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
+    public void sendChatMessage(String msg, CallbackInfo ci) {
+        if(The5zigMod.getListener().onSendChatMessage(msg)) ci.cancel();
+    }
 }

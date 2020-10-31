@@ -80,9 +80,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
@@ -279,23 +277,8 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 			return Collections.emptyList();
 		if (string.isEmpty())
 			return Collections.singletonList("");
-		return getFontrenderer().wrapLines(ChatComponentBuilder.fromLegacyText(string), width).stream().map(t -> {
-			CharacterVisitor visitor = new CharacterVisitor() {
-				final StringBuilder sb = new StringBuilder();
-				@Override
-				public boolean accept(int index, Style style, int codePoint) {
-					sb.appendCodePoint(codePoint);
-					return true;
-				}
-
-				@Override
-				public String toString() {
-					return sb.toString();
-				}
-			};
-			t.accept(visitor);
-			return visitor.toString();
-		}).collect(Collectors.toList());
+		return getFontrenderer().wrapLines(ChatComponentBuilder.fromLegacyText(string), width).stream().map(ChatUtils::getText)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -471,6 +454,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	}
 
 	private TextFieldWidget getChatField() {
+		if(forgeChatField == null) return null;
 		ChatScreen chatGUI = (ChatScreen) getMinecraftScreen();
 		TextFieldWidget chatField;
 		try {

@@ -18,6 +18,7 @@
 
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.IOverlay;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.text.LiteralText;

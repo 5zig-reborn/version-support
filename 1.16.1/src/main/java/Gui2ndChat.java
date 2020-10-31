@@ -19,22 +19,25 @@
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import eu.the5zig.mod.MinecraftFactory;
-import eu.the5zig.mod.asm.Transformer;
-import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.ChatUtils;
-import eu.the5zig.mod.util.GLUtil;
+import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.util.Window;
-import net.minecraft.text.LiteralText;
+import net.minecraft.client.util.ChatMessages;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -48,7 +51,7 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	private final List<String> sentMessages = Lists.newArrayList();
 	private final List<GuiChatLine> chatLines = Lists.newArrayList();
-	private final List<GuiChatLine> singleChatLines = Lists.newArrayList();
+	private final List<ChatHudLine<OrderedText>> singleChatLines = Lists.newArrayList();
 	private int scrollPos;
 	private boolean isScrolled;
 
@@ -74,89 +77,74 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public void draw(int updateCounter) {
-		int scaledWidth = MinecraftFactory.getVars().getScaledWidth();
-		if (MinecraftFactory.getClassProxyCallback().is2ndChatVisible()) {
-			int lineDisplayCount = this.getLineCount();
-			boolean chatOpened = false;
-			int totalChatLines = 0;
-			int chatLineCount = this.singleChatLines.size();
-			float opacity = MinecraftFactory.getClassProxyCallback().get2ndChatOpacity() * 0.9F + 0.1F;
-			if (chatLineCount > 0) {
-				if (this.isChatOpened()) {
-					chatOpened = true;
-				}
-
-				float chatScale = this.getChatScale();
-				int width = MathHelper.ceil((float) this.getChatWidth() / chatScale);
-				GLUtil.pushMatrix();
-				if (Transformer.FORGE) {
-					GLUtil.translate(scaledWidth - getChatWidth() - 6.0f * chatScale, MinecraftFactory.getVars().getScaledHeight() - 28.0F, 0.0F);
-				} else {
-					GLUtil.translate(scaledWidth - getChatWidth() - 6.0f * chatScale, 20.0F, 0.0F);
-				}
-				GLUtil.scale(chatScale, chatScale, 1.0F);
-
-				int lineIndex;
-				int ticksPassed;
-				int alpha;
-				for (lineIndex = 0; lineIndex + this.scrollPos < this.singleChatLines.size() && lineIndex < lineDisplayCount; ++lineIndex) {
-					GuiChatLine chatLine = this.singleChatLines.get(lineIndex + this.scrollPos);
-					if (chatLine != null) {
-						ticksPassed = updateCounter - chatLine.getUpdatedCounter();
-						if (ticksPassed < 200 || chatOpened) {
-							double c = (double) ticksPassed / 200.0D;
-							c = 1.0D - c;
-							c *= 10.0D;
-							c = MathHelper.clamp(c, 0.0D, 1.0D);
-							c *= c;
-							alpha = (int) (255.0D * c);
-							if (chatOpened) {
-								alpha = 255;
-							}
-
-							alpha = (int) ((float) alpha * opacity);
-							++totalChatLines;
-							if (alpha > 3) {
-								int x = 0;
-								int y = -lineIndex * 9;
-								if (!MinecraftFactory.getClassProxyCallback().isChatBackgroundTransparent()) {
-									Gui.drawRect(x, y - 9, x + width + MathHelper.floor(4f * chatScale), y, alpha / 2 << 24);
-								}
-								ChatUtils.highlightChatLine(chatLine.getChatComponent(), MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound() ? x :
-										(int) ((getChatWidth() - MinecraftFactory.getVars().getStringWidth(optStripColor(chatLine.getChatComponent().getString())) * chatScale) / chatScale), y - 9, alpha);
-								String text = chatLine.getChatComponent().getString();
-								GLUtil.enableBlend();
-								if (MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound()) {
-									MinecraftFactory.getVars().drawString(text, x, y - 8, 16777215 + (alpha << 24));
-								} else {
-									MinecraftFactory.getVars().drawString(text, x + width - MinecraftFactory.getVars().getStringWidth(text), y - 8,
-											16777215 + (alpha << 24));
-								}
-								GLUtil.disableAlpha();
-								GLUtil.disableBlend();
-							}
-						}
-					}
-				}
-
-				if (chatOpened) {
-					int fontHeight = MinecraftFactory.getVars().getFontHeight();
-					GLUtil.translate(-3.0F, 0.0F, 0.0F);
-					int visibleLineHeight = chatLineCount * fontHeight + chatLineCount;
-					int totalLineHeight = totalChatLines * fontHeight + totalChatLines;
-					int var19 = this.scrollPos * totalLineHeight / chatLineCount;
-					int var12 = totalLineHeight * totalLineHeight / visibleLineHeight;
-					if (visibleLineHeight != totalLineHeight) {
-						alpha = var19 > 0 ? 170 : 96;
-						int color = this.isScrolled ? 13382451 : 3355562;
-						Gui.drawRect(width + 6, -var19, width + 8, -var19 - var12, color + (alpha << 24));
-						Gui.drawRect(width + 8, -var19, width + 7, -var19 - var12, 13421772 + (alpha << 24));
-					}
-				}
-
-				GLUtil.popMatrix();
+		if(!MinecraftFactory.getClassProxyCallback().is2ndChatVisible()) return;
+		MatrixStack stack = MatrixStacks.hudMatrixStack;
+		MinecraftClient mc = MinecraftClient.getInstance();
+		this.refreshChat();
+		int lineCount = this.getLineCount();
+		int visibleLineCount = this.singleChatLines.size();
+		if (visibleLineCount <= 0) {
+			return;
+		}
+		boolean chatOpened = this.isChatOpened();
+		float scale = this.getChatScale();
+		int width = MathHelper.ceil((double)this.getChatWidth() / this.getChatScale());
+		RenderSystem.pushMatrix();
+		RenderSystem.translatef(MinecraftFactory.getVars().getScaledWidth() - getChatWidth() - 6.0f * scale, 20.0f, 0.0f);
+		RenderSystem.scaled(scale, scale, 1.0);
+		double opacity = MinecraftFactory.getClassProxyCallback().get2ndChatOpacity() * (double)0.9f + (double)0.1f;
+		double backgroundOpacity = mc.options.textBackgroundOpacity;
+		double spacing = 9.0 * (mc.options.chatLineSpacing + 1.0);
+		double spacingPost = -8.0 * (mc.options.chatLineSpacing + 1.0) + 4.0 * mc.options.chatLineSpacing;
+		int totalChatLines = 0;
+		for (int lineIndex = 0; lineIndex + this.scrollPos < this.singleChatLines.size() && lineIndex < lineCount; ++lineIndex) {
+			int ticksPassed;
+			ChatHudLine chatLine = this.singleChatLines.get(lineIndex + this.scrollPos);
+			if (chatLine == null || (ticksPassed = updateCounter - chatLine.getCreationTick()) >= 200 && !chatOpened) continue;
+			double tempOpacity;
+			if(chatOpened) tempOpacity = 1.0;
+			else {
+				tempOpacity = (double) ticksPassed / 200.0;
+				tempOpacity = 1.0 - tempOpacity;
+				tempOpacity *= 10.0;
+				tempOpacity = MathHelper.clamp(tempOpacity, 0.0, 1.0);
+				tempOpacity *= tempOpacity;
+			}
+			int textOpacity = (int)(255.0 * tempOpacity * opacity);
+			int bgOpacity = (int)(255.0 * tempOpacity * backgroundOpacity);
+			++totalChatLines;
+			if (textOpacity <= 3) continue;
+			double y = (double)(-lineIndex) * spacing;
+			stack.push();
+			stack.translate(0.0, 0.0, 50.0);
+			if(!MinecraftFactory.getClassProxyCallback().isChatBackgroundTransparent())
+				ChatHud.fill(stack, -2, (int)(y - spacing), width + 4, (int)y, bgOpacity << 24);
+            ChatUtils.highlightChatLine((OrderedText) chatLine.getText(),
+                    MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound() ? -2 :
+                            (int) ((getChatWidth() - mc.textRenderer.getWidth((OrderedText) chatLine.getText())) * scale / scale),
+                    (int) y - 9, textOpacity);
+			RenderSystem.enableBlend();
+			stack.translate(0.0, 0.0, 50.0);
+			mc.textRenderer.drawWithShadow(stack, (OrderedText) chatLine.getText(), 0.0f, (float)((int)(y + spacingPost)), 0xFFFFFF + (textOpacity << 24));
+			RenderSystem.disableAlphaTest();
+			RenderSystem.disableBlend();
+			stack.pop();
+		}
+		if (chatOpened) {
+			int fontHeight = MinecraftFactory.getVars().getFontHeight();
+			RenderSystem.translatef(-3.0f, 0.0f, 0.0f);
+			int visibleLineHeight = visibleLineCount * fontHeight + visibleLineCount;
+			int totalLineHeight = totalChatLines * fontHeight + totalChatLines;
+			int relativeScroll = this.scrollPos * totalLineHeight / visibleLineCount;
+			int relativeHeight = totalLineHeight * totalLineHeight / visibleLineHeight;
+			if (visibleLineHeight != totalLineHeight) {
+				int alpha = relativeScroll > 0 ? 170 : 96;
+				int color = 0x3333AA;
+				ChatHud.fill(stack, 0, -relativeScroll, 2, -relativeScroll - relativeHeight, color + (alpha << 24));
+				ChatHud.fill(stack, 2, -relativeScroll, 1, -relativeScroll - relativeHeight, 0xCCCCCC + (alpha << 24));
 			}
 		}
+		RenderSystem.popMatrix();
 	}
 
 	public void clearChatMessages() {
@@ -193,28 +181,17 @@ public class Gui2ndChat implements IGui2ndChat {
 		if (id != 0) {
 			this.deleteChatLine(id);
 		}
-
-		int lineWidth = MathHelper.floor((float) this.getChatWidth() / this.getChatScale());
-		List<Text> lines = new ArrayList<>(); /* ZIG116 RenderComponentsUtil
-				.splitText(chatComponent, lineWidth, MinecraftClient.getInstance().textRenderer, false, false);*/
-		boolean var6 = this.isChatOpened();
-
-		Text lineString;
-		for (Iterator<Text> iterator = lines.iterator(); iterator.hasNext(); this.singleChatLines.add(0, new GuiChatLine(currentUpdateCounter, lineString, id))) {
-			lineString = iterator.next();
-			if (var6 && this.scrollPos > 0) {
-				this.isScrolled = true;
+		int lineWidth = MathHelper.floor((double)this.getChatWidth() / this.getChatScale());
+		List<OrderedText> list = ChatMessages.breakRenderedChatMessageLines(chatComponent, lineWidth, MinecraftClient.getInstance().textRenderer);
+		boolean chatOpened = this.isChatOpened();
+		for (OrderedText orderedText : list) {
+			if (chatOpened && this.scrollPos > 0) {
 				this.scroll(1);
 			}
+			this.singleChatLines.add(0, new ChatHudLine<OrderedText>(currentUpdateCounter, orderedText, id));
 		}
-
-		while (this.singleChatLines.size() > MinecraftFactory.getClassProxyCallback().getMaxChatLines()) {
-			this.singleChatLines.remove(this.singleChatLines.size() - 1);
-		}
-
 		if (!refresh) {
 			this.chatLines.add(0, new GuiChatLine(currentUpdateCounter, chatComponent, id));
-
 			while (this.chatLines.size() > MinecraftFactory.getClassProxyCallback().getMaxChatLines()) {
 				this.chatLines.remove(this.chatLines.size() - 1);
 			}
@@ -276,7 +253,8 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public void drawComponentHover(int mouseX, int mouseY) {
-		Text chatComponent = getChatComponent(mouseX, mouseY);
+		if(hoverChatComponent == null) return;
+		Style chatComponent = getChatComponent(mouseX, mouseY);
 		try {
 			hoverChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
 					chatComponent, mouseX, mouseY);
@@ -287,6 +265,7 @@ public class Gui2ndChat implements IGui2ndChat {
 
 	@Override
 	public boolean mouseClicked(int mouseX, int mouseY, int button) {
+		if(clickChatComponent == null) return button == 0;
 		try {
 			return button == 0 && (Boolean) clickChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
 					getChatComponent(mouseX, mouseY));
@@ -304,49 +283,31 @@ public class Gui2ndChat implements IGui2ndChat {
 		}
 	}
 
-	private Text getChatComponent(int mouseX, int mouseY) {
-		if (!this.isChatOpened()) {
+	private Style getChatComponent(int mouseX, int mouseY) {
+		if (!this.isChatOpened()) return null;
+		MinecraftClient mc = MinecraftClient.getInstance();
+		double x = mouseX - 2.0;
+		double y = mc.getWindow().getScaledHeight() - mouseY - 40.0;
+		x = MathHelper.floor(x / this.getChatScale());
+		y = MathHelper.floor(y / (this.getChatScale() * (mc.options.chatLineSpacing + 1.0)));
+		if (x < 0.0 || y < 0.0) {
 			return null;
-		} else {
-			Window window = MinecraftClient.getInstance().getWindow();
-			int resolutionScaleFactor = (int) window.getScaleFactor();
-			float chatScale = this.getChatScale();
-			int x = mouseX / resolutionScaleFactor - MinecraftFactory.getVars().getScaledWidth() + getChatWidth() + 6;
-			int y = mouseY / resolutionScaleFactor - 27;
-			x = MathHelper.floor((float) x / chatScale);
-			y = MathHelper.floor((float) y / chatScale);
-			if (x >= 0 && y >= 0) {
-				int lineCount = Math.min(this.getLineCount(), this.singleChatLines.size());
-				if (x <= MathHelper.floor((float) this.getChatWidth() / this.getChatScale() + 3 / getChatScale()) && y < MinecraftFactory.getVars().getFontHeight() * lineCount) {
-					int lineId = y / MinecraftFactory.getVars().getFontHeight() + this.scrollPos;
-					if (lineId >= 0 && lineId < this.singleChatLines.size()) {
-						GuiChatLine chatLine = this.singleChatLines.get(lineId);
-						int widthCounter = MinecraftFactory.getClassProxyCallback().is2ndChatTextLeftbound() ? 0 :
-								(int) ((getChatWidth() - MinecraftFactory.getVars().getStringWidth(optStripColor(chatLine.getChatComponent().getString())) * chatScale) / chatScale);
-
-						for (Text chatComponent : chatLine.getChatComponent().getSiblings()) {
-							if (chatComponent instanceof LiteralText) { // ChatComponentText
-								widthCounter += MinecraftFactory.getVars().getStringWidth(optStripColor(((LiteralText) chatComponent).getRawString()));
-								if (widthCounter > x) {
-									return chatComponent;
-								}
-							}
-						}
-					}
-
-					return null;
-				} else {
-					return null;
+		}
+		int lineId = Math.min(this.getLineCount(), this.singleChatLines.size());
+		if (x <= (double)MathHelper.floor((double)this.getChatWidth() / this.getChatScale())) {
+			if (y < (double)(9 * lineId + lineId)) {
+				int scroll = (int)(y / 9.0 + (double)this.scrollPos);
+				if (scroll >= 0 && scroll < this.singleChatLines.size()) {
+					ChatHudLine chatHudLine = this.singleChatLines.get(scroll);
+					return mc.textRenderer.getTextHandler().getStyleAt((OrderedText)chatHudLine.getText(), (int)x);
 				}
-			} else {
-				return null;
 			}
 		}
+		return null;
 	}
 
 	private String optStripColor(String text) {
 		return text;
-		//ZIG116 return RenderComponentsUtil.removeTextColorsIfConfigured(text, false);
 	}
 
 	public boolean isChatOpened() {
@@ -357,23 +318,23 @@ public class Gui2ndChat implements IGui2ndChat {
 	 * finds and deletes a Chat line by ID
 	 */
 	public void deleteChatLine(int id) {
-		Iterator<GuiChatLine> iterator = this.singleChatLines.iterator();
-		GuiChatLine chatLine;
+		Iterator<ChatHudLine<OrderedText>> iterator = this.singleChatLines.iterator();
+		ChatHudLine chatLine;
 
 		while (iterator.hasNext()) {
 			chatLine = iterator.next();
 
-			if (chatLine.getChatLineID() == id) {
+			if (chatLine.getId() == id) {
 				iterator.remove();
 			}
 		}
 
-		iterator = this.chatLines.iterator();
+		Iterator<GuiChatLine> iterator2 = this.chatLines.iterator();
+		GuiChatLine chatLine2;
+		while (iterator2.hasNext()) {
+			chatLine2 = iterator2.next();
 
-		while (iterator.hasNext()) {
-			chatLine = iterator.next();
-
-			if (chatLine.getChatLineID() == id) {
+			if (chatLine2.getChatLineID() == id) {
 				iterator.remove();
 				break;
 			}

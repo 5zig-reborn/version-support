@@ -247,7 +247,7 @@ public class GuiList<E extends Row> extends ElementListWidget implements IGuiLis
 				selected = 0;
 		}
 		this.selected = selected;
-		this.setSelected(getEntry(selected));
+		this.setSelected(selected > children().size() ? getEntry(selected) : null);
 		return selected;
 	}
 

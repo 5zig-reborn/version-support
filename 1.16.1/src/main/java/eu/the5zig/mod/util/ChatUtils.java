@@ -23,13 +23,15 @@ import com.google.common.collect.ImmutableList;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.util.minecraft.ChatColor;
-import net.minecraft.text.Text;
+import net.minecraft.text.CharacterVisitor;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Style;
 
 import java.util.List;
 import java.util.Locale;
 
 public class ChatUtils {
-    public static void highlightChatLine(Text chatComponent, int x, int y, int alpha) {
+    public static void highlightChatLine(OrderedText chatComponent, int x, int y, int alpha) {
         List<String> highlightWords;
         boolean onlyWordMatch;
         String chatSearchText = MinecraftFactory.getClassProxyCallback().getChatSearchText();
@@ -43,38 +45,49 @@ public class ChatUtils {
         if (highlightWords.isEmpty()) {
             return;
         }
-        StringBuilder builder = new StringBuilder();
-        for (Text textComponent : chatComponent.getSiblings()) {
-            int currIndex = builder.length();
-            String formattingCode = textComponent.getStyle().getColor().toString();
-            String text = textComponent.asString();
-            builder.append(formattingCode).append(text).append(ChatColor.RESET);
-            text = ChatColor.stripColor(text.toLowerCase(Locale.ROOT));
-
-            for (String search : highlightWords) {
-                search = search.replace("%player%", MinecraftFactory.getVars().getGameProfile().getName()).toLowerCase(Locale.ROOT);
-                for (int nameIndex = builder.toString().toLowerCase(Locale.ROOT).indexOf(search, currIndex), unformattedIndex = text.indexOf(search); nameIndex != -1 && unformattedIndex != -1;
-                     nameIndex = builder.toString().toLowerCase(Locale.ROOT).indexOf(search, nameIndex + search.length()), unformattedIndex =
-                             text.indexOf(search, unformattedIndex + search.length())) {
-                    if (onlyWordMatch) {
-                        if (unformattedIndex > 0) {
-                            char previousChar = Character.toLowerCase(text.charAt(unformattedIndex - 1));
-                            if ((previousChar >= 'a' && previousChar <= 'z') || (previousChar >= '0' && previousChar <= '9')) {
-                                continue;
-                            }
-                        }
-                        if (unformattedIndex + search.length() < text.length()) {
-                            char nextChar = text.charAt(unformattedIndex + search.length());
-                            if ((nextChar >= 'a' && nextChar <= 'z') || (nextChar >= '0' && nextChar <= '9')) {
-                                continue;
-                            }
+        String text = ChatColor.stripColor(getText(chatComponent).toLowerCase(Locale.ROOT));
+        int currIndex = 0;
+        for (String search : highlightWords) {
+            search = search.replace("%player%", MinecraftFactory.getVars().getGameProfile().getName()).toLowerCase(Locale.ROOT);
+            for (int nameIndex = text.indexOf(search, currIndex), unformattedIndex = text.indexOf(search); nameIndex != -1 && unformattedIndex != -1;
+                 nameIndex = text.indexOf(search, nameIndex + search.length()), unformattedIndex =
+                         text.indexOf(search, unformattedIndex + search.length())) {
+                if (onlyWordMatch) {
+                    if (unformattedIndex > 0) {
+                        char previousChar = Character.toLowerCase(text.charAt(unformattedIndex - 1));
+                        if ((previousChar >= 'a' && previousChar <= 'z') || (previousChar >= '0' && previousChar <= '9')) {
+                            continue;
                         }
                     }
-                    int offset = MinecraftFactory.getVars().getStringWidth(builder.substring(0, nameIndex));
-                    int width = MinecraftFactory.getVars().getStringWidth(formattingCode + builder.substring(nameIndex, nameIndex + search.length()));
-                    Gui.drawRect(x + offset, y, x + offset + width, y + MinecraftFactory.getVars().getFontHeight(), MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, alpha) << 24));
+                    if (unformattedIndex + search.length() < text.length()) {
+                        char nextChar = text.charAt(unformattedIndex + search.length());
+                        if ((nextChar >= 'a' && nextChar <= 'z') || (nextChar >= '0' && nextChar <= '9')) {
+                            continue;
+                        }
+                    }
                 }
+                int offset = MinecraftFactory.getVars().getStringWidth(text.substring(0, nameIndex));
+                int width = MinecraftFactory.getVars().getStringWidth(text.substring(nameIndex, nameIndex + search.length()));
+                Gui.drawRect(x + offset, y, x + offset + width, y + MinecraftFactory.getVars().getFontHeight(), MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, alpha) << 24));
             }
         }
+    }
+
+    public static String getText(OrderedText in) {
+        CharacterVisitor visitor = new CharacterVisitor() {
+            final StringBuilder sb = new StringBuilder();
+            @Override
+            public boolean accept(int index, Style style, int codePoint) {
+                sb.appendCodePoint(codePoint);
+                return true;
+            }
+
+            @Override
+            public String toString() {
+                return sb.toString();
+            }
+        };
+        in.accept(visitor);
+        return visitor.toString();
     }
 }

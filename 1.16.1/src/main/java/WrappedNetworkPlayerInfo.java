@@ -17,6 +17,7 @@
  */
 
 import com.mojang.authlib.GameProfile;
+import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.NetworkPlayerInfo;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.client.network.PlayerListEntry;

@@ -16,9 +16,13 @@
  * along with The 5zig Mod.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.common.collect.ImmutableMap;
+package eu.the5zig.mod.util;
+
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import eu.the5zig.mod.util.component.MessageComponent;
 import eu.the5zig.mod.util.component.style.MessageAction;
+import eu.the5zig.mod.util.component.style.MessageStyle;
 import eu.the5zig.util.minecraft.ChatColor;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
@@ -44,12 +48,12 @@ public class ChatComponentBuilder {
 		}
 	}
 
-	private static final Map<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableMap.of(
+	private static final BiMap<MessageAction.Action, ClickEvent.Action> clickActions = ImmutableBiMap.of(
 			MessageAction.Action.OPEN_URL, ClickEvent.Action.OPEN_URL,
 			MessageAction.Action.OPEN_FILE, ClickEvent.Action.OPEN_FILE,
 			MessageAction.Action.RUN_COMMAND, ClickEvent.Action.RUN_COMMAND,
 			MessageAction.Action.SUGGEST_COMMAND, ClickEvent.Action.SUGGEST_COMMAND);
-	private static final Map<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
+	private static final BiMap<MessageAction.Action, HoverEvent.Action> hoverActions = ImmutableBiMap.of(MessageAction.Action.SHOW_TEXT, HoverEvent.Action.SHOW_TEXT);
 
 	public static Text fromInterface(MessageComponent api) {
 		LiteralText text = new LiteralText(api.getText());
@@ -67,6 +71,20 @@ public class ChatComponentBuilder {
 			text.getSiblings().add(fromInterface(sibling));
 		}
 		return text;
+	}
+
+	public static MessageComponent toInterface(Text mc) {
+		MessageComponent base = new MessageComponent(mc.getString());
+		Style style = mc.getStyle();
+		MessageAction click = style.getClickEvent() == null ? null
+				: new MessageAction(clickActions.inverse().get(style.getClickEvent().getAction()), style.getClickEvent().getValue());
+		MessageAction hover = style.getHoverEvent() == null || style.getHoverEvent().getAction() != HoverEvent.Action.SHOW_TEXT ? null
+				: new MessageAction(hoverActions.inverse().get(style.getHoverEvent().getAction()), toInterface(style.getHoverEvent().getValue(HoverEvent.Action.SHOW_TEXT)));
+		base.setStyle(new MessageStyle(hover, click));
+		for(Text sibling : mc.getSiblings()) {
+			base.getSiblings().add(toInterface(sibling));
+		}
+		return base;
 	}
 
 	public static Text fromLegacyText(String message) {
