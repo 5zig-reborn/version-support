@@ -18,15 +18,15 @@
 
 import eu.the5zig.mod.MinecraftFactory;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.TextureTickListener;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.Tickable;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleTickingTexture extends AbstractTexture implements Tickable {
+public class SimpleTickingTexture extends AbstractTexture implements TextureTickListener {
 
 	private final ResourceLocation resourceLocation;
 

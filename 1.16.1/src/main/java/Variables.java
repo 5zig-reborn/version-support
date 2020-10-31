@@ -1071,7 +1071,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	@Override
 	public void drawIngameTexturedModalRect(int x, int y, int u, int v, int width, int height) {
 		if (getGuiIngame() != null) {
-			//ZIG116 getGuiIngame().blit(x, y, u, v, width, height);
+			getGuiIngame().drawTexture(MatrixStacks.hudMatrixStack, x, y, u, v, width, height);
 		}
 	}
 
