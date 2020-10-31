@@ -29,6 +29,13 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.9'
 }
 
+afterEvaluate {
+    task deleteDevJar {
+        jar.archivePath.deleteOnExit()
+    }
+    remapJar.dependsOn(deleteDevJar)
+}
+
 processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.ext.get("buildNumber")
