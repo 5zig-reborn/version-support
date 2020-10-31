@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.asm.ReflectionNames;
 import eu.the5zig.mod.asm.Transformer;
@@ -40,6 +41,7 @@ import eu.the5zig.util.minecraft.ChatColor;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
@@ -56,6 +58,7 @@ import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.*;
@@ -489,14 +492,15 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void registerKeybindings(List<IKeybinding> keybindings) {
-		//ZIG116 KeyBinding[] currentKeybindings = getGameSettings().keysAll;
+		KeyBinding[] currentKeybindings = getGameSettings().keysAll;
 		KeyBinding[] customKeybindings = new KeyBinding[keybindings.size()];
 		for (int i = 0; i < keybindings.size(); i++) {
 			customKeybindings[i] = (KeyBinding) keybindings.get(i);
 		}
+		//getGameSettings().keysAll = Utils.concat(currentKeybindings, customKeybindings);
 		//ZIG116 ((MixinGameSettings)getGameSettings()).setKeyBindings(Utils.concat(currentKeybindings, customKeybindings));
 
-		//ZIG116 getGameSettings().load();
+		getGameSettings().load();
 	}
 
 	@Override
@@ -1027,15 +1031,25 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 	}
 
 	public void renderItem(net.minecraft.item.ItemStack itemStack, int x, int y) {
-		/*ZIG116 RenderHelper.func_227780_a_();
-		GlStateManager.func_227740_m_();
-		GlStateManager.func_227706_d_(770, 771, 1, 0);
+		RenderSystem.enableRescaleNormal();
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		float cooldown = (float)itemStack.getCooldown();
+		if (cooldown > 0.0f) {
+			RenderSystem.pushMatrix();
+			float h = 1.0f + cooldown / 5.0f;
+			RenderSystem.translatef(x + 8, y + 12, 0.0f);
+			RenderSystem.scalef(1.0f / h, (h + 1.0f) / 2.0f, 1.0f);
+			RenderSystem.translatef(-(x + 8), -(y + 12), 0.0f);
+		}
 		ItemRenderer itemRenderer = getMinecraft().getItemRenderer();
-		itemRenderer.renderItemAndEffectIntoGUI(itemStack, x, y);
-		itemRenderer.renderItemOverlays(getFontrenderer(), itemStack, x, y);
-		GlStateManager.func_227737_l_();
-		RenderHelper.disableStandardItemLighting();
-		GlStateManager.func_227700_d_();*/
+		itemRenderer.renderInGuiWithOverrides(getPlayer(), itemStack, x, y);
+		if (cooldown > 0.0f) {
+			RenderSystem.popMatrix();
+		}
+		itemRenderer.renderGuiItemOverlay(getFontrenderer(), itemStack, x, y);
+		RenderSystem.disableRescaleNormal();
+		RenderSystem.disableBlend();
 	}
 
 	@Override
@@ -1225,7 +1239,7 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 		StatusEffectSpriteManager potionspriteuploader = this.getMinecraft().getStatusEffectSpriteManager();
 		Sprite sprite = potionspriteuploader.getSprite(effect);
 		this.getMinecraft().getTextureManager().bindTexture(sprite.getAtlas().getId());
-		//ZIG116 AbstractGui.blit(0, 0, 0, 18, 18, sprite);
+		DrawableHelper.drawSprite(MatrixStacks.hudMatrixStack, 0, 0, 0, 18, 18, sprite);
 	}
 
 	public TextureManager getTextureManager() {

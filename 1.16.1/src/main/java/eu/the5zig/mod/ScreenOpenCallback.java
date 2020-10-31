@@ -18,17 +18,22 @@
 
 package eu.the5zig.mod;
 
-import eu.the5zig.mod.listener.RenderEvents;
-import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ActionResult;
 
-public class Fabric5zig implements ClientModInitializer {
-    @Override
-    public void onInitializeClient() {
-        RenderEvents.register();
-        ScreenOpenCallback.EVENT.register((_prev, _next) -> {
-            if(!The5zigMod.hasBeenInitialized()) The5zigMod.init();
-            return ActionResult.PASS;
-        });
-    }
+public interface ScreenOpenCallback {
+    Event<ScreenOpenCallback> EVENT = EventFactory.createArrayBacked(ScreenOpenCallback.class,
+            (listeners) -> (previous, toOpen) -> {
+                for (ScreenOpenCallback listener : listeners) {
+                    ActionResult result = listener.open(previous, toOpen);
+                    if(result != ActionResult.PASS) {
+                        return result;
+                    }
+                }
+                return ActionResult.PASS;
+            });
+
+    ActionResult open(Screen previous, Screen toOpen);
 }

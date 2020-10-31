@@ -18,8 +18,11 @@
 
 package eu.the5zig.mod.mixin;
 
+import eu.the5zig.mod.ScreenOpenCallback;
 import eu.the5zig.mod.The5zigMod;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.ActionResult;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,5 +33,12 @@ public abstract class MixinMinecraft {
     @Inject(method = "tick", at = @At("TAIL"))
     public void tick(CallbackInfo _ci) {
         The5zigMod.getListener().onTick();
+    }
+
+    @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
+    public void openScreen(Screen toOpen, CallbackInfo ci) {
+        Screen current = MinecraftClient.getInstance().currentScreen;
+        ActionResult result = ScreenOpenCallback.EVENT.invoker().open(current, toOpen);
+        if(result == ActionResult.FAIL) ci.cancel();
     }
 }
