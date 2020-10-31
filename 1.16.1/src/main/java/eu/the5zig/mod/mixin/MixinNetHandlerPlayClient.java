@@ -64,7 +64,7 @@ public abstract class MixinNetHandlerPlayClient {
     @Inject(method = "onHeldItemChange", at = @At("HEAD"))
     public void handleSetSlot(HeldItemChangeS2CPacket packet, CallbackInfo _ci) {
         try {
-            //ItemStack stack = (ItemStack) Class.forName("WrappedItemStack").getConstructor(net.minecraft.item.ItemStack.class)
+            //ZIG116 ItemStack stack = (ItemStack) Class.forName("WrappedItemStack").getConstructor(net.minecraft.item.ItemStack.class)
             //        .newInstance(packet.());
             The5zigMod.getListener().onInventorySetSlot(packet.getSlot(), null);
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "onTitle", at = @At(value = "RETURN", ordinal = 2))
     public void title(TitleS2CPacket packet, CallbackInfo _ci) {
-        String text = packet.getText().getString();
+        String text = packet.getText() == null ? "" : packet.getText().getString();
         switch(packet.getAction()) {
             case TITLE:
                 The5zigMod.getListener().onTitle(text, null);
