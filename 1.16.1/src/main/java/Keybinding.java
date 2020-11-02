@@ -39,7 +39,7 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 
 	@Override
 	public boolean callIsPressed() {
-		return isPressed();
+		return wasPressed();
 	}
 
 	public int callGetKeyCode() {

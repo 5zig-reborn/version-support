@@ -39,6 +39,7 @@ import eu.the5zig.util.Callback;
 import eu.the5zig.util.Utils;
 import eu.the5zig.util.minecraft.ChatColor;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -477,14 +478,9 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public void registerKeybindings(List<IKeybinding> keybindings) {
-		KeyBinding[] currentKeybindings = getGameSettings().keysAll;
-		KeyBinding[] customKeybindings = new KeyBinding[keybindings.size()];
-		for (int i = 0; i < keybindings.size(); i++) {
-			customKeybindings[i] = (KeyBinding) keybindings.get(i);
+		for(IKeybinding kb : keybindings) {
+			KeyBindingHelper.registerKeyBinding((Keybinding) kb);
 		}
-		//getGameSettings().keysAll = Utils.concat(currentKeybindings, customKeybindings);
-		//ZIG116 ((MixinGameSettings)getGameSettings()).setKeyBindings(Utils.concat(currentKeybindings, customKeybindings));
-
 		getGameSettings().load();
 	}
 

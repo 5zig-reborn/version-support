@@ -34,7 +34,6 @@ public class Keybinding extends KeyBinding implements IKeybinding {
 
 	public Keybinding(String description, int keyCode, String category) {
 		super(description, keyCode, category);
-		tryRegisterCategory(category);
 	}
 
 	@Override
