@@ -41,4 +41,14 @@ public abstract class MixinMinecraft {
         ActionResult result = ScreenOpenCallback.EVENT.invoker().open(current, toOpen);
         if(result == ActionResult.FAIL) ci.cancel();
     }
+
+    @Inject(method = "doAttack", at = @At("HEAD"))
+    public void leftClickCPS(CallbackInfo _ci) {
+        The5zigMod.getDataManager().getCpsManager().getLeftClickCounter().incrementCount();
+    }
+
+    @Inject(method = "doItemUse", at = @At("HEAD"))
+    public void rightClickCPS(CallbackInfo _ci) {
+        The5zigMod.getDataManager().getCpsManager().getRightClickCounter().incrementCount();
+    }
 }
