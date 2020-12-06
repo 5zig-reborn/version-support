@@ -21,6 +21,7 @@ package eu.the5zig.mod.mixin;
 import eu.the5zig.mod.MinecraftFactory;
 import eu.the5zig.mod.The5zigMod;
 import eu.the5zig.mod.util.ChatUtils;
+import eu.the5zig.mod.util.MatrixStacks;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,20 +32,34 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ChatHud.class)
-public class MixinGuiChatNew {
+public abstract class MixinGuiChatNew {
     private static final String fillTarget = "net/minecraft/client/gui/hud/ChatHud.fill(Lnet/minecraft/client/util/math/MatrixStack;IIIII)V";
+    private static final Class<?> secondChatClass;
 
     private OrderedText lastComponent;
     private int lastY, lastAlpha;
 
+    static {
+        try {
+            secondChatClass = Class.forName("Gui2ndChat");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Inject(method = "scroll", at = @At("HEAD"))
     public void scroll(double amount, CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().scroll((int)amount);
+        if(!secondChatClass.isAssignableFrom(this.getClass())) {
+            The5zigMod.getVars().get2ndChat().scroll((int) amount);
+        }
     }
 
     @Inject(method = "render", at = @At("HEAD"))
-    public void drawChat(MatrixStack _stack, int upd, CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().draw(upd);
+    public void drawChat(MatrixStack stack, int upd, CallbackInfo _ci) {
+        if(!secondChatClass.isAssignableFrom(this.getClass())) {
+            MatrixStacks.chatMatrixStack = stack;
+            The5zigMod.getVars().get2ndChat().draw(upd);
+        }
     }
 
     @ModifyVariable(method = "render", at = @At(value = "INVOKE", ordinal = 0, target = fillTarget))
@@ -68,14 +83,16 @@ public class MixinGuiChatNew {
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = fillTarget, shift = At.Shift.AFTER))
-    public void callHighlight(MatrixStack _stack, int upd, CallbackInfo _ci) {
+    public void callHighlight(MatrixStack stack, int upd, CallbackInfo _ci) {
         if(lastComponent == null) return;
-        ChatUtils.highlightChatLine(lastComponent, 0, lastY, lastAlpha);
+        ChatUtils.highlightChatLine(stack, lastComponent, 0, lastY, lastAlpha);
     }
 
     @Inject(method = "clear", at = @At("HEAD"))
     public void clearChatMessages(boolean _history, CallbackInfo _ci) {
-        The5zigMod.getVars().get2ndChat().clear();
+        if(!secondChatClass.isAssignableFrom(this.getClass())) {
+            The5zigMod.getVars().get2ndChat().clear();
+        }
     }
 
     @ModifyVariable(method = "queueMessage", at = @At("HEAD"), argsOnly = true, index = 1)

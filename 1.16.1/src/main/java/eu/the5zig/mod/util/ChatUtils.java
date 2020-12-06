@@ -21,8 +21,8 @@ package eu.the5zig.mod.util;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import eu.the5zig.mod.MinecraftFactory;
-import eu.the5zig.mod.gui.Gui;
 import eu.the5zig.util.minecraft.ChatColor;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ChatUtils {
-    public static void highlightChatLine(OrderedText chatComponent, int x, int y, int alpha) {
+    public static void highlightChatLine(MatrixStack stack, OrderedText chatComponent, int x, int y, int alpha) {
         List<String> highlightWords;
         boolean onlyWordMatch;
         String chatSearchText = MinecraftFactory.getClassProxyCallback().getChatSearchText();
@@ -68,7 +68,7 @@ public class ChatUtils {
                 }
                 int offset = MinecraftFactory.getVars().getStringWidth(text.substring(0, nameIndex));
                 int width = MinecraftFactory.getVars().getStringWidth(text.substring(nameIndex, nameIndex + search.length()));
-                Gui.drawRect(x + offset, y, x + offset + width, y + MinecraftFactory.getVars().getFontHeight(), MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, alpha) << 24));
+                MatrixStacks.drawRect(stack, x + offset, y, x + offset + width, y + MinecraftFactory.getVars().getFontHeight(), MinecraftFactory.getClassProxyCallback().getHighlightWordsColor() + (Math.min(0x80, alpha) << 24));
             }
         }
     }
