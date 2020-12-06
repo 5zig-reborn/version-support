@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import eu.the5zig.mod.MinecraftFactory;
+import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.gui.ingame.IGui2ndChat;
 import eu.the5zig.mod.util.ChatComponentBuilder;
 import eu.the5zig.mod.util.ChatUtils;
@@ -29,6 +30,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
@@ -55,24 +57,22 @@ public class Gui2ndChat implements IGui2ndChat {
 	private int scrollPos;
 	private boolean isScrolled;
 
-	private static Method clickChatComponent;
-	private static Method hoverChatComponent;
+	private static final Method clickChatComponent;
+	private static final Method hoverChatComponent;
 
 	public Gui2ndChat() {
 	}
 
 	static {
-		/* ZIG116
 		try {
-			clickChatComponent = Screen.class.getDeclaredMethod(Transformer.REFLECTION.ChatComponentClick().get(), Text.class);
+			clickChatComponent = Screen.class.getDeclaredMethod(Transformer.REFLECTION.ChatComponentClick().get(), Style.class);
 			clickChatComponent.setAccessible(true);
 
-			hoverChatComponent = Screen.class.getDeclaredMethod(Transformer.REFLECTION.ChatComponentHover().get(),
-					Text.class, int.class, int.class);
+			hoverChatComponent = Screen.class.getDeclaredMethod(Transformer.REFLECTION.ChatComponentHover().get(), MatrixStack.class, Style.class, int.class, int.class);
 			hoverChatComponent.setAccessible(true);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		} */
+		}
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class Gui2ndChat implements IGui2ndChat {
 			if (chatOpened && this.scrollPos > 0) {
 				this.scroll(1);
 			}
-			this.singleChatLines.add(0, new ChatHudLine<OrderedText>(currentUpdateCounter, orderedText, id));
+			this.singleChatLines.add(0, new ChatHudLine<>(currentUpdateCounter, orderedText, id));
 		}
 		if (!refresh) {
 			this.chatLines.add(0, new GuiChatLine(currentUpdateCounter, chatComponent, id));
@@ -256,8 +256,7 @@ public class Gui2ndChat implements IGui2ndChat {
 		if(hoverChatComponent == null) return;
 		Style chatComponent = getChatComponent(mouseX, mouseY);
 		try {
-			hoverChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
-					chatComponent, mouseX, mouseY);
+			hoverChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(), MatrixStacks.hudMatrixStack, chatComponent, mouseX, mouseY);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -267,8 +266,7 @@ public class Gui2ndChat implements IGui2ndChat {
 	public boolean mouseClicked(int mouseX, int mouseY, int button) {
 		if(clickChatComponent == null) return button == 0;
 		try {
-			return button == 0 && (Boolean) clickChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(),
-					getChatComponent(mouseX, mouseY));
+			return button == 0 && (Boolean) clickChatComponent.invoke(MinecraftFactory.getVars().getMinecraftScreen(), getChatComponent(mouseX, mouseY));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

@@ -25,8 +25,7 @@ import net.minecraft.text.LiteralText;
 import java.net.UnknownHostException;
 
 public class ServerPinger implements IServerPinger {
-
-	private net.minecraft.client.network.MultiplayerServerListPinger handle = new net.minecraft.client.network.MultiplayerServerListPinger();
+	private final net.minecraft.client.network.MultiplayerServerListPinger handle = new net.minecraft.client.network.MultiplayerServerListPinger();
 
 	@Override
 	public IServerData createServerData(String serverIP) {

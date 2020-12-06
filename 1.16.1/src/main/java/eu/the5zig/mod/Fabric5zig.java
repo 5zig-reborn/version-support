@@ -18,6 +18,8 @@
 
 package eu.the5zig.mod;
 
+import eu.the5zig.mod.asm.ReflectionNames1164;
+import eu.the5zig.mod.asm.Transformer;
 import eu.the5zig.mod.listener.RenderEvents;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.util.ActionResult;
@@ -25,6 +27,8 @@ import net.minecraft.util.ActionResult;
 public class Fabric5zig implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        Transformer.FABRIC = true;
+        Transformer.REFLECTION = new ReflectionNames1164();
         RenderEvents.register();
         ScreenOpenCallback.EVENT.register((_prev, _next) -> {
             if(!The5zigMod.hasBeenInitialized()) The5zigMod.init();

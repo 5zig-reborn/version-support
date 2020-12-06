@@ -18,7 +18,7 @@
 
 package eu.the5zig.mod.asm;
 
-public class ReflectionNames1144 implements ReflectionNames {
+public class ReflectionNames1164 implements ReflectionNames {
     @Override
     public ReflSimpleTuple GuiChatInput() {
         return new ReflSimpleTriple("field_146415_a", "a", "field_2382");
@@ -26,12 +26,12 @@ public class ReflectionNames1144 implements ReflectionNames {
 
     @Override
     public ReflSimpleTuple ChatComponentClick() {
-        return new ReflSimpleTriple("handleComponentClicked", "handleComponentClicked", "handleComponentClicked");
+        return new ReflSimpleTriple("handleTextClick", "handleTextClick", "method_25430");
     }
 
     @Override
     public ReflSimpleTuple ChatComponentHover() {
-        return new ReflSimpleTriple("renderComponentHoverEffect", "renderComponentHoverEffect", "renderComponentHoverEffect");
+        return new ReflSimpleTriple("renderTextHoverEffect", "renderTextHoverEffect", "method_25418");
     }
 
     @Override
