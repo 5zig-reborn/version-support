@@ -468,7 +468,9 @@ public class Variables implements IVariables, GLFWKeyCallbackI {
 
 	@Override
 	public Object getChatComponentWithPrefix(String prefix, Object originalChatComponent) {
-		return new LiteralText(prefix).getSiblings().add((Text) originalChatComponent);
+		Text text = new LiteralText(prefix);
+		text.getSiblings().add((Text) originalChatComponent);
+		return text;
 	}
 
 	@Override
