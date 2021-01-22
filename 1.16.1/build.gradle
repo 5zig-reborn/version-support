@@ -20,7 +20,7 @@ plugins {
     id 'fabric-loom' version '0.5-SNAPSHOT'
 }
 
-project.ext.set("customVer", "1.16.4")
+project.ext.set("customVer", "1.16.5")
 
 apply plugin: 'java'
 apply from: '../../mod/common.gradle'
