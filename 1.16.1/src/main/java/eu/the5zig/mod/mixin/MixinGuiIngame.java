@@ -37,7 +37,8 @@ public abstract class MixinGuiIngame {
 
     @Inject(method = "tick", at = @At("TAIL"))
     public void updateTick(CallbackInfo _ci) {
-        The5zigMod.getGuiIngame().tick();
+        if (The5zigMod.hasBeenInitialized())
+            The5zigMod.getGuiIngame().tick();
     }
 
     @Inject(method = "renderStatusBars", at = @At(value = "INVOKE", target = "net/minecraft/util/profiler/Profiler.swap(Ljava/lang/String;)V",

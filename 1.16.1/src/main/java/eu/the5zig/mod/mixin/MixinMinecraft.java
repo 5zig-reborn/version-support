@@ -32,7 +32,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinMinecraft {
     @Inject(method = "tick", at = @At("TAIL"))
     public void tick(CallbackInfo _ci) {
-        The5zigMod.getListener().onTick();
+        if (The5zigMod.hasBeenInitialized())
+            The5zigMod.getListener().onTick();
     }
 
     @Inject(method = "openScreen", at = @At("HEAD"), cancellable = true)
